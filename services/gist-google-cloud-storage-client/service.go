@@ -1,4 +1,4 @@
-package gistgooglecloudstorage
+package gistgooglecloudstorageclient
 
 import (
 	"context"
@@ -32,10 +32,10 @@ func (s *Service) Exists(ctx context.Context, bucketID, fileName string) (bool, 
 		FileName:  fileName,
 	})
 	if err != nil {
-		return false, fmt.Errorf("gist-google-cloud-storage: exists: %w", err)
+		return false, fmt.Errorf("gist-google-cloud-storage-client: exists: %w", err)
 	}
 	if resp.GetErrorCode() != "" {
-		return false, fmt.Errorf("gist-google-cloud-storage: exists: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
+		return false, fmt.Errorf("gist-google-cloud-storage-client: exists: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
 	}
 	return resp.GetExists(), nil
 }
@@ -67,10 +67,10 @@ func (s *Service) Store(ctx context.Context, bucketID, path string, fileHeader *
 		ContentType: fileHeader.Header.Get("Content-Type"),
 	})
 	if err != nil {
-		return nil, nil, fmt.Errorf("gist-google-cloud-storage: store: %w", err)
+		return nil, nil, fmt.Errorf("gist-google-cloud-storage-client: store: %w", err)
 	}
 	if resp.GetErrorCode() != "" {
-		return nil, nil, fmt.Errorf("gist-google-cloud-storage: store: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
+		return nil, nil, fmt.Errorf("gist-google-cloud-storage-client: store: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
 	}
 	respPath, respFileName := resp.GetPath(), resp.GetFileName()
 	return &respPath, &respFileName, nil
@@ -86,10 +86,10 @@ func (s *Service) CreateBucket(ctx context.Context, bucketID, location string) (
 		Location:  location,
 	})
 	if err != nil {
-		return false, fmt.Errorf("gist-google-cloud-storage: create bucket: %w", err)
+		return false, fmt.Errorf("gist-google-cloud-storage-client: create bucket: %w", err)
 	}
 	if resp.GetErrorCode() != "" {
-		return false, fmt.Errorf("gist-google-cloud-storage: create bucket: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
+		return false, fmt.Errorf("gist-google-cloud-storage-client: create bucket: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
 	}
 	return resp.GetCreated(), nil
 }
@@ -103,16 +103,16 @@ func (s *Service) GetBucket(ctx context.Context, bucketID string, out any) (foun
 		BucketId:  bucketID,
 	})
 	if err != nil {
-		return false, fmt.Errorf("gist-google-cloud-storage: get bucket: %w", err)
+		return false, fmt.Errorf("gist-google-cloud-storage-client: get bucket: %w", err)
 	}
 	if resp.GetErrorCode() != "" {
-		return false, fmt.Errorf("gist-google-cloud-storage: get bucket: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
+		return false, fmt.Errorf("gist-google-cloud-storage-client: get bucket: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
 	}
 	if !resp.GetFound() {
 		return false, nil
 	}
 	if err := json.Unmarshal(resp.GetAttrsJson(), out); err != nil {
-		return false, fmt.Errorf("gist-google-cloud-storage: could not decode bucket attrs: %w", err)
+		return false, fmt.Errorf("gist-google-cloud-storage-client: could not decode bucket attrs: %w", err)
 	}
 	return true, nil
 }
@@ -123,7 +123,7 @@ func (s *Service) GetBucket(ctx context.Context, bucketID string, out any) (foun
 func (s *Service) UpdateBucket(ctx context.Context, bucketID string, attrs any) (found bool, err error) {
 	attrsJSON, err := json.Marshal(attrs)
 	if err != nil {
-		return false, fmt.Errorf("gist-google-cloud-storage: could not encode bucket attrs: %w", err)
+		return false, fmt.Errorf("gist-google-cloud-storage-client: could not encode bucket attrs: %w", err)
 	}
 
 	resp, err := rpcconn.MustFor(s.server).GoogleCloudStorage.UpdateBucket(ctx, &gistproto.GoogleCloudStorageUpdateBucketRequest{
@@ -132,10 +132,10 @@ func (s *Service) UpdateBucket(ctx context.Context, bucketID string, attrs any) 
 		AttrsJson: attrsJSON,
 	})
 	if err != nil {
-		return false, fmt.Errorf("gist-google-cloud-storage: update bucket: %w", err)
+		return false, fmt.Errorf("gist-google-cloud-storage-client: update bucket: %w", err)
 	}
 	if resp.GetErrorCode() != "" {
-		return false, fmt.Errorf("gist-google-cloud-storage: update bucket: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
+		return false, fmt.Errorf("gist-google-cloud-storage-client: update bucket: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
 	}
 	return resp.GetFound(), nil
 }
@@ -149,10 +149,10 @@ func (s *Service) DeleteBucket(ctx context.Context, bucketID string) (found bool
 		BucketId:  bucketID,
 	})
 	if err != nil {
-		return false, fmt.Errorf("gist-google-cloud-storage: delete bucket: %w", err)
+		return false, fmt.Errorf("gist-google-cloud-storage-client: delete bucket: %w", err)
 	}
 	if resp.GetErrorCode() != "" {
-		return false, fmt.Errorf("gist-google-cloud-storage: delete bucket: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
+		return false, fmt.Errorf("gist-google-cloud-storage-client: delete bucket: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
 	}
 	return resp.GetFound(), nil
 }
@@ -166,10 +166,10 @@ func (s *Service) GetObject(ctx context.Context, bucketID, fileName string) (fou
 		FileName:  fileName,
 	})
 	if err != nil {
-		return false, nil, fmt.Errorf("gist-google-cloud-storage: get object: %w", err)
+		return false, nil, fmt.Errorf("gist-google-cloud-storage-client: get object: %w", err)
 	}
 	if resp.GetErrorCode() != "" {
-		return false, nil, fmt.Errorf("gist-google-cloud-storage: get object: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
+		return false, nil, fmt.Errorf("gist-google-cloud-storage-client: get object: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
 	}
 	if !resp.GetFound() {
 		return false, nil, nil
@@ -188,10 +188,10 @@ func (s *Service) UpdateObjectMetadata(ctx context.Context, bucketID, fileName s
 		Metadata:  metadata,
 	})
 	if err != nil {
-		return false, nil, fmt.Errorf("gist-google-cloud-storage: update object metadata: %w", err)
+		return false, nil, fmt.Errorf("gist-google-cloud-storage-client: update object metadata: %w", err)
 	}
 	if resp.GetErrorCode() != "" {
-		return false, nil, fmt.Errorf("gist-google-cloud-storage: update object metadata: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
+		return false, nil, fmt.Errorf("gist-google-cloud-storage-client: update object metadata: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
 	}
 	if !resp.GetFound() {
 		return false, nil, nil
@@ -208,10 +208,10 @@ func (s *Service) DeleteObject(ctx context.Context, bucketID, fileName string) (
 		FileName:  fileName,
 	})
 	if err != nil {
-		return false, fmt.Errorf("gist-google-cloud-storage: delete object: %w", err)
+		return false, fmt.Errorf("gist-google-cloud-storage-client: delete object: %w", err)
 	}
 	if resp.GetErrorCode() != "" {
-		return false, fmt.Errorf("gist-google-cloud-storage: delete object: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
+		return false, fmt.Errorf("gist-google-cloud-storage-client: delete object: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
 	}
 	return resp.GetFound(), nil
 }

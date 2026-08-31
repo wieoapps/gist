@@ -1,11 +1,11 @@
-// Package gistrabbitmq is the thin, injectable client half of
-// gist-rabbit-mq - Publish/ExchangeDeclare/QueueDeclare/QueueBind, every
+// Package gistrabbitmqclient is the thin, injectable client half of
+// gist-rabbit-mq-client - Publish/ExchangeDeclare/QueueDeclare/QueueBind, every
 // call forwarded to gist-server's own RabbitMQService, routed by this
 // instance's own config id. Consuming a queue (the push direction, not
 // a call this client makes) is a separate concern - see
 // gistsdk.RegisterRabbitMQConsumer, a root-level Option like
 // RegisterScheduleFunc, not a method here.
-package gistrabbitmq
+package gistrabbitmqclient
 
 import (
 	"context"
@@ -42,10 +42,10 @@ func (s *Service) Publish(ctx context.Context, exchange, routingKey string, body
 		Headers:     headers,
 	})
 	if err != nil {
-		return fmt.Errorf("gistrabbitmq: publish: %w", err)
+		return fmt.Errorf("gistrabbitmqclient: publish: %w", err)
 	}
 	if resp.GetErrorCode() != "" {
-		return fmt.Errorf("gistrabbitmq: publish: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
+		return fmt.Errorf("gistrabbitmqclient: publish: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
 	}
 	return nil
 }
@@ -64,10 +64,10 @@ func (s *Service) ExchangeDeclare(ctx context.Context, name, kind string, durabl
 		Args:       args,
 	})
 	if err != nil {
-		return fmt.Errorf("gistrabbitmq: exchange declare: %w", err)
+		return fmt.Errorf("gistrabbitmqclient: exchange declare: %w", err)
 	}
 	if resp.GetErrorCode() != "" {
-		return fmt.Errorf("gistrabbitmq: exchange declare: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
+		return fmt.Errorf("gistrabbitmqclient: exchange declare: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
 	}
 	return nil
 }
@@ -85,10 +85,10 @@ func (s *Service) QueueDeclare(ctx context.Context, name string, durable, autoDe
 		Args:       args,
 	})
 	if err != nil {
-		return "", fmt.Errorf("gistrabbitmq: queue declare: %w", err)
+		return "", fmt.Errorf("gistrabbitmqclient: queue declare: %w", err)
 	}
 	if resp.GetErrorCode() != "" {
-		return "", fmt.Errorf("gistrabbitmq: queue declare: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
+		return "", fmt.Errorf("gistrabbitmqclient: queue declare: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
 	}
 	return resp.GetName(), nil
 }
@@ -103,10 +103,10 @@ func (s *Service) QueueBind(ctx context.Context, queue, exchange, routingKey str
 		Args:       args,
 	})
 	if err != nil {
-		return fmt.Errorf("gistrabbitmq: queue bind: %w", err)
+		return fmt.Errorf("gistrabbitmqclient: queue bind: %w", err)
 	}
 	if resp.GetErrorCode() != "" {
-		return fmt.Errorf("gistrabbitmq: queue bind: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
+		return fmt.Errorf("gistrabbitmqclient: queue bind: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
 	}
 	return nil
 }

@@ -4,11 +4,11 @@ import (
 	"testing"
 
 	"github.com/wieoapps/gist"
-	"github.com/wieoapps/gist/services/gist-elasticsearch"
+	"github.com/wieoapps/gist/services/gist-elasticsearch-client"
 	"github.com/wieoapps/gist/services/gist-mysql-client"
 )
 
-// These tests exercise the REAL registrations gist-mysql/gist-elasticsearch
+// These tests exercise the REAL registrations gist-mysql/gist-elasticsearch-client
 // make from their own init() - not a fake registered type - since that's
 // exactly what a customer's ServicesGroup relies on once those packages
 // are imported.
@@ -29,8 +29,8 @@ func TestBuildServiceGroup_ResolvesTaggedField(t *testing.T) {
 }
 
 type mixedFieldGroup struct {
-	TestDb     *gistmysqlclient.Service   `name:"test-db"`
-	TestSearch *gistelasticsearch.Service `name:"test-search"`
+	TestDb     *gistmysqlclient.Service         `name:"test-db"`
+	TestSearch *gistelasticsearchclient.Service `name:"test-search"`
 	Untagged   *gistmysqlclient.Service
 }
 

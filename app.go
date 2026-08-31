@@ -186,9 +186,9 @@ func WithRabbitMQAutoAck() RabbitMQConsumerOption {
 }
 
 // RegisterRabbitMQConsumer activates consuming queue on serviceID's
-// gist-rabbit-mq instance and registers fn as the handler every message
+// gist-rabbit-mq-client instance and registers fn as the handler every message
 // on it is delivered to. gist-server owns the actual amqp091-go Consume
-// loop (see gistrabbitmq.Service.StartConsuming) and calls back into
+// loop (see gistrabbitmqclient.Service.StartConsuming) and calls back into
 // this process for every message - the same push-driven shape
 // gist-scheduler's Tick already uses for cron fires (a queue name plays
 // the role Tick's id does), not giststatemachine.Attach's shape:
@@ -729,7 +729,7 @@ func (s *callbackServer) Tick(ctx context.Context, req *gistproto.TickRequest) (
 
 // Deliver runs the fn RegisterRabbitMQConsumer registered for
 // (service_id, queue), reporting its outcome back as the ack/nack
-// verdict gist-rabbit-mq's own Service.handleDelivery applies to the
+// verdict gist-rabbit-mq-client's own Service.handleDelivery applies to the
 // broker - see that method's doc comment for why this is one round
 // trip, not a separate later Ack/Nack RPC.
 func (s *callbackServer) Deliver(ctx context.Context, req *gistproto.DeliverRequest) (*gistproto.DeliverAck, error) {

@@ -1,4 +1,4 @@
-package gistrabbitmq
+package gistrabbitmqclient
 
 import (
 	"context"

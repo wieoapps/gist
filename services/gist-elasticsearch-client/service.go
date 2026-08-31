@@ -1,4 +1,4 @@
-package gistelasticsearch
+package gistelasticsearchclient
 
 import (
 	"context"
@@ -33,7 +33,7 @@ func init() {
 func (s *Service) CreateItem(ctx context.Context, index, id string, item any) (created bool, actualID string, err error) {
 	itemJSON, err := json.Marshal(item)
 	if err != nil {
-		return false, "", fmt.Errorf("gistelasticsearch: could not encode item: %w", err)
+		return false, "", fmt.Errorf("gistelasticsearchclient: could not encode item: %w", err)
 	}
 
 	resp, err := rpcconn.MustFor(s.server).Elasticsearch.CreateItem(ctx, &gistproto.CreateItemRequest{
@@ -43,10 +43,10 @@ func (s *Service) CreateItem(ctx context.Context, index, id string, item any) (c
 		ItemJson:  itemJSON,
 	})
 	if err != nil {
-		return false, "", fmt.Errorf("gistelasticsearch: create item: %w", err)
+		return false, "", fmt.Errorf("gistelasticsearchclient: create item: %w", err)
 	}
 	if resp.GetErrorCode() != "" {
-		return false, "", fmt.Errorf("gistelasticsearch: create item: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
+		return false, "", fmt.Errorf("gistelasticsearchclient: create item: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
 	}
 	return resp.GetCreated(), resp.GetId(), nil
 }
@@ -59,7 +59,7 @@ func (s *Service) CreateItem(ctx context.Context, index, id string, item any) (c
 func (s *Service) IndexItem(ctx context.Context, index, id string, item any) error {
 	itemJSON, err := json.Marshal(item)
 	if err != nil {
-		return fmt.Errorf("gistelasticsearch: could not encode item: %w", err)
+		return fmt.Errorf("gistelasticsearchclient: could not encode item: %w", err)
 	}
 
 	resp, err := rpcconn.MustFor(s.server).Elasticsearch.IndexItem(ctx, &gistproto.IndexItemRequest{
@@ -69,10 +69,10 @@ func (s *Service) IndexItem(ctx context.Context, index, id string, item any) err
 		ItemJson:  itemJSON,
 	})
 	if err != nil {
-		return fmt.Errorf("gistelasticsearch: index item: %w", err)
+		return fmt.Errorf("gistelasticsearchclient: index item: %w", err)
 	}
 	if resp.GetErrorCode() != "" {
-		return fmt.Errorf("gistelasticsearch: index item: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
+		return fmt.Errorf("gistelasticsearchclient: index item: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
 	}
 	return nil
 }
@@ -87,16 +87,16 @@ func (s *Service) GetItem(ctx context.Context, index, id string, out any) (found
 		Id:        id,
 	})
 	if err != nil {
-		return false, fmt.Errorf("gistelasticsearch: get item: %w", err)
+		return false, fmt.Errorf("gistelasticsearchclient: get item: %w", err)
 	}
 	if resp.GetErrorCode() != "" {
-		return false, fmt.Errorf("gistelasticsearch: get item: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
+		return false, fmt.Errorf("gistelasticsearchclient: get item: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
 	}
 	if !resp.GetFound() {
 		return false, nil
 	}
 	if err := json.Unmarshal(resp.GetItemJson(), out); err != nil {
-		return false, fmt.Errorf("gistelasticsearch: could not decode item: %w", err)
+		return false, fmt.Errorf("gistelasticsearchclient: could not decode item: %w", err)
 	}
 	return true, nil
 }
@@ -107,7 +107,7 @@ func (s *Service) GetItem(ctx context.Context, index, id string, out any) (found
 func (s *Service) UpdateItem(ctx context.Context, index, id string, doc any) (found bool, err error) {
 	docJSON, err := json.Marshal(doc)
 	if err != nil {
-		return false, fmt.Errorf("gistelasticsearch: could not encode update: %w", err)
+		return false, fmt.Errorf("gistelasticsearchclient: could not encode update: %w", err)
 	}
 
 	resp, err := rpcconn.MustFor(s.server).Elasticsearch.UpdateItem(ctx, &gistproto.UpdateItemRequest{
@@ -117,10 +117,10 @@ func (s *Service) UpdateItem(ctx context.Context, index, id string, doc any) (fo
 		ItemJson:  docJSON,
 	})
 	if err != nil {
-		return false, fmt.Errorf("gistelasticsearch: update item: %w", err)
+		return false, fmt.Errorf("gistelasticsearchclient: update item: %w", err)
 	}
 	if resp.GetErrorCode() != "" {
-		return false, fmt.Errorf("gistelasticsearch: update item: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
+		return false, fmt.Errorf("gistelasticsearchclient: update item: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
 	}
 	return resp.GetFound(), nil
 }
@@ -134,10 +134,10 @@ func (s *Service) DeleteItem(ctx context.Context, index, id string) (found bool,
 		Id:        id,
 	})
 	if err != nil {
-		return false, fmt.Errorf("gistelasticsearch: delete item: %w", err)
+		return false, fmt.Errorf("gistelasticsearchclient: delete item: %w", err)
 	}
 	if resp.GetErrorCode() != "" {
-		return false, fmt.Errorf("gistelasticsearch: delete item: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
+		return false, fmt.Errorf("gistelasticsearchclient: delete item: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
 	}
 	return resp.GetFound(), nil
 }
@@ -166,7 +166,7 @@ func (s *Service) BulkIndex(ctx context.Context, index string, items []BulkItem)
 	for i, item := range items {
 		itemJSON, encErr := json.Marshal(item.Item)
 		if encErr != nil {
-			return false, nil, fmt.Errorf("gistelasticsearch: could not encode bulk item %d: %w", i, encErr)
+			return false, nil, fmt.Errorf("gistelasticsearchclient: could not encode bulk item %d: %w", i, encErr)
 		}
 		wireItems[i] = &gistproto.BulkIndexItem{Id: item.ID, ItemJson: itemJSON}
 	}
@@ -177,10 +177,10 @@ func (s *Service) BulkIndex(ctx context.Context, index string, items []BulkItem)
 		Items:     wireItems,
 	})
 	if err != nil {
-		return false, nil, fmt.Errorf("gistelasticsearch: bulk index: %w", err)
+		return false, nil, fmt.Errorf("gistelasticsearchclient: bulk index: %w", err)
 	}
 	if resp.GetErrorCode() != "" {
-		return false, nil, fmt.Errorf("gistelasticsearch: bulk index: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
+		return false, nil, fmt.Errorf("gistelasticsearchclient: bulk index: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
 	}
 
 	results = make([]BulkResult, len(resp.GetResults()))
@@ -211,7 +211,7 @@ type SearchResult struct {
 func (s *Service) Search(ctx context.Context, index string, query any) (*SearchResult, error) {
 	queryJSON, err := json.Marshal(query)
 	if err != nil {
-		return nil, fmt.Errorf("gistelasticsearch: could not encode query: %w", err)
+		return nil, fmt.Errorf("gistelasticsearchclient: could not encode query: %w", err)
 	}
 
 	resp, err := rpcconn.MustFor(s.server).Elasticsearch.Search(ctx, &gistproto.SearchRequest{
@@ -220,10 +220,10 @@ func (s *Service) Search(ctx context.Context, index string, query any) (*SearchR
 		QueryJson: queryJSON,
 	})
 	if err != nil {
-		return nil, fmt.Errorf("gistelasticsearch: search: %w", err)
+		return nil, fmt.Errorf("gistelasticsearchclient: search: %w", err)
 	}
 	if resp.GetErrorCode() != "" {
-		return nil, fmt.Errorf("gistelasticsearch: search: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
+		return nil, fmt.Errorf("gistelasticsearchclient: search: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
 	}
 
 	var wire struct {
@@ -239,7 +239,7 @@ func (s *Service) Search(ctx context.Context, index string, query any) (*SearchR
 		} `json:"hits"`
 	}
 	if err := json.Unmarshal(resp.GetResponseJson(), &wire); err != nil {
-		return nil, fmt.Errorf("gistelasticsearch: could not decode search response: %w", err)
+		return nil, fmt.Errorf("gistelasticsearchclient: could not decode search response: %w", err)
 	}
 
 	result := &SearchResult{Total: wire.Hits.Total.Value, Hits: make([]SearchHit, len(wire.Hits.Hits))}

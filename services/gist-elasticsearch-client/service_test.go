@@ -1,4 +1,4 @@
-package gistelasticsearch
+package gistelasticsearchclient
 
 import (
 	"context"

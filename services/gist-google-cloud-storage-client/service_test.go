@@ -1,4 +1,4 @@
-package gistgooglecloudstorage
+package gistgooglecloudstorageclient
 
 import (
 	"bytes"
