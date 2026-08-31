@@ -152,6 +152,10 @@ type fakeAdminClient struct {
 	registerErr error
 }
 
+func (f *fakeAdminClient) Handshake(context.Context, *gistproto.HandshakeRequest, ...grpc.CallOption) (*gistproto.HandshakeResponse, error) {
+	return &gistproto.HandshakeResponse{}, nil
+}
+
 func (f *fakeAdminClient) Register(_ context.Context, in *gistproto.RegisterRequest, _ ...grpc.CallOption) (*gistproto.RegisterResponse, error) {
 	f.mu.Lock()
 	f.registered = append(f.registered, in)

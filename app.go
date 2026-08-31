@@ -538,7 +538,7 @@ func (a *Server) dialAdmin() error {
 	for {
 		state := conn.GetState()
 		if state == connectivity.Ready {
-			return nil
+			return a.handshake(ctx, conn)
 		}
 
 		changed := make(chan bool, 1)
@@ -553,6 +553,19 @@ func (a *Server) dialAdmin() error {
 			}
 		}
 	}
+}
+
+// handshake is called once, right as the admin channel becomes ready and
+// before any other admin RPC - see gist-server's Handshake implementation
+// (adminserver.go) for the version comparison itself. A mismatch here is
+// fatal: dialAdmin's own caller (Start) tears the connection back down on
+// any error, exactly as it already does for a failed connect.
+func (a *Server) handshake(ctx context.Context, conn *grpc.ClientConn) error {
+	client := gistproto.NewBootstrapServiceClient(conn)
+	if _, err := client.Handshake(ctx, &gistproto.HandshakeRequest{SdkVersion: sdkVersion()}); err != nil {
+		return fmt.Errorf("gistsdk: version handshake with gist-server failed: %w", err)
+	}
+	return nil
 }
 
 func (a *Server) Stop() error {

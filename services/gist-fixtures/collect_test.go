@@ -201,6 +201,10 @@ type fakeAdminClient struct {
 	err error
 }
 
+func (f *fakeAdminClient) Handshake(context.Context, *gistproto.HandshakeRequest, ...grpc.CallOption) (*gistproto.HandshakeResponse, error) {
+	return &gistproto.HandshakeResponse{}, nil
+}
+
 func (f *fakeAdminClient) Register(context.Context, *gistproto.RegisterRequest, ...grpc.CallOption) (*gistproto.RegisterResponse, error) {
 	return &gistproto.RegisterResponse{}, nil
 }
