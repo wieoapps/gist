@@ -765,7 +765,7 @@ go get github.com/wieoapps/gist-sdk</code></pre>
     var cached = readCache();
     if (cached) populate(cached);
 
-    fetch("https://api.github.com/repos/wieoapps/wieoapps.github.io/contents/")
+    fetch("https://api.github.com/repos/wieoapps/gist/contents/docs")
       .then(function(r){ return r.ok ? r.json() : Promise.reject(r.status); })
       .then(function(items){
         var names = items
