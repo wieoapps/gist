@@ -4,7 +4,7 @@ go 1.27.0
 
 require (
 	github.com/joho/godotenv v1.5.1
-	github.com/wieoapps/gist-proto v1.0.0
+	github.com/wieoapps/gist-proto v1.0.1
 	google.golang.org/grpc v1.83.1
 )
 
