@@ -8,7 +8,7 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/wieoapps/gist"
-	"github.com/wieoapps/gist-proto"
+	gistproto "github.com/wieoapps/gist/proto"
 	"github.com/wieoapps/gist/internal/rpcconn"
 	"github.com/wieoapps/gist/services/gist-http-client/delete"
 	"github.com/wieoapps/gist/services/gist-http-client/get"

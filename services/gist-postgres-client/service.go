@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/wieoapps/gist"
-	"github.com/wieoapps/gist-proto"
+	gistproto "github.com/wieoapps/gist/proto"
 	"github.com/wieoapps/gist/internal/rpcconn"
 )
 
@@ -100,8 +100,8 @@ func (s *Service) inTransaction(ctx context.Context, readOnly bool, name string,
 	return tr.Commit()
 }
 
-// EndAction is the SDK-level counterpart of gist-proto's EndAction enum -
-// callers never need to import gist-proto directly to use CloseAfter.
+// EndAction is the SDK-level counterpart of gist/proto's EndAction enum -
+// callers never need to import gist/proto directly to use CloseAfter.
 type EndAction string
 
 const (

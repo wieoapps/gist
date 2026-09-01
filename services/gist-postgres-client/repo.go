@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"reflect"
 
-	"github.com/wieoapps/gist-proto"
+	gistproto "github.com/wieoapps/gist/proto"
 )
 
 func Find[model any](tr *Transaction, opts ...Option) ([]model, error) {

@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/wieoapps/gist-proto"
+	gistproto "github.com/wieoapps/gist/proto"
 )
 
 const (

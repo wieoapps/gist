@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/wieoapps/gist-proto"
+	gistproto "github.com/wieoapps/gist/proto"
 )
 
 type fakeCustomServiceConfig struct {

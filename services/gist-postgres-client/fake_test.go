@@ -5,7 +5,7 @@ import (
 
 	"google.golang.org/grpc"
 
-	"github.com/wieoapps/gist-proto"
+	gistproto "github.com/wieoapps/gist/proto"
 )
 
 // fakePGClient implements gistproto.PostgresServiceClient entirely in memory - no

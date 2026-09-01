@@ -3,7 +3,7 @@ package gistmysqlclient
 import (
 	"context"
 
-	"github.com/wieoapps/gist-proto"
+	gistproto "github.com/wieoapps/gist/proto"
 	"google.golang.org/grpc"
 )
 

@@ -3,7 +3,7 @@ package gistpostgresclient
 import (
 	"encoding/json"
 
-	"github.com/wieoapps/gist-proto"
+	gistproto "github.com/wieoapps/gist/proto"
 )
 
 type Operator string

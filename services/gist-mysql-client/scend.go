@@ -1,6 +1,6 @@
 package gistmysqlclient
 
-import "github.com/wieoapps/gist-proto"
+import gistproto "github.com/wieoapps/gist/proto"
 
 type Scend interface {
 	toWire() *gistproto.Sort

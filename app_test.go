@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/wieoapps/gist-proto"
+	gistproto "github.com/wieoapps/gist/proto"
 )
 
 // TestReadBubbleUpErrors_TrueWhenSet proves config.json's top-level

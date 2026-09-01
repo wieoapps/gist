@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"sync"
 
-	"github.com/wieoapps/gist-proto"
+	gistproto "github.com/wieoapps/gist/proto"
 )
 
 // Clients is the bundle of raw service clients dialed once a *gistsdk.Server
