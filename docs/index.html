@@ -469,46 +469,10 @@
     </div>
     <div class="sidebar-scroll">
       <ol class="toc" id="toc">
-<li><a href="#s0"><span><span class="toc-num">00</span> Command line</span></a></li>
-<li><a href="#s1"><span><span class="toc-num">01</span> Logging</span></a></li>
-<li>
-          <details class="toc-group">
-            <summary><span class="toc-chevron"></span><a href="#s2"><span><span class="toc-num">02</span> gist-api-server</span></a></summary>
-            <ul class="toc-sub">
-              <li><a href="#s2-endpoints-json">endpoints.json</a></li>
-              <li><a href="#s2-api">API</a></li>
-            </ul>
-          </details>
-        </li>
+<li><a href="#s2"><span><span class="toc-num">02</span> gist-api-server</span></a></li>
 <li><a href="#s3"><span><span class="toc-num">03</span> gist-mysql-client</span></a></li>
 <li><a href="#s4"><span><span class="toc-num">04</span> gist-postgres-client</span></a></li>
 <li><a href="#s5"><span><span class="toc-num">05</span> gist-http-server</span></a></li>
-<li>
-          <details class="toc-group">
-            <summary><span class="toc-chevron"></span><a href="#s6"><span><span class="toc-num">06</span> gist-auth</span></a></summary>
-            <ul class="toc-sub">
-              <li><a href="#s6-google">google</a></li>
-              <li><a href="#s6-gitea">gitea</a></li>
-              <li><a href="#s6-apple">apple</a></li>
-            </ul>
-          </details>
-        </li>
-<li>
-          <details class="toc-group">
-            <summary><span class="toc-chevron"></span><a href="#s7"><span><span class="toc-num">07</span> gist-fixtures</span></a></summary>
-            <ul class="toc-sub">
-              <li><a href="#s7-mysql">mysql / postgres / mariadb</a></li>
-              <li><a href="#s7-mssql">mssql</a></li>
-              <li><a href="#s7-mongodb">mongodb</a></li>
-              <li><a href="#s7-gcs">gcs</a></li>
-              <li><a href="#s7-elasticsearch">elasticsearch</a></li>
-              <li><a href="#s7-rabbitmq">rabbitmq</a></li>
-              <li><a href="#s7-pubsub">pubsub</a></li>
-              <li><a href="#s7-mailpit">mailpit</a></li>
-              <li><a href="#s7-redis">redis</a></li>
-            </ul>
-          </details>
-        </li>
 <li><a href="#s8"><span><span class="toc-num">08</span> gist-http-client</span></a></li>
 <li><a href="#s9"><span><span class="toc-num">09</span> gist-elasticsearch-client</span></a></li>
 <li><a href="#s10"><span><span class="toc-num">10</span> gist-google-cloud-storage-client</span></a></li>
@@ -518,7 +482,6 @@
 <li><a href="#s14"><span><span class="toc-num">14</span> gist-pub-sub-client</span></a></li>
 <li><a href="#s15"><span><span class="toc-num">15</span> gist-rabbit-mq-client</span></a></li>
 <li><a href="#s16"><span><span class="toc-num">16</span> gist-load-balancer</span></a></li>
-<li><a href="#s17"><span><span class="toc-num">17</span> gist-custom</span></a></li>
       </ol>
     </div>
     <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false" title="Match system theme">
@@ -560,7 +523,6 @@
         <caption>At a glance — what each service exposes to your own Go code</caption>
         <thead><tr><th>#</th><th>Service</th><th>Surface</th></tr></thead>
         <tbody>
-          <tr><td>1</td><td><a href="#s1">Logging</a></td><td><span class="badge badge-always">Always on</span></td></tr>
                 <!-- GENERATED:gist-api-server:SURFACE:BEGIN -->
           <tr><td>2</td><td><a href="#s2">gist-api-server</a></td><td><span class="badge badge-api">API</span></td></tr>
                 <!-- GENERATED:gist-api-server:SURFACE:END -->
@@ -573,8 +535,6 @@
                 <!-- GENERATED:gist-http-server:SURFACE:BEGIN -->
           <tr><td>5</td><td><a href="#s5">gist-http-server</a></td><td><span class="badge badge-config">Config only</span></td></tr>
                 <!-- GENERATED:gist-http-server:SURFACE:END -->
-          <tr><td>6</td><td><a href="#s6">gist-auth</a></td><td><span class="badge badge-none">No API</span></td></tr>
-          <tr><td>7</td><td><a href="#s7">gist-fixtures</a></td><td><span class="badge badge-api">API</span></td></tr>
                 <!-- GENERATED:gist-http-client:SURFACE:BEGIN -->
           <tr><td>8</td><td><a href="#s8">gist-http-client</a></td><td><span class="badge badge-api">API</span></td></tr>
                 <!-- GENERATED:gist-http-client:SURFACE:END -->
@@ -602,7 +562,6 @@
                 <!-- GENERATED:gist-load-balancer:SURFACE:BEGIN -->
           <tr><td>16</td><td><a href="#s16">gist-load-balancer</a></td><td><span class="badge badge-config">Config only</span></td></tr>
                 <!-- GENERATED:gist-load-balancer:SURFACE:END -->
-          <tr><td>17</td><td><a href="#s17">gist-custom</a></td><td><span class="badge badge-api">API</span></td></tr>
         </tbody>
       </table>
       <p class="muted">
@@ -646,120 +605,15 @@
       </div>
     </div>
 
-    <!-- ============ 0. gist-server command line ============ -->
-    <section class="doc-section" id="s0">
-      <details open>
-        <summary><span class="toc-num">00</span><h2>gist-server command line</h2></summary>
-        <div class="section-body">
-          <p>The <code>gist-server</code> binary has three independent modes, selected by which
-            flags are set. Flag list verbatim from <code>gist-server -h</code>.</p>
-
-          <h3>Normal run — what <code>gist.NewApp</code> invokes for you</h3>
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Shell</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-bash">gist-server -admin-socket &lt;path&gt; -callback-socket &lt;path&gt; -config &lt;path&gt;</code></pre>
-          </div>
-          <div class="table-scroll">
-          <table class="overview-table">
-            <thead><tr><th>Flag</th><th>Description</th></tr></thead>
-            <tbody>
-              <tr><td><code>-admin-socket &lt;path&gt;</code></td><td>Path to the admin gRPC unix socket. Your own process registers its endpoint/trigger/schedule handlers here.</td></tr>
-              <tr><td><code>-callback-socket &lt;path&gt;</code></td><td>Path to the callback gRPC unix socket — the other half of the handshake; gist-server calls back into your process here.</td></tr>
-              <tr><td><code>-config &lt;path&gt;</code></td><td>Path to your <code>config.json</code>.</td></tr>
-            </tbody>
-          </table>
-          </div>
-          <p>You won't usually type this yourself: <code>gist.NewApp</code> reads
-            <code>config.json</code>'s own top-level <code>"gist-binary"</code> field for the
-            binary path, generates both socket paths per run, and <code>exec</code>s this exact
-            command. Only reach for it directly when you're driving gist-server outside the SDK
-            (debugging, a non-Go customer process).</p>
-
-          <h3>Scaffold a new Go project</h3>
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Shell</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-bash">gist-server -new-project orderflow
-gist-server -new-project orderflow -project-path ./somewhere/else</code></pre>
-          </div>
-          <div class="table-scroll">
-          <table class="overview-table">
-            <thead><tr><th>Flag</th><th>Description</th></tr></thead>
-            <tbody>
-              <tr><td><code>-new-project &lt;name&gt;</code></td><td>Generates a starting <code>go.mod</code> + <code>main.go</code>; <code>&lt;name&gt;</code> becomes the Go module name. Refuses to run if a <code>go.mod</code> already exists at the target path.</td></tr>
-              <tr><td><code>-project-path &lt;dir&gt;</code></td><td>Where to scaffold it. Defaults to <code>./&lt;name&gt;</code>.</td></tr>
-            </tbody>
-          </table>
-          </div>
-
-          <h3>Generate a starting config.json</h3>
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Shell</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-bash">gist-server -generate-config gist-api-server,gist-mysql-client -out config.json
-gist-server -generate-config all -out config.json</code></pre>
-          </div>
-          <div class="table-scroll">
-          <table class="overview-table">
-            <thead><tr><th>Flag</th><th>Description</th></tr></thead>
-            <tbody>
-              <tr><td><code>-generate-config &lt;kinds&gt;</code></td><td>Comma-separated service kinds, or <code>all</code>. Valid kinds (every service in this doc except <code>gist-custom</code>, which has no fixed schema to scaffold): <code>gist-api-server</code>, <code>gist-auth</code>, <code>gist-elasticsearch-client</code>, <code>gist-fixtures</code>, <code>gist-google-cloud-storage-client</code>, <code>gist-http-client</code>, <code>gist-http-server</code>, <code>gist-load-balancer</code>, <code>gist-mysql-client</code>, <code>gist-postgres-client</code>, <code>gist-pub-sub-client</code>, <code>gist-rabbit-mq-client</code>, <code>gist-redis-client</code>, <code>gist-scheduler</code>, <code>gist-state-machine</code>.</td></tr>
-              <tr><td><code>-out &lt;path&gt;</code></td><td>Output path. Default <code>config.json</code>.</td></tr>
-            </tbody>
-          </table>
-          </div>
-          <p>Every field of every requested kind's real <code>Config</code> struct is written out
-            with a placeholder value — generated by reflection over the actual struct, not
-            hand-maintained, so it never drifts from the real fields. The output is a starting
-            point to fill in, not a finished config.</p>
-
-          <h3>Combining scaffold + config</h3>
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Shell</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-bash">gist-server -new-project orderflow -generate-config gist-api-server,gist-mysql-client</code></pre>
-          </div>
-          <p>Scaffolds the project and writes <code>config.json</code> into it in one call. If
-            <code>-out</code> was left at its bare default, the config lands at
-            <code>&lt;project-path&gt;/config/config.json</code> specifically — exactly where
-            <code>gist.NewApp</code> already looks by default (the <code>CONFIG_FILE</code> env
-            var, defaulting to <code>./config/config.json</code>) — so the scaffolded project
-            needs no <code>.env</code> adjustment to find it.</p>
-        </div>
-      </details>
-    </section>
-    <!-- ============ 1. Logging ============ -->
-    <section class="doc-section" id="s1">
-      <details open>
-        <summary><span class="toc-num">01</span><h2>Logging</h2><span class="badge badge-always">Always on</span></summary>
-        <div class="section-body">
-          <p>Not a configurable service — always on, package-level, no config entry of its own.</p>
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-go">logging.Info("order approved", map[string]any{
-    "order_id":    order.ID,
-    "customer_id": order.CustomerID,
-})
-logging.Error("charge failed", map[string]any{
-    "order_id": order.ID,
-    "error":    err.Error(),
-})</code></pre>
-          </div>
-          <p>Swallowed handler errors (anything reaching gist-api-server's
-            <code>BubbleUpErrors</code> boundary) carry a v4 UUID trace ID in both the client
-            response and the log line — search logs by that ID rather than by timestamp when a
-            customer reports "order 1001 failed" and you need the exact failure, not a guess at
-            which log line it was.</p>
-        </div>
-      </details>
-    </section>
     <!-- ============ 2. gist-api-server ============ -->
     <section class="doc-section" id="s2">
       <details open>
-        <summary><span class="toc-num">02</span><h2>gist-api-server</h2><span class="badge badge-api">API</span></summary>
+        <summary><span class="toc-num">02</span><h2>gist-api-server</h2></summary>
         <div class="section-body">
                 <!-- GENERATED:gist-api-server:INTRO:BEGIN -->
           <p>Public HTTP listener + endpoint registry. You declare routing/doc metadata in <code>endpoints.json</code> (see below) and bind a Go handler to each <code>id</code> separately, at startup, via <code>Attach</code>. An <code>id</code> with no handler serves as 501 Unimplemented automatically, not a startup error — declare the shape of an endpoint before it's real.</p>
           <p>This instance's own listener is always plain HTTP — there's no <code>protocol</code>/TLS config field, since the underlying <code>net.Listen</code> is never wrapped in TLS. Front it with HTTPS via a reverse proxy if you need that; <code>docs.servers[]</code> (in <strong>Full</strong> below) is exactly where you'd document that proxy's own URL for the OpenAPI spec, independent of this listener's own address.</p>
                 <!-- GENERATED:gist-api-server:INTRO:END -->
-          <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-api-server">gist-api-server</a></div>
                 <!-- GENERATED:gist-api-server:BEGIN -->
           <div class="cfgref">
               <div class="cfgref-tabs">
@@ -1060,12 +914,11 @@ func AttachEndpointHandlers() gist.Option {
     <!-- ============ 3. gist-mysql-client ============ -->
     <section class="doc-section" id="s3">
       <details open>
-        <summary><span class="toc-num">03</span><h2>gist-mysql-client</h2><span class="badge badge-api">API</span></summary>
+        <summary><span class="toc-num">03</span><h2>gist-mysql-client</h2></summary>
         <div class="section-body">
                 <!-- GENERATED:gist-mysql-client:INTRO:BEGIN -->
           <p>MySQL connection pool with a generic repo layer (<code>Find</code>/<code>Save</code>/<code>Update</code>/<code>Delete</code>), a transaction API, and a small condition/sort DSL — not a raw-SQL client, not an ORM in the ActiveRecord sense. <strong>gist-postgres-client (next) is API-identical</strong> — same functions, same option/condition/sort types, same model tag vocabulary. Only the package name (<code>gistmysqlclient</code> vs <code>gistpostgresclient</code>), the injected field's underlying RPC connection, and error-message prefixes differ.</p>
                 <!-- GENERATED:gist-mysql-client:INTRO:END -->
-          <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-mysql-client-config">gist-mysql-client-config</a></div>
                 <!-- GENERATED:gist-mysql-client:BEGIN -->
           <div class="cfgref">
               <div class="cfgref-tabs">
@@ -1184,128 +1037,17 @@ func AttachEndpointHandlers() gist.Option {
               </div>
           </div>
                 <!-- GENERATED:gist-mysql-client:END -->
-
-          <h3>Model tags</h3>
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-go">// DB models - db/json/source/join tags only. No `example` tags here: those
-// are an OpenAPI-doc concept for gist-api-server's request/response
-// structs (see the CreateOrderInput/CreateOrderOutput example above),
-// meaningless on a struct that only ever crosses the mysql-client RPC
-// wire, not an HTTP response.
-type Order struct {
-    _          any         `source:"orderflow.orders"`
-    ID         int         `db:"id" json:"id"`
-    CustomerID int         `db:"customer_id" json:"customer_id"`
-    Status     string      `db:"status" json:"status"`
-    Items      []OrderItem `db:"items" json:"items" join:"id,order_id"`
-}
-type OrderItem struct {
-    _       any    `source:"orderflow.order_items"`
-    OrderID int    `db:"order_id" json:"order_id"`
-    SKU     string `db:"sku" json:"sku"`
-    Qty     int    `db:"qty" json:"qty"`
-}</code></pre>
-          </div>
-          <p><code>source:"schema.table"</code> names the table (blank <code>_ any</code> field,
-            required on the top-level struct). <code>db:"col"</code> maps a field to a column.
-            <code>join:"parentCol,childCol"</code> on a <code>[]OtherStruct</code> field marks it
-            a relation: <code>Find</code>/<code>FindOne</code> populate it server-side;
-            <code>Save</code>/<code>Update</code> silently skip it — a joined field is read-only
-            from the SDK's side, and writing to it does nothing without an error, which is worth
-            remembering the first time an update to <code>Items</code> doesn't seem to take.</p>
-
-          <h3>Reads and writes (free generic functions, <code>*Transaction</code> or <code>*Service</code> + <code>...Option</code>)</h3>
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-go">Find[model](tr, opts...) ([]model, error)
-FindOne[model](tr, opts...) (*model, error)
-Count[model](tr, opts...) (int64, error)
-Exists[model](tr, opts...) (bool, error)
-Save(tr, models ...any) (int64, error)
-SaveWithReturning[model](tr, models ...any) ([]model, int64, error)
-Update(tr, newValues any, opts...) (int64, error)
-UpdateWithReturning[model](tr, newValues any, opts...) ([]model, int64, error)
-Delete[model](tr, opts...) (int64, error)
-DeleteWithReturning[model](tr, opts...) ([]model, int64, error)</code></pre>
-          </div>
-          <p>Every one has an <code>*AutoClose</code> sibling taking <code>*Service</code>
-            instead of <code>*Transaction</code> — e.g. <code>FindAutoClose[Order](sg.OrdersDB,
-            opts...)</code>, <code>SaveAutoClose(sg.OrdersDB, &order)</code> — folding
-            begin+op+commit/rollback into a single RPC. Use <code>*AutoClose</code> for a lone
-            operation; use a real <code>*Transaction</code> (below) once you need more than one
-            op to commit or fail together.</p>
-          <p>Options (<code>WithLimit</code>, <code>WithOffset</code>, <code>WithRange</code>,
-            <code>WithConditions</code>, <code>WithSorting</code>,
-            <code>WithRelationConditions</code>, <code>WithLock</code>) compose with a small
-            condition DSL:</p>
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-go">gistmysqlclient.NewCondition("status", gistmysqlclient.Equal, "pending")
-gistmysqlclient.AndConditions(
-    gistmysqlclient.NewCondition("customer_id", gistmysqlclient.Equal, 42),
-    gistmysqlclient.NewCondition("status", gistmysqlclient.InOperator, []string{
-        "pending",
-        "paid",
-    }),
-)
-gistmysqlclient.NewBetweenCondition("created_at", start, end)</code></pre>
-          </div>
-          <p><code>Operator</code> values: <code>Equal</code>, <code>NotEqual</code>,
-            <code>GreaterThan</code>, <code>GreaterThanOrEqual</code>, <code>LessThan</code>,
-            <code>LessThanOrEqual</code>, <code>IsNullOperator</code>, <code>IsNotNullOperator</code>,
-            <code>InOperator</code>, <code>NotInOperator</code>, <code>BeginsWith</code>,
-            <code>EndsWith</code>, <code>Contains</code>, <code>BeginsWithInsensitive</code>,
-            <code>EndsWithInsensitive</code>, <code>ContainsInsensitive</code>, <code>Between</code>,
-            <code>NotBetween</code>. Sorting: <code>gistmysqlclient.Desc{"created_at"}</code> /
-            <code>Asc{"id"}</code>, passed to <code>WithSorting</code>.</p>
-
-          <h3>Transactions</h3>
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-go">func (s *Service) NewTransaction(ctx) (*Transaction, error)
-func (s *Service) NewReadTransaction(ctx) (*Transaction, error)
-func (s *Service) InTransaction(ctx, fn func(tr *Transaction) error) error
-func (s *Service) InReadTransaction(ctx, fn func(tr *Transaction) error) error
-// Named variants exist for both (NewNamedTransaction, InNamedReadTransaction, ...) - useful
-// when nesting requires distinguishing which transaction a later op belongs to.
-func (tr *Transaction) CloseAfter(action EndAction) // Rollback | Commit | CommitIfOK
-func (tr *Transaction) Commit() error
-func (tr *Transaction) Rollback() error</code></pre>
-          </div>
-          <p><code>NewTransaction</code> sends nothing over the wire by itself — a transaction
-            opened and never used costs zero RPCs, so it's always safe to open one speculatively.
-            <code>InTransaction</code> commits if <code>fn</code> returns <code>nil</code>, rolls
-            back otherwise:</p>
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-go">err := sg.OrdersDB.InTransaction(ctx, func(tr *gistmysqlclient.Transaction) error {
-    if _, err := gistmysqlclient.Save(tr, &order); err != nil {
-        return err
-    }
-    for i := range items {
-        items[i].OrderID = order.ID
-    }
-    _, err := gistmysqlclient.Save(tr, toAnySlice(items)...)
-    return err
-})</code></pre>
-          </div>
-          <p>For a hand-rolled (non-callback) sequence, <code>tr.CloseAfter(gistmysqlclient.CommitIfOK)</code>
-            on the last op folds the commit into that op's own RPC instead of a separate
-            round-trip — the advanced form once <code>InTransaction</code>'s callback shape isn't
-            quite the fit.</p>
         </div>
       </details>
     </section>
     <!-- ============ 4. gist-postgres-client ============ -->
     <section class="doc-section" id="s4">
       <details open>
-        <summary><span class="toc-num">04</span><h2>gist-postgres-client</h2><span class="badge badge-api">API</span></summary>
+        <summary><span class="toc-num">04</span><h2>gist-postgres-client</h2></summary>
         <div class="section-body">
                 <!-- GENERATED:gist-postgres-client:INTRO:BEGIN -->
           <p>PostgreSQL connection pool with a generic repo layer (<code>Find</code>/<code>Save</code>/<code>Update</code>/<code>Delete</code>), a transaction API, and a small condition/sort DSL — not a raw-SQL client, not an ORM in the ActiveRecord sense. <strong>gist-mysql-client (previous) is API-identical</strong> — same functions, same option/condition/sort types, same model tag vocabulary. Only the package name (<code>gistpostgresclient</code> vs <code>gistmysqlclient</code>), the injected field's underlying RPC connection, and error-message prefixes differ.</p>
                 <!-- GENERATED:gist-postgres-client:INTRO:END -->
-          <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-postgres-client-config">gist-postgres-client-config</a></div>
                 <!-- GENERATED:gist-postgres-client:BEGIN -->
           <div class="cfgref">
               <div class="cfgref-tabs">
@@ -1422,128 +1164,17 @@ func (tr *Transaction) Rollback() error</code></pre>
               </div>
           </div>
                 <!-- GENERATED:gist-postgres-client:END -->
-
-          <h3>Model tags</h3>
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-go">// DB models - db/json/source/join tags only. No `example` tags here: those
-// are an OpenAPI-doc concept for gist-api-server's request/response
-// structs (see the CreateOrderInput/CreateOrderOutput example above),
-// meaningless on a struct that only ever crosses the postgres-client RPC
-// wire, not an HTTP response.
-type Order struct {
-    _          any         `source:"orderflow.orders"`
-    ID         int         `db:"id" json:"id"`
-    CustomerID int         `db:"customer_id" json:"customer_id"`
-    Status     string      `db:"status" json:"status"`
-    Items      []OrderItem `db:"items" json:"items" join:"id,order_id"`
-}
-type OrderItem struct {
-    _       any    `source:"orderflow.order_items"`
-    OrderID int    `db:"order_id" json:"order_id"`
-    SKU     string `db:"sku" json:"sku"`
-    Qty     int    `db:"qty" json:"qty"`
-}</code></pre>
-          </div>
-          <p><code>source:"schema.table"</code> names the table (blank <code>_ any</code> field,
-            required on the top-level struct). <code>db:"col"</code> maps a field to a column.
-            <code>join:"parentCol,childCol"</code> on a <code>[]OtherStruct</code> field marks it
-            a relation: <code>Find</code>/<code>FindOne</code> populate it server-side;
-            <code>Save</code>/<code>Update</code> silently skip it — a joined field is read-only
-            from the SDK's side, and writing to it does nothing without an error, which is worth
-            remembering the first time an update to <code>Items</code> doesn't seem to take.</p>
-
-          <h3>Reads and writes (free generic functions, <code>*Transaction</code> or <code>*Service</code> + <code>...Option</code>)</h3>
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-go">Find[model](tr, opts...) ([]model, error)
-FindOne[model](tr, opts...) (*model, error)
-Count[model](tr, opts...) (int64, error)
-Exists[model](tr, opts...) (bool, error)
-Save(tr, models ...any) (int64, error)
-SaveWithReturning[model](tr, models ...any) ([]model, int64, error)
-Update(tr, newValues any, opts...) (int64, error)
-UpdateWithReturning[model](tr, newValues any, opts...) ([]model, int64, error)
-Delete[model](tr, opts...) (int64, error)
-DeleteWithReturning[model](tr, opts...) ([]model, int64, error)</code></pre>
-          </div>
-          <p>Every one has an <code>*AutoClose</code> sibling taking <code>*Service</code>
-            instead of <code>*Transaction</code> — e.g. <code>FindAutoClose[Order](sg.OrdersDB,
-            opts...)</code>, <code>SaveAutoClose(sg.OrdersDB, &order)</code> — folding
-            begin+op+commit/rollback into a single RPC. Use <code>*AutoClose</code> for a lone
-            operation; use a real <code>*Transaction</code> (below) once you need more than one
-            op to commit or fail together.</p>
-          <p>Options (<code>WithLimit</code>, <code>WithOffset</code>, <code>WithRange</code>,
-            <code>WithConditions</code>, <code>WithSorting</code>,
-            <code>WithRelationConditions</code>, <code>WithLock</code>) compose with a small
-            condition DSL:</p>
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-go">gistpostgresclient.NewCondition("status", gistpostgresclient.Equal, "pending")
-gistpostgresclient.AndConditions(
-    gistpostgresclient.NewCondition("customer_id", gistpostgresclient.Equal, 42),
-    gistpostgresclient.NewCondition("status", gistpostgresclient.InOperator, []string{
-        "pending",
-        "paid",
-    }),
-)
-gistpostgresclient.NewBetweenCondition("created_at", start, end)</code></pre>
-          </div>
-          <p><code>Operator</code> values: <code>Equal</code>, <code>NotEqual</code>,
-            <code>GreaterThan</code>, <code>GreaterThanOrEqual</code>, <code>LessThan</code>,
-            <code>LessThanOrEqual</code>, <code>IsNullOperator</code>, <code>IsNotNullOperator</code>,
-            <code>InOperator</code>, <code>NotInOperator</code>, <code>BeginsWith</code>,
-            <code>EndsWith</code>, <code>Contains</code>, <code>BeginsWithInsensitive</code>,
-            <code>EndsWithInsensitive</code>, <code>ContainsInsensitive</code>, <code>Between</code>,
-            <code>NotBetween</code>. Sorting: <code>gistpostgresclient.Desc{"created_at"}</code> /
-            <code>Asc{"id"}</code>, passed to <code>WithSorting</code>.</p>
-
-          <h3>Transactions</h3>
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-go">func (s *Service) NewTransaction(ctx) (*Transaction, error)
-func (s *Service) NewReadTransaction(ctx) (*Transaction, error)
-func (s *Service) InTransaction(ctx, fn func(tr *Transaction) error) error
-func (s *Service) InReadTransaction(ctx, fn func(tr *Transaction) error) error
-// Named variants exist for both (NewNamedTransaction, InNamedReadTransaction, ...) - useful
-// when nesting requires distinguishing which transaction a later op belongs to.
-func (tr *Transaction) CloseAfter(action EndAction) // Rollback | Commit | CommitIfOK
-func (tr *Transaction) Commit() error
-func (tr *Transaction) Rollback() error</code></pre>
-          </div>
-          <p><code>NewTransaction</code> sends nothing over the wire by itself — a transaction
-            opened and never used costs zero RPCs, so it's always safe to open one speculatively.
-            <code>InTransaction</code> commits if <code>fn</code> returns <code>nil</code>, rolls
-            back otherwise:</p>
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-go">err := sg.OrdersDB.InTransaction(ctx, func(tr *gistpostgresclient.Transaction) error {
-    if _, err := gistpostgresclient.Save(tr, &order); err != nil {
-        return err
-    }
-    for i := range items {
-        items[i].OrderID = order.ID
-    }
-    _, err := gistpostgresclient.Save(tr, toAnySlice(items)...)
-    return err
-})</code></pre>
-          </div>
-          <p>For a hand-rolled (non-callback) sequence, <code>tr.CloseAfter(gistpostgresclient.CommitIfOK)</code>
-            on the last op folds the commit into that op's own RPC instead of a separate
-            round-trip — the advanced form once <code>InTransaction</code>'s callback shape isn't
-            quite the fit.</p>
         </div>
       </details>
     </section>
     <!-- ============ 5. gist-http-server ============ -->
     <section class="doc-section" id="s5">
       <details open>
-        <summary><span class="toc-num">05</span><h2>gist-http-server</h2><span class="badge badge-config">Config only</span></summary>
+        <summary><span class="toc-num">05</span><h2>gist-http-server</h2></summary>
         <div class="section-body">
                 <!-- GENERATED:gist-http-server:INTRO:BEGIN -->
           <p>Static file server. No client-side package exists — <code>www-files</code>, <code>hostname</code>, <code>port</code> in config is the entire surface, with nothing to call or hook into from Go. Point <code>www-files</code> at a directory (e.g. generated invoice PDFs written there by another service) and it's served, full stop.</p>
                 <!-- GENERATED:gist-http-server:INTRO:END -->
-          <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-http-server-config">gist-http-server-config</a></div>
                 <!-- GENERATED:gist-http-server:BEGIN -->
           <div class="cfgref">
               <div class="cfgref-tabs">
@@ -1615,1207 +1246,14 @@ func (tr *Transaction) Rollback() error</code></pre>
         </div>
       </details>
     </section>
-    <!-- ============ 6. gist-auth ============ -->
-    <section class="doc-section" id="s6">
-      <details open>
-        <summary><span class="toc-num">06</span><h2>gist-auth</h2><span class="badge badge-none">No API</span></summary>
-        <div class="section-body">
-          <p>OAuth provider (<code>apple</code> / <code>gitea</code> / <code>google</code> via
-            goth/gothic), serving three fixed routes — begin, callback, logout — on its own
-            listener. <strong>No client-side API exists at all</strong>: no injectable
-            <code>Service</code> type, no way to read the authenticated identity from inside
-            another handler, no session hook. This isn't an oversight to work around; it's the
-            service's actual current shape — it's a complete, self-contained OAuth handshake, and
-            today that's where its responsibility ends. If <code>orderflow</code> needs "which
-            customer is this request from" inside <code>create-order</code>, that has to come
-            from somewhere else (a bearer token your own middleware validates, an API key via
-            <code>gist-api-server</code>'s <code>api-key</code> field, etc.) — not from this
-            service.</p>
-          <p><strong>Only one instance per <code>provider</code> should be configured</strong> —
-            provider registration is process-global, not scoped to the instance's own <code>id</code>.</p>
-          <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-auth-config">gist-auth-config</a></div>
-
-          <h3>Providers</h3>
-          <p><code>hostname</code>/<code>port</code>/<code>callback-url</code>/<code>client-id</code>/
-            <code>session-secret</code>/<code>scopes</code> apply the same way regardless of
-            <code>provider</code>. <code>server-url</code> is accepted but never actually read,
-            for any provider — a dead field, not provider-specific, included in <strong>Full</strong>
-            below for completeness only. What follows each provider's Minimal/Full pair is only
-            the fields specific to that <code>provider</code> value.</p>
-
-          <h4 id="s6-google">google</h4>
-          <div class="table-scroll">
-          <table class="overview-table">
-            <thead><tr><th>Field</th><th>Behavior</th></tr></thead>
-            <tbody>
-              <tr><td><code>client-secret</code></td><td>OAuth client secret issued by Google.</td></tr>
-            </tbody>
-          </table>
-          </div>
-          <p>No google-specific fields beyond the shared ones above.</p>
-          <div class="cfgref">
-            <div class="cfgref-tabs">
-              <button type="button" class="cfgref-tab is-active" data-mode="minimal">Minimal</button>
-              <button type="button" class="cfgref-tab" data-mode="full">Full</button>
-            </div>
-            <div class="cfgref-pane" data-mode="minimal">
-              <div class="table-scroll">
-              <table class="overview-table">
-                <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
-                <tbody>
-                  <tr><td><code>id</code></td><td>string</td><td>Unique instance ID.</td></tr>
-                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely.</td></tr>
-                  <tr><td><code>hostname</code></td><td>string</td><td>Bind address for this instance's OAuth listener.</td></tr>
-                  <tr><td><code>port</code></td><td>int</td><td>Bind port for this instance's OAuth listener.</td></tr>
-                  <tr><td><code>provider</code></td><td>string</td><td><code>google</code>.</td></tr>
-                  <tr><td><code>callback-url</code></td><td>string</td><td>OAuth callback/redirect URL registered with the provider.</td></tr>
-                  <tr><td><code>client-id</code></td><td>string</td><td>OAuth client ID.</td></tr>
-                  <tr><td><code>client-secret</code></td><td>string</td><td>OAuth client secret issued by Google.</td></tr>
-                  <tr><td><code>session-secret</code></td><td>string</td><td>Key used to encrypt/sign the gothic session cookie store.</td></tr>
-                  <tr><td><code>scopes</code></td><td>[]string</td><td>OAuth scopes requested.</td></tr>
-                </tbody>
-              </table>
-              </div>
-              <div class="code-block">
-                <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
-                <pre><code class="language-json">"gist-auth": [
-  {
-    "id": "customer-login",
-    "enabled": true,
-    "hostname": "0.0.0.0",
-    "port": 8082,
-    "provider": "google",
-    "callback-url": "https://orderflow.example.com/auth/callback",
-    "client-id": "...",
-    "client-secret": "...",
-    "session-secret": "...",
-    "scopes": ["email", "profile"]
-  }
-]</code></pre>
-              </div>
-            </div>
-            <div class="cfgref-pane" data-mode="full" hidden>
-              <p class="code-note">Same fields as Minimal, plus <code>delayed-start</code>/<code>wait-for</code> and the always-accepted-but-unused <code>server-url</code>.</p>
-              <div class="code-block">
-                <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
-                <pre><code class="language-json">"gist-auth": [
-  {
-    "id": "customer-login",
-    "enabled": true,
-    "delayed-start": "5s",
-    "wait-for": [],
-    "hostname": "0.0.0.0",
-    "port": 8082,
-    "provider": "google",
-    "callback-url": "https://orderflow.example.com/auth/callback",
-    "client-id": "...",
-    "client-secret": "...",
-    "server-url": "",
-    "session-secret": "...",
-    "scopes": ["email", "profile"]
-  }
-]</code></pre>
-              </div>
-            </div>
-          </div>
-
-          <h4 id="s6-gitea">gitea</h4>
-          <div class="table-scroll">
-          <table class="overview-table">
-            <thead><tr><th>Field</th><th>Behavior</th></tr></thead>
-            <tbody>
-              <tr><td><code>auth-url</code></td><td>The Gitea instance's authorization endpoint.</td></tr>
-              <tr><td><code>token-url</code></td><td>The Gitea instance's token endpoint.</td></tr>
-              <tr><td><code>profile-url</code></td><td>The Gitea instance's user-profile endpoint.</td></tr>
-              <tr><td><code>client-secret</code></td><td>OAuth client secret issued by that Gitea instance.</td></tr>
-            </tbody>
-          </table>
-          </div>
-          <p>Self-hosted, so — unlike <code>google</code>/<code>apple</code> — it has to be told
-            where the instance actually is. <code>auth-url</code>/<code>token-url</code>/
-            <code>profile-url</code> aren't enforced at startup, but the provider can't function
-            without them, so they're already part of <strong>Minimal</strong> below, not deferred
-            to <strong>Full</strong>.</p>
-          <div class="cfgref">
-            <div class="cfgref-tabs">
-              <button type="button" class="cfgref-tab is-active" data-mode="minimal">Minimal</button>
-              <button type="button" class="cfgref-tab" data-mode="full">Full</button>
-            </div>
-            <div class="cfgref-pane" data-mode="minimal">
-              <div class="table-scroll">
-              <table class="overview-table">
-                <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
-                <tbody>
-                  <tr><td><code>id</code></td><td>string</td><td>Unique instance ID.</td></tr>
-                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely.</td></tr>
-                  <tr><td><code>hostname</code></td><td>string</td><td>Bind address for this instance's OAuth listener.</td></tr>
-                  <tr><td><code>port</code></td><td>int</td><td>Bind port for this instance's OAuth listener.</td></tr>
-                  <tr><td><code>provider</code></td><td>string</td><td><code>gitea</code>.</td></tr>
-                  <tr><td><code>auth-url</code></td><td>string</td><td>The Gitea instance's authorization endpoint.</td></tr>
-                  <tr><td><code>token-url</code></td><td>string</td><td>The Gitea instance's token endpoint.</td></tr>
-                  <tr><td><code>profile-url</code></td><td>string</td><td>The Gitea instance's user-profile endpoint.</td></tr>
-                  <tr><td><code>callback-url</code></td><td>string</td><td>OAuth callback/redirect URL registered with the provider.</td></tr>
-                  <tr><td><code>client-id</code></td><td>string</td><td>OAuth client ID.</td></tr>
-                  <tr><td><code>client-secret</code></td><td>string</td><td>OAuth client secret issued by that Gitea instance.</td></tr>
-                  <tr><td><code>session-secret</code></td><td>string</td><td>Key used to encrypt/sign the gothic session cookie store.</td></tr>
-                  <tr><td><code>scopes</code></td><td>[]string</td><td>OAuth scopes requested.</td></tr>
-                </tbody>
-              </table>
-              </div>
-              <div class="code-block">
-                <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
-                <pre><code class="language-json">"gist-auth": [
-  {
-    "id": "customer-login",
-    "enabled": true,
-    "hostname": "0.0.0.0",
-    "port": 8082,
-    "provider": "gitea",
-    "auth-url": "https://git.orderflow.example.com/login/oauth/authorize",
-    "token-url": "https://git.orderflow.example.com/login/oauth/access_token",
-    "profile-url": "https://git.orderflow.example.com/api/v1/user",
-    "callback-url": "https://orderflow.example.com/auth/callback",
-    "client-id": "...",
-    "client-secret": "...",
-    "session-secret": "...",
-    "scopes": ["read:user"]
-  }
-]</code></pre>
-              </div>
-            </div>
-            <div class="cfgref-pane" data-mode="full" hidden>
-              <p class="code-note">Same fields as Minimal, plus <code>delayed-start</code>/<code>wait-for</code>/<code>server-url</code> (dead, accepted only).</p>
-              <div class="code-block">
-                <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
-                <pre><code class="language-json">"gist-auth": [
-  {
-    "id": "customer-login",
-    "enabled": true,
-    "delayed-start": "5s",
-    "wait-for": [],
-    "hostname": "0.0.0.0",
-    "port": 8082,
-    "provider": "gitea",
-    "auth-url": "https://git.orderflow.example.com/login/oauth/authorize",
-    "token-url": "https://git.orderflow.example.com/login/oauth/access_token",
-    "profile-url": "https://git.orderflow.example.com/api/v1/user",
-    "callback-url": "https://orderflow.example.com/auth/callback",
-    "client-id": "...",
-    "client-secret": "...",
-    "server-url": "",
-    "session-secret": "...",
-    "scopes": ["read:user"]
-  }
-]</code></pre>
-              </div>
-            </div>
-          </div>
-
-          <h4 id="s6-apple">apple</h4>
-          <div class="table-scroll">
-          <table class="overview-table">
-            <thead><tr><th>Field</th><th>Behavior</th></tr></thead>
-            <tbody>
-              <tr><td><code>team-id</code></td><td>Apple Developer Team ID.</td></tr>
-              <tr><td><code>key-id</code></td><td>Sign in with Apple key ID.</td></tr>
-              <tr><td><code>private-key</code></td><td>Apple private key (PEM) — derives the OAuth client secret directly.</td></tr>
-            </tbody>
-          </table>
-          </div>
-          <p>No <code>client-secret</code> field for <code>apple</code> — it's never read for
-            this provider; <code>private-key</code> generates one instead.</p>
-          <div class="cfgref">
-            <div class="cfgref-tabs">
-              <button type="button" class="cfgref-tab is-active" data-mode="minimal">Minimal</button>
-              <button type="button" class="cfgref-tab" data-mode="full">Full</button>
-            </div>
-            <div class="cfgref-pane" data-mode="minimal">
-              <div class="table-scroll">
-              <table class="overview-table">
-                <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
-                <tbody>
-                  <tr><td><code>id</code></td><td>string</td><td>Unique instance ID.</td></tr>
-                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely.</td></tr>
-                  <tr><td><code>hostname</code></td><td>string</td><td>Bind address for this instance's OAuth listener.</td></tr>
-                  <tr><td><code>port</code></td><td>int</td><td>Bind port for this instance's OAuth listener.</td></tr>
-                  <tr><td><code>provider</code></td><td>string</td><td><code>apple</code>.</td></tr>
-                  <tr><td><code>callback-url</code></td><td>string</td><td>OAuth callback/redirect URL registered with the provider.</td></tr>
-                  <tr><td><code>client-id</code></td><td>string</td><td>OAuth client ID.</td></tr>
-                  <tr><td><code>team-id</code></td><td>string</td><td>Apple Developer Team ID.</td></tr>
-                  <tr><td><code>key-id</code></td><td>string</td><td>Sign in with Apple key ID.</td></tr>
-                  <tr><td><code>private-key</code></td><td>string</td><td>Apple private key (PEM) — derives the OAuth client secret.</td></tr>
-                  <tr><td><code>session-secret</code></td><td>string</td><td>Key used to encrypt/sign the gothic session cookie store.</td></tr>
-                  <tr><td><code>scopes</code></td><td>[]string</td><td>OAuth scopes requested.</td></tr>
-                </tbody>
-              </table>
-              </div>
-              <div class="code-block">
-                <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
-                <pre><code class="language-json">"gist-auth": [
-  {
-    "id": "customer-login",
-    "enabled": true,
-    "hostname": "0.0.0.0",
-    "port": 8082,
-    "provider": "apple",
-    "callback-url": "https://orderflow.example.com/auth/callback",
-    "client-id": "...",
-    "team-id": "...",
-    "key-id": "...",
-    "private-key": "-----BEGIN PRIVATE KEY-----...",
-    "session-secret": "...",
-    "scopes": ["name", "email"]
-  }
-]</code></pre>
-              </div>
-            </div>
-            <div class="cfgref-pane" data-mode="full" hidden>
-              <p class="code-note">Same fields as Minimal, plus <code>delayed-start</code>/<code>wait-for</code>/<code>server-url</code> (dead, accepted only).</p>
-              <div class="code-block">
-                <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
-                <pre><code class="language-json">"gist-auth": [
-  {
-    "id": "customer-login",
-    "enabled": true,
-    "delayed-start": "5s",
-    "wait-for": [],
-    "hostname": "0.0.0.0",
-    "port": 8082,
-    "provider": "apple",
-    "callback-url": "https://orderflow.example.com/auth/callback",
-    "client-id": "...",
-    "server-url": "",
-    "team-id": "...",
-    "key-id": "...",
-    "private-key": "-----BEGIN PRIVATE KEY-----...",
-    "session-secret": "...",
-    "scopes": ["name", "email"]
-  }
-]</code></pre>
-              </div>
-            </div>
-          </div>
-        </div>
-      </details>
-    </section>
-    <!-- ============ 7. gist-fixtures ============ -->
-    <section class="doc-section" id="s7">
-      <details open>
-        <summary><span class="toc-num">07</span><h2>gist-fixtures</h2><span class="badge badge-api">API</span></summary>
-        <div class="section-body">
-          <p>Boots a testcontainers-backed dependency (MySQL, Postgres, MariaDB, MSSQL, MongoDB,
-            GCS emulator, Elasticsearch, RabbitMQ, a Pub/Sub emulator, Mailpit, or Redis) and
-            seeds it, in one call, from tagged Go structs — no separate fixtures format, no
-            <code>testfixtures</code> dependency.</p>
-          <div class="config-link">Config, including every container type: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-fixtures-config">gist-fixtures-config</a></div>
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-json">"gist-fixtures": [
-  {
-    "id": "orderflow-fixtures",
-    "enabled": true,
-    "type": "mysql"
-  }
-]</code></pre>
-          </div>
-
-          <h3>API</h3>
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-go">func GenerateFixtures(id string, rows ...any) gist.Option</code></pre>
-          </div>
-          <p>Reflection reads three tags, ignoring <code>json</code>/<code>example</code> (those
-            are for docs elsewhere, inert here): <code>source:"schema.table"</code> (required,
-            panics if missing), <code>db:"column"</code>, and <code>join:"..."</code> on a
-            <code>[]OtherStruct</code> field to recurse into it as a relation rather than treat it
-            as one column — same model structs <code>gist-mysql-client</code> already uses work
-            here unchanged:</p>
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-go">gistfixtures.GenerateFixtures("orderflow-fixtures",
-    []model.Order{
-        {
-            ID:         1,
-            CustomerID: 42,
-            Status:     "pending",
-            Items: []model.OrderItem{
-                {
-                    OrderID: 1,
-                    SKU:     "WIDGET-1",
-                    Qty:     3,
-                },
-            },
-        },
-    },
-    []model.Customer{ // flat table, no join needed
-        {
-            ID:   42,
-            Name: "Acme Co",
-        },
-    },
-)</code></pre>
-          </div>
-          <p>Multiple <code>rows...any</code> arguments in one call can freely mix joined and flat
-            tables; unexported fields are skipped even with a <code>db</code> tag present.</p>
-
-          <h3>Container types</h3>
-          <p><code>id</code>/<code>enabled</code>/<code>delayed-start</code>/<code>wait-for</code>/
-            <code>image</code>/<code>host-port</code>/<code>restart-after</code> apply the same way
-            to every <code>type</code> (full descriptions in
-            <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-fixtures-config">gist-fixtures-config</a>); what
-            follows per dialect is only the fields specific to it. None of them are strictly
-            required by the code — every one is a nil-checked pointer field, and an unset one just
-            falls back to the image's own default — but each dialect has fields worth setting for
-            the container to do anything useful, which is what each dialect's own
-            <strong>Minimal</strong> below sets.</p>
-          <p><code>restart-after</code> tears a booted container down and boots a fresh one from
-            the same fixture data, on a timer — 48h by default, since a long-running dev/test
-            container is otherwise just as susceptible to memory growth or state drift as any
-            other long-lived process. Every duration field across every service
-            (<code>delayed-start</code>, <code>timeout</code>, <code>restart-after</code>,
-            <code>connection-ping</code>, <code>query-timeout</code>,
-            <code>conn-max-lifetime-minutes</code>, <code>gist-api-server</code>'s
-            <code>timeouts.read</code>/<code>write</code>/<code>idle</code>) accepts either a bare
-            number in its own pre-existing unit (seconds, except
-            <code>conn-max-lifetime-minutes</code>, which is minutes) or a unit-suffixed string —
-            <code>w</code>/<code>W</code>, <code>d</code>/<code>D</code>, <code>h</code>/<code>H</code>,
-            <code>m</code>/<code>M</code>, <code>s</code>/<code>S</code> — e.g.
-            <code>"restart-after": "2d"</code> instead of <code>"restart-after": 172800</code>.</p>
-
-          <p><strong>Shared fields</strong> — every per-dialect example below is layered on top of
-            these: <code>id</code>/<code>enabled</code>/<code>type</code> in Minimal, all seven in
-            Full.</p>
-          <div class="cfgref">
-              <div class="cfgref-tabs">
-                <button type="button" class="cfgref-tab is-active" data-mode="minimal">Minimal</button>
-                <button type="button" class="cfgref-tab" data-mode="full">Full</button>
-              </div>
-              <div class="cfgref-pane" data-mode="minimal">
-                <div class="table-scroll">
-                <table class="overview-table">
-                  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
-                  <tbody>
-                  <tr><td><code>id</code></td><td>string</td><td>Unique instance ID for this fixture container.</td></tr>
-                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely.</td></tr>
-                  <tr><td><code>type</code></td><td><a href="#s7-type-values">string</a></td><td>Container dialect to run.</td></tr>
-                  </tbody>
-                </table>
-                </div>
-                <div class="code-block">
-                <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
-                <pre><code class="language-json">"gist-fixtures": [
-  {
-    "id": "orderflow-fixtures",
-    "enabled": true,
-    "type": "mysql"
-  }
-]</code></pre>
-                </div>
-              </div>
-              <div class="cfgref-pane" data-mode="full" hidden>
-                <div class="table-scroll">
-                <table class="overview-table">
-                  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
-                  <tbody>
-                  <tr><td><code>id</code></td><td>string</td><td>Unique instance ID for this fixture container.</td></tr>
-                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely (no container started).</td></tr>
-                  <tr><td><code>delayed-start</code></td><td>int | string</td><td>Seconds (or duration string) to wait/delay before starting this instance.</td></tr>
-                  <tr><td><code>wait-for</code></td><td>[]string</td><td>IDs of other services this instance must wait to become ready before starting.</td></tr>
-                  <tr><td><code>host-port</code></td><td>int | null</td><td>Fixed host port to bind the container's default port to, instead of a random one.</td></tr>
-                  <tr><td><code>image</code></td><td>string | null</td><td>Docker image override; defaults to the dialect's own default image when omitted.</td></tr>
-                  <tr><td><code>restart-after</code></td><td>int | string | null</td><td>Seconds (or duration string) a booted container runs before it's automatically restarted from the same fixture data. Omitted defaults to 48h; <code>0</code> disables auto-restart.</td></tr>
-                  <tr><td><code>type</code></td><td><a href="#s7-type-values">string</a></td><td>Container dialect to run.</td></tr>
-                  </tbody>
-                </table>
-                </div>
-                <div class="code-block">
-                <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
-                <pre><code class="language-json">"gist-fixtures": [
-  {
-    "id": "orderflow-fixtures",
-    "enabled": true,
-    "delayed-start": "5s",
-    "wait-for": [],
-    "host-port": 3306,
-    "image": null,
-    "restart-after": "24h",
-    "type": "mysql"
-  }
-]</code></pre>
-                </div>
-
-                <h4 id="s7-type-values">type values</h4>
-                <div class="table-scroll">
-                <table class="overview-table">
-                  <thead><tr><th>Value</th><th>Description</th></tr></thead>
-                  <tbody>
-                  <tr><td><code>mysql</code></td><td>MySQL container.</td></tr>
-                  <tr><td><code>postgres</code></td><td>PostgreSQL container.</td></tr>
-                  <tr><td><code>mariadb</code></td><td>MariaDB container.</td></tr>
-                  <tr><td><code>mssql</code></td><td>Microsoft SQL Server container (EULA auto-accepted).</td></tr>
-                  <tr><td><code>mongodb</code></td><td>MongoDB container.</td></tr>
-                  <tr><td><code>gcs</code></td><td>Google Cloud Storage emulator container; only <code>image</code>/<code>host-port</code> apply — buckets/objects come from fixture rows, not config.</td></tr>
-                  <tr><td><code>elasticsearch</code></td><td>Elasticsearch container; only <code>password</code> applies (username is the fixed <code>elastic</code> superuser).</td></tr>
-                  <tr><td><code>rabbitmq</code></td><td>RabbitMQ container; <code>username</code>/<code>password</code> default to <code>guest</code>/<code>guest</code> and are also baked into the generated <code>definitions.json</code>.</td></tr>
-                  <tr><td><code>pubsub</code></td><td>GCP Pub/Sub emulator container; only <code>project-id</code>/<code>host-port</code> apply.</td></tr>
-                  <tr><td><code>mailpit</code></td><td>Mailpit fake-SMTP/email-testing container; <code>username</code>/<code>password</code> are optional SMTP auth credentials (both required together to take effect) — no <code>database</code> concept.</td></tr>
-                  <tr><td><code>redis</code></td><td>Redis container; only <code>password</code> applies (sets <code>--requirepass</code>) — no <code>username</code>/<code>database</code> concept.</td></tr>
-                  </tbody>
-                </table>
-                </div>
-              </div>
-            </div>
-
-          <h4 id="s7-mysql">mysql / postgres / mariadb</h4>
-          <p>Identical field behavior across all three — only the package/image differ.</p>
-          <div class="table-scroll">
-          <table class="overview-table">
-            <thead><tr><th>Field</th><th>Behavior</th></tr></thead>
-            <tbody>
-              <tr><td><code>database</code></td><td>Creates this database in the container. Must end in <code>_test</code>, or startup fails.</td></tr>
-              <tr><td><code>username</code></td><td>Creates this user in the container.</td></tr>
-              <tr><td><code>password</code></td><td>Sets that user's password.</td></tr>
-            </tbody>
-          </table>
-          </div>
-          <div class="cfgref">
-              <div class="cfgref-tabs">
-                <button type="button" class="cfgref-tab is-active" data-mode="minimal">Minimal</button>
-                <button type="button" class="cfgref-tab" data-mode="full">Full</button>
-              </div>
-              <div class="cfgref-pane" data-mode="minimal">
-                <div class="table-scroll">
-                <table class="overview-table">
-                  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
-                  <tbody>
-                  <tr><td><code>database</code></td><td>string</td><td>Creates this database in the container. Must end in <code>_test</code>.</td></tr>
-                  <tr><td><code>username</code></td><td>string</td><td>Creates this user in the container.</td></tr>
-                  <tr><td><code>password</code></td><td>string</td><td>Sets that user's password.</td></tr>
-                  </tbody>
-                </table>
-                </div>
-                <div class="code-block">
-                <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
-                <pre><code class="language-json">"gist-fixtures": [
-  {
-    "id": "orders-db-fixtures",
-    "enabled": true,
-    "type": "mysql",
-    "database": "orderflow_test",
-    "username": "orderflow",
-    "password": "orderflow"
-  }
-]</code></pre>
-                </div>
-              </div>
-              <div class="cfgref-pane" data-mode="full" hidden>
-                <div class="table-scroll">
-                <table class="overview-table">
-                  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
-                  <tbody>
-                  <tr><td><code>id</code></td><td>string</td><td>Unique instance ID for this fixture container.</td></tr>
-                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely (no container started).</td></tr>
-                  <tr><td><code>delayed-start</code></td><td>int | string</td><td>Seconds (or duration string) to wait/delay before starting this instance.</td></tr>
-                  <tr><td><code>wait-for</code></td><td>[]string</td><td>IDs of other services this instance must wait to become ready before starting.</td></tr>
-                  <tr><td><code>host-port</code></td><td>int | null</td><td>Fixed host port to bind the container's default port to, instead of a random one.</td></tr>
-                  <tr><td><code>image</code></td><td>string | null</td><td>Docker image override; defaults to the dialect's own default image when omitted.</td></tr>
-                  <tr><td><code>restart-after</code></td><td>int | string | null</td><td>Seconds (or duration string) a booted container runs before it's automatically restarted from the same fixture data. Omitted defaults to 48h; <code>0</code> disables auto-restart.</td></tr>
-                  <tr><td><code>type</code></td><td>string</td><td>Container dialect to run.</td></tr>
-                  <tr><td><code>database</code></td><td>string</td><td>Creates this database in the container. Must end in <code>_test</code>.</td></tr>
-                  <tr><td><code>username</code></td><td>string</td><td>Creates this user in the container.</td></tr>
-                  <tr><td><code>password</code></td><td>string</td><td>Sets that user's password.</td></tr>
-                  </tbody>
-                </table>
-                </div>
-                <div class="code-block">
-                <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
-                <pre><code class="language-json">"gist-fixtures": [
-  {
-    "id": "orders-db-fixtures",
-    "enabled": true,
-    "delayed-start": "5s",
-    "wait-for": [],
-    "host-port": 3306,
-    "image": null,
-    "restart-after": "24h",
-    "type": "mysql",
-    "database": "orderflow_test",
-    "username": "orderflow",
-    "password": "orderflow"
-  }
-]</code></pre>
-                </div>
-              </div>
-            </div>
-
-          <h4 id="s7-mssql">mssql</h4>
-          <div class="table-scroll">
-          <table class="overview-table">
-            <thead><tr><th>Field</th><th>Behavior</th></tr></thead>
-            <tbody>
-              <tr><td><code>database</code></td><td>Selects the target database — unlike the SQL-family three above, there's no driver-level <code>WithDatabase</code> option; this gets injected as a preamble into the container's own init SQL instead. Must end in <code>_test</code>.</td></tr>
-              <tr><td><code>password</code></td><td>Sets the fixed <code>sa</code> account's password.</td></tr>
-            </tbody>
-          </table>
-          </div>
-          <p>No <code>username</code> field — SQL Server's admin account is always <code>sa</code>,
-            not configurable here. EULA acceptance happens automatically; it isn't a config field
-            either.</p>
-          <div class="cfgref">
-              <div class="cfgref-tabs">
-                <button type="button" class="cfgref-tab is-active" data-mode="minimal">Minimal</button>
-                <button type="button" class="cfgref-tab" data-mode="full">Full</button>
-              </div>
-              <div class="cfgref-pane" data-mode="minimal">
-                <div class="table-scroll">
-                <table class="overview-table">
-                  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
-                  <tbody>
-                  <tr><td><code>database</code></td><td>string</td><td>Selects the target database. Must end in <code>_test</code>.</td></tr>
-                  <tr><td><code>password</code></td><td>string</td><td>Sets the fixed <code>sa</code> account's password.</td></tr>
-                  </tbody>
-                </table>
-                </div>
-                <div class="code-block">
-                <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
-                <pre><code class="language-json">"gist-fixtures": [
-  {
-    "id": "orders-db-fixtures",
-    "enabled": true,
-    "type": "mssql",
-    "database": "orderflow_test",
-    "password": "OrderflowStrong!1"
-  }
-]</code></pre>
-                </div>
-              </div>
-              <div class="cfgref-pane" data-mode="full" hidden>
-                <div class="table-scroll">
-                <table class="overview-table">
-                  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
-                  <tbody>
-                  <tr><td><code>id</code></td><td>string</td><td>Unique instance ID for this fixture container.</td></tr>
-                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely (no container started).</td></tr>
-                  <tr><td><code>delayed-start</code></td><td>int | string</td><td>Seconds (or duration string) to wait/delay before starting this instance.</td></tr>
-                  <tr><td><code>wait-for</code></td><td>[]string</td><td>IDs of other services this instance must wait to become ready before starting.</td></tr>
-                  <tr><td><code>host-port</code></td><td>int | null</td><td>Fixed host port to bind the container's default port to, instead of a random one.</td></tr>
-                  <tr><td><code>image</code></td><td>string | null</td><td>Docker image override; defaults to the dialect's own default image when omitted.</td></tr>
-                  <tr><td><code>restart-after</code></td><td>int | string | null</td><td>Seconds (or duration string) a booted container runs before it's automatically restarted from the same fixture data. Omitted defaults to 48h; <code>0</code> disables auto-restart.</td></tr>
-                  <tr><td><code>type</code></td><td>string</td><td>Container dialect to run.</td></tr>
-                  <tr><td><code>database</code></td><td>string</td><td>Selects the target database. Must end in <code>_test</code>.</td></tr>
-                  <tr><td><code>password</code></td><td>string</td><td>Sets the fixed <code>sa</code> account's password.</td></tr>
-                  </tbody>
-                </table>
-                </div>
-                <div class="code-block">
-                <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
-                <pre><code class="language-json">"gist-fixtures": [
-  {
-    "id": "orders-db-fixtures",
-    "enabled": true,
-    "delayed-start": "5s",
-    "wait-for": [],
-    "host-port": 1433,
-    "image": null,
-    "restart-after": "24h",
-    "type": "mssql",
-    "database": "orderflow_test",
-    "password": "OrderflowStrong!1"
-  }
-]</code></pre>
-                </div>
-              </div>
-            </div>
-
-          <h4 id="s7-mongodb">mongodb</h4>
-          <div class="table-scroll">
-          <table class="overview-table">
-            <thead><tr><th>Field</th><th>Behavior</th></tr></thead>
-            <tbody>
-              <tr><td><code>database</code></td><td>Selects which database the generated <code>insertMany</code> script targets — Mongo has no <code>WithDatabase</code> container option since databases are created implicitly on first write. Must end in <code>_test</code>.</td></tr>
-              <tr><td><code>username</code></td><td>Creates this user in the container.</td></tr>
-              <tr><td><code>password</code></td><td>Sets that user's password.</td></tr>
-            </tbody>
-          </table>
-          </div>
-          <div class="cfgref">
-              <div class="cfgref-tabs">
-                <button type="button" class="cfgref-tab is-active" data-mode="minimal">Minimal</button>
-                <button type="button" class="cfgref-tab" data-mode="full">Full</button>
-              </div>
-              <div class="cfgref-pane" data-mode="minimal">
-                <div class="table-scroll">
-                <table class="overview-table">
-                  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
-                  <tbody>
-                  <tr><td><code>database</code></td><td>string</td><td>Selects the target database. Must end in <code>_test</code>.</td></tr>
-                  <tr><td><code>username</code></td><td>string</td><td>Creates this user in the container.</td></tr>
-                  <tr><td><code>password</code></td><td>string</td><td>Sets that user's password.</td></tr>
-                  </tbody>
-                </table>
-                </div>
-                <div class="code-block">
-                <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
-                <pre><code class="language-json">"gist-fixtures": [
-  {
-    "id": "orders-doc-fixtures",
-    "enabled": true,
-    "type": "mongodb",
-    "database": "orderflow_test",
-    "username": "orderflow",
-    "password": "orderflow"
-  }
-]</code></pre>
-                </div>
-              </div>
-              <div class="cfgref-pane" data-mode="full" hidden>
-                <div class="table-scroll">
-                <table class="overview-table">
-                  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
-                  <tbody>
-                  <tr><td><code>id</code></td><td>string</td><td>Unique instance ID for this fixture container.</td></tr>
-                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely (no container started).</td></tr>
-                  <tr><td><code>delayed-start</code></td><td>int | string</td><td>Seconds (or duration string) to wait/delay before starting this instance.</td></tr>
-                  <tr><td><code>wait-for</code></td><td>[]string</td><td>IDs of other services this instance must wait to become ready before starting.</td></tr>
-                  <tr><td><code>host-port</code></td><td>int | null</td><td>Fixed host port to bind the container's default port to, instead of a random one.</td></tr>
-                  <tr><td><code>image</code></td><td>string | null</td><td>Docker image override; defaults to the dialect's own default image when omitted.</td></tr>
-                  <tr><td><code>restart-after</code></td><td>int | string | null</td><td>Seconds (or duration string) a booted container runs before it's automatically restarted from the same fixture data. Omitted defaults to 48h; <code>0</code> disables auto-restart.</td></tr>
-                  <tr><td><code>type</code></td><td>string</td><td>Container dialect to run.</td></tr>
-                  <tr><td><code>database</code></td><td>string</td><td>Selects the target database. Must end in <code>_test</code>.</td></tr>
-                  <tr><td><code>username</code></td><td>string</td><td>Creates this user in the container.</td></tr>
-                  <tr><td><code>password</code></td><td>string</td><td>Sets that user's password.</td></tr>
-                  </tbody>
-                </table>
-                </div>
-                <div class="code-block">
-                <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
-                <pre><code class="language-json">"gist-fixtures": [
-  {
-    "id": "orders-doc-fixtures",
-    "enabled": true,
-    "delayed-start": "5s",
-    "wait-for": [],
-    "host-port": 27017,
-    "image": null,
-    "restart-after": "24h",
-    "type": "mongodb",
-    "database": "orderflow_test",
-    "username": "orderflow",
-    "password": "orderflow"
-  }
-]</code></pre>
-                </div>
-              </div>
-            </div>
-
-          <h4 id="s7-gcs">gcs</h4>
-          <p>No type-specific fields at all. Buckets and objects come entirely from
-            <code>GenerateFixtures</code>' own rows (<code>bucket</code>/<code>name</code>/optional
-            <code>data</code> per object) — Minimal/Full here differ only in the shared fields
-            already covered above.</p>
-          <div class="cfgref">
-              <div class="cfgref-tabs">
-                <button type="button" class="cfgref-tab is-active" data-mode="minimal">Minimal</button>
-                <button type="button" class="cfgref-tab" data-mode="full">Full</button>
-              </div>
-              <div class="cfgref-pane" data-mode="minimal">
-                <div class="table-scroll">
-                <table class="overview-table">
-                  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
-                  <tbody>
-
-                  </tbody>
-                </table>
-                </div>
-                <div class="code-block">
-                <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
-                <pre><code class="language-json">"gist-fixtures": [
-  {
-    "id": "receipts-fixtures",
-    "enabled": true,
-    "type": "gcs"
-  }
-]</code></pre>
-                </div>
-              </div>
-              <div class="cfgref-pane" data-mode="full" hidden>
-                <div class="table-scroll">
-                <table class="overview-table">
-                  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
-                  <tbody>
-                  <tr><td><code>id</code></td><td>string</td><td>Unique instance ID for this fixture container.</td></tr>
-                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely (no container started).</td></tr>
-                  <tr><td><code>delayed-start</code></td><td>int | string</td><td>Seconds (or duration string) to wait/delay before starting this instance.</td></tr>
-                  <tr><td><code>wait-for</code></td><td>[]string</td><td>IDs of other services this instance must wait to become ready before starting.</td></tr>
-                  <tr><td><code>host-port</code></td><td>int | null</td><td>Fixed host port to bind the container's default port to, instead of a random one.</td></tr>
-                  <tr><td><code>image</code></td><td>string | null</td><td>Docker image override; defaults to the dialect's own default image when omitted.</td></tr>
-                  <tr><td><code>restart-after</code></td><td>int | string | null</td><td>Seconds (or duration string) a booted container runs before it's automatically restarted from the same fixture data. Omitted defaults to 48h; <code>0</code> disables auto-restart.</td></tr>
-                  <tr><td><code>type</code></td><td>string</td><td>Container dialect to run.</td></tr>
-                  </tbody>
-                </table>
-                </div>
-                <div class="code-block">
-                <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
-                <pre><code class="language-json">"gist-fixtures": [
-  {
-    "id": "receipts-fixtures",
-    "enabled": true,
-    "delayed-start": "5s",
-    "wait-for": [],
-    "host-port": 4443,
-    "image": null,
-    "restart-after": "24h",
-    "type": "gcs"
-  }
-]</code></pre>
-                </div>
-              </div>
-            </div>
-
-          <h4 id="s7-elasticsearch">elasticsearch</h4>
-          <div class="table-scroll">
-          <table class="overview-table">
-            <thead><tr><th>Field</th><th>Behavior</th></tr></thead>
-            <tbody>
-              <tr><td><code>password</code></td><td>Sets the fixed <code>elastic</code> superuser's password.</td></tr>
-            </tbody>
-          </table>
-          </div>
-          <p>No <code>username</code> field — that account name is fixed. Also unconditionally
-            disables the container's HTTP TLS layer (not config-driven at all) so the real
-            <code>gist-elasticsearch-client</code> client — which has no CA-cert support — can actually
-            connect; see <a href="#s7-real-client">Pointing a real client at your own fixtures
-            container</a> below.</p>
-          <div class="cfgref">
-              <div class="cfgref-tabs">
-                <button type="button" class="cfgref-tab is-active" data-mode="minimal">Minimal</button>
-                <button type="button" class="cfgref-tab" data-mode="full">Full</button>
-              </div>
-              <div class="cfgref-pane" data-mode="minimal">
-                <div class="table-scroll">
-                <table class="overview-table">
-                  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
-                  <tbody>
-                  <tr><td><code>password</code></td><td>string</td><td>Sets the fixed <code>elastic</code> superuser's password.</td></tr>
-                  </tbody>
-                </table>
-                </div>
-                <div class="code-block">
-                <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
-                <pre><code class="language-json">"gist-fixtures": [
-  {
-    "id": "order-index-fixtures",
-    "enabled": true,
-    "type": "elasticsearch",
-    "password": "orderflow"
-  }
-]</code></pre>
-                </div>
-              </div>
-              <div class="cfgref-pane" data-mode="full" hidden>
-                <div class="table-scroll">
-                <table class="overview-table">
-                  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
-                  <tbody>
-                  <tr><td><code>id</code></td><td>string</td><td>Unique instance ID for this fixture container.</td></tr>
-                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely (no container started).</td></tr>
-                  <tr><td><code>delayed-start</code></td><td>int | string</td><td>Seconds (or duration string) to wait/delay before starting this instance.</td></tr>
-                  <tr><td><code>wait-for</code></td><td>[]string</td><td>IDs of other services this instance must wait to become ready before starting.</td></tr>
-                  <tr><td><code>host-port</code></td><td>int | null</td><td>Fixed host port to bind the container's default port to, instead of a random one.</td></tr>
-                  <tr><td><code>image</code></td><td>string | null</td><td>Docker image override; defaults to the dialect's own default image when omitted.</td></tr>
-                  <tr><td><code>restart-after</code></td><td>int | string | null</td><td>Seconds (or duration string) a booted container runs before it's automatically restarted from the same fixture data. Omitted defaults to 48h; <code>0</code> disables auto-restart.</td></tr>
-                  <tr><td><code>type</code></td><td>string</td><td>Container dialect to run.</td></tr>
-                  <tr><td><code>password</code></td><td>string</td><td>Sets the fixed <code>elastic</code> superuser's password.</td></tr>
-                  </tbody>
-                </table>
-                </div>
-                <div class="code-block">
-                <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
-                <pre><code class="language-json">"gist-fixtures": [
-  {
-    "id": "order-index-fixtures",
-    "enabled": true,
-    "delayed-start": "5s",
-    "wait-for": [],
-    "host-port": 9200,
-    "image": null,
-    "restart-after": "24h",
-    "type": "elasticsearch",
-    "password": "orderflow"
-  }
-]</code></pre>
-                </div>
-              </div>
-            </div>
-
-          <h4 id="s7-rabbitmq">rabbitmq</h4>
-          <div class="table-scroll">
-          <table class="overview-table">
-            <thead><tr><th>Field</th><th>Behavior</th></tr></thead>
-            <tbody>
-              <tr><td><code>username</code></td><td>Admin username. Defaults to <code>guest</code> if unset — the testcontainers module's own default.</td></tr>
-              <tr><td><code>password</code></td><td>Admin password. Defaults to <code>guest</code> if unset.</td></tr>
-            </tbody>
-          </table>
-          </div>
-          <p>Both also get baked into the generated <code>definitions.json</code> topology
-            import, not just passed as plain container startup credentials — a mismatch between
-            what's configured here and what a real <code>gist-rabbit-mq-client</code> client expects
-            shows up as an auth failure on the client side, not here.</p>
-          <div class="cfgref">
-              <div class="cfgref-tabs">
-                <button type="button" class="cfgref-tab is-active" data-mode="minimal">Minimal</button>
-                <button type="button" class="cfgref-tab" data-mode="full">Full</button>
-              </div>
-              <div class="cfgref-pane" data-mode="minimal">
-                <div class="table-scroll">
-                <table class="overview-table">
-                  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
-                  <tbody>
-
-                  </tbody>
-                </table>
-                </div>
-                <div class="code-block">
-                <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
-                <pre><code class="language-json">"gist-fixtures": [
-  {
-    "id": "bus-fixtures",
-    "enabled": true,
-    "type": "rabbitmq"
-  }
-]</code></pre>
-                </div>
-              </div>
-              <div class="cfgref-pane" data-mode="full" hidden>
-                <div class="table-scroll">
-                <table class="overview-table">
-                  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
-                  <tbody>
-                  <tr><td><code>id</code></td><td>string</td><td>Unique instance ID for this fixture container.</td></tr>
-                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely (no container started).</td></tr>
-                  <tr><td><code>delayed-start</code></td><td>int | string</td><td>Seconds (or duration string) to wait/delay before starting this instance.</td></tr>
-                  <tr><td><code>wait-for</code></td><td>[]string</td><td>IDs of other services this instance must wait to become ready before starting.</td></tr>
-                  <tr><td><code>host-port</code></td><td>int | null</td><td>Fixed host port to bind the container's default port to, instead of a random one.</td></tr>
-                  <tr><td><code>image</code></td><td>string | null</td><td>Docker image override; defaults to the dialect's own default image when omitted.</td></tr>
-                  <tr><td><code>restart-after</code></td><td>int | string | null</td><td>Seconds (or duration string) a booted container runs before it's automatically restarted from the same fixture data. Omitted defaults to 48h; <code>0</code> disables auto-restart.</td></tr>
-                  <tr><td><code>type</code></td><td>string</td><td>Container dialect to run.</td></tr>
-                  <tr><td><code>username</code></td><td>string</td><td>Admin username. Defaults to <code>guest</code> if unset.</td></tr>
-                  <tr><td><code>password</code></td><td>string</td><td>Admin password. Defaults to <code>guest</code> if unset.</td></tr>
-                  </tbody>
-                </table>
-                </div>
-                <div class="code-block">
-                <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
-                <pre><code class="language-json">"gist-fixtures": [
-  {
-    "id": "bus-fixtures",
-    "enabled": true,
-    "delayed-start": "5s",
-    "wait-for": [],
-    "host-port": 5672,
-    "image": null,
-    "restart-after": "24h",
-    "type": "rabbitmq",
-    "username": "orderflow",
-    "password": "orderflow"
-  }
-]</code></pre>
-                </div>
-              </div>
-            </div>
-
-          <h4 id="s7-pubsub">pubsub</h4>
-          <div class="table-scroll">
-          <table class="overview-table">
-            <thead><tr><th>Field</th><th>Behavior</th></tr></thead>
-            <tbody>
-              <tr><td><code>project-id</code></td><td>GCP project ID the emulator's topics/subscriptions are created under.</td></tr>
-            </tbody>
-          </table>
-          </div>
-          <p>Optional in the sense that nothing enforces it, but the rows convention
-            (<code>topics</code>/<code>subscriptions</code>/<code>messages</code>) implicitly
-            needs one for a real customer to later point their own <code>gist-pub-sub-client</code>
-            client at the same project.</p>
-          <div class="cfgref">
-              <div class="cfgref-tabs">
-                <button type="button" class="cfgref-tab is-active" data-mode="minimal">Minimal</button>
-                <button type="button" class="cfgref-tab" data-mode="full">Full</button>
-              </div>
-              <div class="cfgref-pane" data-mode="minimal">
-                <div class="table-scroll">
-                <table class="overview-table">
-                  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
-                  <tbody>
-                  <tr><td><code>project-id</code></td><td>string</td><td>GCP project ID the emulator's topics/subscriptions are created under.</td></tr>
-                  </tbody>
-                </table>
-                </div>
-                <div class="code-block">
-                <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
-                <pre><code class="language-json">"gist-fixtures": [
-  {
-    "id": "order-events-fixtures",
-    "enabled": true,
-    "type": "pubsub",
-    "project-id": "orderflow"
-  }
-]</code></pre>
-                </div>
-              </div>
-              <div class="cfgref-pane" data-mode="full" hidden>
-                <div class="table-scroll">
-                <table class="overview-table">
-                  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
-                  <tbody>
-                  <tr><td><code>id</code></td><td>string</td><td>Unique instance ID for this fixture container.</td></tr>
-                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely (no container started).</td></tr>
-                  <tr><td><code>delayed-start</code></td><td>int | string</td><td>Seconds (or duration string) to wait/delay before starting this instance.</td></tr>
-                  <tr><td><code>wait-for</code></td><td>[]string</td><td>IDs of other services this instance must wait to become ready before starting.</td></tr>
-                  <tr><td><code>host-port</code></td><td>int | null</td><td>Fixed host port to bind the container's default port to, instead of a random one.</td></tr>
-                  <tr><td><code>image</code></td><td>string | null</td><td>Docker image override; defaults to the dialect's own default image when omitted.</td></tr>
-                  <tr><td><code>restart-after</code></td><td>int | string | null</td><td>Seconds (or duration string) a booted container runs before it's automatically restarted from the same fixture data. Omitted defaults to 48h; <code>0</code> disables auto-restart.</td></tr>
-                  <tr><td><code>type</code></td><td>string</td><td>Container dialect to run.</td></tr>
-                  <tr><td><code>project-id</code></td><td>string</td><td>GCP project ID the emulator's topics/subscriptions are created under.</td></tr>
-                  </tbody>
-                </table>
-                </div>
-                <div class="code-block">
-                <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
-                <pre><code class="language-json">"gist-fixtures": [
-  {
-    "id": "order-events-fixtures",
-    "enabled": true,
-    "delayed-start": "5s",
-    "wait-for": [],
-    "host-port": 8085,
-    "image": null,
-    "restart-after": "24h",
-    "type": "pubsub",
-    "project-id": "orderflow"
-  }
-]</code></pre>
-                </div>
-              </div>
-            </div>
-
-          <h4 id="s7-mailpit">mailpit</h4>
-          <div class="table-scroll">
-          <table class="overview-table">
-            <thead><tr><th>Field</th><th>Behavior</th></tr></thead>
-            <tbody>
-              <tr><td><code>username</code></td><td>SMTP auth username. Only takes effect when <code>password</code> is also set.</td></tr>
-              <tr><td><code>password</code></td><td>SMTP auth password. Only takes effect when <code>username</code> is also set.</td></tr>
-            </tbody>
-          </table>
-          </div>
-          <p>Left unset (the common case), the container accepts unauthenticated SMTP —
-            <code>seedMailpit</code>'s live send step works either way, so <strong>Minimal</strong>
-            below leaves both unset.</p>
-          <div class="cfgref">
-              <div class="cfgref-tabs">
-                <button type="button" class="cfgref-tab is-active" data-mode="minimal">Minimal</button>
-                <button type="button" class="cfgref-tab" data-mode="full">Full</button>
-              </div>
-              <div class="cfgref-pane" data-mode="minimal">
-                <div class="table-scroll">
-                <table class="overview-table">
-                  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
-                  <tbody>
-
-                  </tbody>
-                </table>
-                </div>
-                <div class="code-block">
-                <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
-                <pre><code class="language-json">"gist-fixtures": [
-  {
-    "id": "order-emails-fixtures",
-    "enabled": true,
-    "type": "mailpit"
-  }
-]</code></pre>
-                </div>
-              </div>
-              <div class="cfgref-pane" data-mode="full" hidden>
-                <div class="table-scroll">
-                <table class="overview-table">
-                  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
-                  <tbody>
-                  <tr><td><code>id</code></td><td>string</td><td>Unique instance ID for this fixture container.</td></tr>
-                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely (no container started).</td></tr>
-                  <tr><td><code>delayed-start</code></td><td>int | string</td><td>Seconds (or duration string) to wait/delay before starting this instance.</td></tr>
-                  <tr><td><code>wait-for</code></td><td>[]string</td><td>IDs of other services this instance must wait to become ready before starting.</td></tr>
-                  <tr><td><code>host-port</code></td><td>int | null</td><td>Fixed host port to bind the container's default port to, instead of a random one.</td></tr>
-                  <tr><td><code>image</code></td><td>string | null</td><td>Docker image override; defaults to the dialect's own default image when omitted.</td></tr>
-                  <tr><td><code>restart-after</code></td><td>int | string | null</td><td>Seconds (or duration string) a booted container runs before it's automatically restarted from the same fixture data. Omitted defaults to 48h; <code>0</code> disables auto-restart.</td></tr>
-                  <tr><td><code>type</code></td><td>string</td><td>Container dialect to run.</td></tr>
-                  <tr><td><code>username</code></td><td>string</td><td>SMTP auth username. Only takes effect when <code>password</code> is also set.</td></tr>
-                  <tr><td><code>password</code></td><td>string</td><td>SMTP auth password. Only takes effect when <code>username</code> is also set.</td></tr>
-                  </tbody>
-                </table>
-                </div>
-                <div class="code-block">
-                <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
-                <pre><code class="language-json">"gist-fixtures": [
-  {
-    "id": "order-emails-fixtures",
-    "enabled": true,
-    "delayed-start": "5s",
-    "wait-for": [],
-    "host-port": 1025,
-    "image": null,
-    "restart-after": "24h",
-    "type": "mailpit",
-    "username": "orderflow",
-    "password": "orderflow"
-  }
-]</code></pre>
-                </div>
-              </div>
-            </div>
-
-          <h4 id="s7-redis">redis</h4>
-          <div class="table-scroll">
-          <table class="overview-table">
-            <thead><tr><th>Field</th><th>Behavior</th></tr></thead>
-            <tbody>
-              <tr><td><code>password</code></td><td>Sets <code>--requirepass</code> directly on the container's own command line — the module has no dedicated password option.</td></tr>
-            </tbody>
-          </table>
-          </div>
-          <p>No <code>username</code> field — Redis's classic AUTH is password-only. No
-            <code>database</code> field either: Redis selects a logical DB index (0-15) per-
-            connection, not per-container, so there's nothing for <code>gist-fixtures</code>
-            itself to configure there.</p>
-          <div class="cfgref">
-              <div class="cfgref-tabs">
-                <button type="button" class="cfgref-tab is-active" data-mode="minimal">Minimal</button>
-                <button type="button" class="cfgref-tab" data-mode="full">Full</button>
-              </div>
-              <div class="cfgref-pane" data-mode="minimal">
-                <div class="table-scroll">
-                <table class="overview-table">
-                  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
-                  <tbody>
-                  <tr><td><code>password</code></td><td>string</td><td>Sets <code>--requirepass</code> directly on the container's own command line.</td></tr>
-                  </tbody>
-                </table>
-                </div>
-                <div class="code-block">
-                <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
-                <pre><code class="language-json">"gist-fixtures": [
-  {
-    "id": "order-cache-fixtures",
-    "enabled": true,
-    "type": "redis",
-    "password": "orderflow"
-  }
-]</code></pre>
-                </div>
-              </div>
-              <div class="cfgref-pane" data-mode="full" hidden>
-                <div class="table-scroll">
-                <table class="overview-table">
-                  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
-                  <tbody>
-                  <tr><td><code>id</code></td><td>string</td><td>Unique instance ID for this fixture container.</td></tr>
-                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely (no container started).</td></tr>
-                  <tr><td><code>delayed-start</code></td><td>int | string</td><td>Seconds (or duration string) to wait/delay before starting this instance.</td></tr>
-                  <tr><td><code>wait-for</code></td><td>[]string</td><td>IDs of other services this instance must wait to become ready before starting.</td></tr>
-                  <tr><td><code>host-port</code></td><td>int | null</td><td>Fixed host port to bind the container's default port to, instead of a random one.</td></tr>
-                  <tr><td><code>image</code></td><td>string | null</td><td>Docker image override; defaults to the dialect's own default image when omitted.</td></tr>
-                  <tr><td><code>restart-after</code></td><td>int | string | null</td><td>Seconds (or duration string) a booted container runs before it's automatically restarted from the same fixture data. Omitted defaults to 48h; <code>0</code> disables auto-restart.</td></tr>
-                  <tr><td><code>type</code></td><td>string</td><td>Container dialect to run.</td></tr>
-                  <tr><td><code>password</code></td><td>string</td><td>Sets <code>--requirepass</code> directly on the container's own command line.</td></tr>
-                  </tbody>
-                </table>
-                </div>
-                <div class="code-block">
-                <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
-                <pre><code class="language-json">"gist-fixtures": [
-  {
-    "id": "order-cache-fixtures",
-    "enabled": true,
-    "delayed-start": "5s",
-    "wait-for": [],
-    "host-port": 6379,
-    "image": null,
-    "restart-after": "24h",
-    "type": "redis",
-    "password": "orderflow"
-  }
-]</code></pre>
-                </div>
-              </div>
-            </div>
-
-          <p><code>elasticsearch</code>, <code>pubsub</code>, <code>rabbitmq</code>,
-            <code>mailpit</code>, and <code>redis</code> containers have no init-script mount
-            point, so their seed data is delivered by a live client call right after boot instead
-            — same <code>rows...any</code> call, different table conventions per dialect.
-            <code>mailpit</code>'s is a single <code>"messages"</code> table: <code>to</code>
-            (required — a row with none is skipped), <code>from</code> (defaults to
-            <code>fixtures@localhost</code>), <code>subject</code>, <code>body</code>; each row is
-            sent as one real SMTP delivery, so it shows up through the running container's own web
-            UI/REST API exactly like a message a test sent itself would. <code>redis</code>'s is a
-            single <code>"strings"</code> table: <code>key</code> (required — a row with none is
-            skipped), <code>value</code> (stringified, defaults to <code>""</code>); each row is a
-            real <code>SET</code>, sent over a hand-rolled RESP connection rather than a client
-            library (SET is a three-line wire command, not worth a new dependency for).</p>
-
-          <h3 id="s7-real-client">Pointing a real client at your own fixtures container</h3>
-          <p>Beyond seeding through <code>GenerateFixtures</code>, it's common to point the
-            matching <em>real</em> client service — <a href="#s10">gist-google-cloud-storage-client</a>,
-            <a href="#s13">gist-redis-client</a>, <a href="#s14">gist-pub-sub-client</a>,
-            <a href="#s9">gist-elasticsearch-client</a>, or <a href="#s15">gist-rabbit-mq-client</a> — straight
-            at a <code>gist-fixtures</code>-booted container for local dev. Pin the port with
-            <code>gist-fixtures</code>' own <code>host-port</code> first, then:</p>
-          <div class="table-scroll">
-          <table class="overview-table">
-            <thead><tr><th>Client</th><th>Field(s)</th><th>Notes</th></tr></thead>
-            <tbody>
-              <tr>
-                <td><code>gist-google-cloud-storage-client</code></td>
-                <td><code>endpoint: "http://127.0.0.1:&lt;host-port&gt;"</code></td>
-                <td>Already works as-is — <code>endpoint</code> skips ADC auth entirely and talks straight to the fake server.</td>
-              </tr>
-              <tr>
-                <td><code>gist-redis-client</code></td>
-                <td><code>host: "127.0.0.1"</code>, <code>port: &lt;host-port&gt;</code>, <code>password</code> matching the fixtures entry's own <code>password</code></td>
-                <td>Needed a fix: the client had no <code>password</code> field at all until now, so it could never authenticate against a <code>--requirepass</code> container — see <code>Config.Password</code>, wired into <code>redis.Options.Password</code>.</td>
-              </tr>
-              <tr>
-                <td><code>gist-pub-sub-client</code></td>
-                <td><code>endpoint: "127.0.0.1:&lt;host-port&gt;"</code> (no scheme)</td>
-                <td>Already works as-is — same <code>host:port</code> format as <code>PUBSUB_EMULATOR_HOST</code>, which this field takes precedence over.</td>
-              </tr>
-              <tr>
-                <td><code>gist-elasticsearch-client</code></td>
-                <td><code>hosts: ["http://127.0.0.1:&lt;host-port&gt;"]</code>, <code>user: "elastic"</code>, <code>password</code> matching the fixtures entry's own <code>password</code> (or <code>"changeme"</code> if left unset)</td>
-                <td>Requires <code>gist-fixtures</code> to disable the container's HTTP TLS layer, which it does unconditionally — the real client's plain <code>http.Client</code> has no CA-cert support, and ES 8.x defaults to HTTPS with a generated self-signed CA otherwise. Without that, this pairing doesn't work at all.</td>
-              </tr>
-              <tr>
-                <td><code>gist-rabbit-mq-client</code></td>
-                <td><code>url: "amqp://&lt;user&gt;:&lt;password&gt;@127.0.0.1:&lt;host-port&gt;/"</code> — <code>guest:guest</code> unless the fixtures entry's own <code>username</code>/<code>password</code> were set</td>
-                <td>Already works as-is — a plain connection string, no TLS involved.</td>
-              </tr>
-            </tbody>
-          </table>
-          </div>
-        </div>
-      </details>
-    </section>
     <!-- ============ 8. gist-http-client ============ -->
     <section class="doc-section" id="s8">
       <details open>
-        <summary><span class="toc-num">08</span><h2>gist-http-client</h2><span class="badge badge-api">API</span></summary>
+        <summary><span class="toc-num">08</span><h2>gist-http-client</h2></summary>
         <div class="section-body">
                 <!-- GENERATED:gist-http-client:INTRO:BEGIN -->
           <p>Outbound HTTP client — five verb-specific methods, not a <code>Do(Request{...})</code> shape. <code>endpoint</code> is joined against the instance's configured <code>base-url</code>; per-request behavior is typed options, one package per verb.</p>
                 <!-- GENERATED:gist-http-client:INTRO:END -->
-          <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-http-client-config">gist-http-client-config</a></div>
                 <!-- GENERATED:gist-http-client:BEGIN -->
           <div class="cfgref">
               <div class="cfgref-tabs">
@@ -2895,53 +1333,17 @@ func (tr *Transaction) Rollback() error</code></pre>
               </div>
           </div>
                 <!-- GENERATED:gist-http-client:END -->
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-go">func (s *Service) Get(ctx, endpoint string, options ...get.Option) Response
-func (s *Service) Post(ctx, endpoint string, options ...post.Option) Response
-func (s *Service) Put(ctx, endpoint string, options ...put.Option) Response
-func (s *Service) Patch(ctx, endpoint string, options ...patch.Option) Response
-func (s *Service) Delete(ctx, endpoint string, options ...delete.Option) Response
-
-type Response struct {
-    StatusCode int
-    Headers    http.Header
-    Body       []byte
-    Error      error // plain field, not a Go error return - check it explicitly
-}</code></pre>
-          </div>
-          <p>Shared options (package <code>option</code>, wrapped per-verb):
-            <code>WithHeader(key, value string)</code>, <code>WithQueryParams(key, value string)</code>,
-            <code>WithBody(body []byte)</code> (post/put/patch only — <code>get</code>/<code>delete</code>
-            have no body option), <code>WithOmitResponseHeaders()</code>.</p>
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-go">resp := sg.PaymentGateway.Post(ctx, "/charges",
-    post.WithHeader("Idempotency-Key", order.IdempotencyKey()),
-    post.WithBody(chargePayload),
-)
-if resp.Error != nil || resp.StatusCode >= 400 {
-    return fmt.Errorf("charge failed: %v (status %d)", resp.Error, resp.StatusCode)
-}
-var charge ChargeResult
-json.Unmarshal(resp.Body, &charge)</code></pre>
-          </div>
-          <p>A transport failure (DNS, connection refused, timeout) synthesizes
-            <code>StatusCode: 500</code> with <code>Error</code> set — both a non-nil
-            <code>Error</code> and a <code>>= 400</code> status are worth checking, since they
-            cover different failure classes.</p>
         </div>
       </details>
     </section>
     <!-- ============ 9. gist-elasticsearch-client ============ -->
     <section class="doc-section" id="s9">
       <details open>
-        <summary><span class="toc-num">09</span><h2>gist-elasticsearch-client</h2><span class="badge badge-api">API</span></summary>
+        <summary><span class="toc-num">09</span><h2>gist-elasticsearch-client</h2></summary>
         <div class="section-body">
                 <!-- GENERATED:gist-elasticsearch-client:INTRO:BEGIN -->
           <p>Index + query one Elasticsearch cluster. Seven methods, all with a consistent two-layer error model worth internalizing once: a transport error and a wire-level error both surface as the returned <code>error</code> (wrapped <code>"gistelasticsearchclient: &lt;op&gt;: %w"</code>); "not found" is never an error, it's a <code>bool</code> return.</p>
                 <!-- GENERATED:gist-elasticsearch-client:INTRO:END -->
-          <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-elasticsearch-client-config">gist-elasticsearch-client-config</a></div>
                 <!-- GENERATED:gist-elasticsearch-client:BEGIN -->
           <div class="cfgref">
               <div class="cfgref-tabs">
@@ -3004,51 +1406,17 @@ json.Unmarshal(resp.Body, &charge)</code></pre>
               </div>
           </div>
                 <!-- GENERATED:gist-elasticsearch-client:END -->
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-go">func (s *Service) CreateItem(ctx, index, id string, item any) (created bool, actualID string, err error)
-// insert-only; id=="" auto-generates one. id set + doc already exists -> created=false, no error.
-
-func (s *Service) IndexItem(ctx, index, id string, item any) error
-// create-or-replace at a known id (id required).
-
-func (s *Service) GetItem(ctx, index, id string, out any) (found bool, err error)
-func (s *Service) UpdateItem(ctx, index, id string, doc any) (found bool, err error) // partial merge
-func (s *Service) DeleteItem(ctx, index, id string) (found bool, err error)
-
-func (s *Service) BulkIndex(ctx, index string, items []BulkItem) (hasErrors bool, results []BulkResult, err error)
-// BulkItem{ID string, Item any}; BulkResult{ID string, Status int, Error string} - check each
-// result's Error individually even when hasErrors is false-checked, bulk can partially fail.
-
-func (s *Service) Search(ctx, index string, query any) (*SearchResult, error)
-// query is a raw ES query body. SearchResult{Total int64, Hits []SearchHit};
-// SearchHit{ID string, Score float64, Source json.RawMessage}.</code></pre>
-          </div>
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-go">_ = sg.Search.IndexItem(ctx, "orders", strconv.Itoa(order.ID), order)
-
-result, err := sg.Search.Search(ctx, "orders", map[string]any{
-    "query": map[string]any{"match": map[string]any{"customer_name": "acme"}},
-    "size":  20,
-})
-for _, hit := range result.Hits {
-    var order model.Order
-    json.Unmarshal(hit.Source, &order)
-}</code></pre>
-          </div>
         </div>
       </details>
     </section>
     <!-- ============ 10. gist-google-cloud-storage-client ============ -->
     <section class="doc-section" id="s10">
       <details open>
-        <summary><span class="toc-num">10</span><h2>gist-google-cloud-storage-client</h2><span class="badge badge-api">API</span></summary>
+        <summary><span class="toc-num">10</span><h2>gist-google-cloud-storage-client</h2></summary>
         <div class="section-body">
                 <!-- GENERATED:gist-google-cloud-storage-client:INTRO:BEGIN -->
           <p>Bucket + object CRUD against real GCS or a local emulator (<code>endpoint</code> in config). <code>bucketID</code> in every method is the config's own <code>buckets</code> map key (e.g. <code>"receipts"</code>), never the real GCS bucket name — that mapping happens server-side, so the real name never appears in your code.</p>
                 <!-- GENERATED:gist-google-cloud-storage-client:INTRO:END -->
-          <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-google-cloud-storage-client-config">gist-google-cloud-storage-client-config</a></div>
                 <!-- GENERATED:gist-google-cloud-storage-client:BEGIN -->
           <div class="cfgref">
               <div class="cfgref-tabs">
@@ -3115,51 +1483,17 @@ for _, hit := range result.Hits {
               </div>
           </div>
                 <!-- GENERATED:gist-google-cloud-storage-client:END -->
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-go">func (s *Service) Exists(ctx, bucketID, fileName string) (bool, error)
-
-func (s *Service) Store(ctx, bucketID, path string, fileHeader *multipart.FileHeader) (*string, *string, error)
-// fileHeader must be non-nil/non-empty - built to plug straight into r.FormFile() from an HTTP
-// upload handler, not a raw []byte. Returns (path, fileName).
-
-func (s *Service) CreateBucket(ctx, bucketID, location string) (created bool, err error)
-// location is a real GCS region/multi-region string ("US", "EUROPE-WEST1"). 409-if-exists is
-// not an error - created reports which case happened.
-func (s *Service) GetBucket(ctx, bucketID string, out any) (found bool, err error)
-func (s *Service) UpdateBucket(ctx, bucketID string, attrs any) (found bool, err error) // merged
-func (s *Service) DeleteBucket(ctx, bucketID string) (found bool, err error) // bucket must be empty first
-
-func (s *Service) GetObject(ctx, bucketID, fileName string) (found bool, content []byte, err error)
-func (s *Service) UpdateObjectMetadata(ctx, bucketID, fileName string, metadata map[string]string) (found bool, updated map[string]string, err error)
-func (s *Service) DeleteObject(ctx, bucketID, fileName string) (found bool, err error)</code></pre>
-          </div>
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-go">func uploadReceipt(sg ServicesGroup, ctx context.Context, r *http.Request, orderID int) error {
-    _, fh, err := r.FormFile("receipt")
-    if err != nil {
-        return err
-    }
-    path, fileName, err := sg.Receipts.Store(ctx, "receipts", fmt.Sprintf("orders/%d/", orderID), fh)
-    return err
-}</code></pre>
-          </div>
-          <div class="code-note">No <code>ListObjects</code> exists — bucket/object listing isn't
-            part of the surface today; track object paths yourself (e.g. a column on
-            <code>Order</code>) if you need to enumerate them later.</div>
         </div>
       </details>
     </section>
     <!-- ============ 11. gist-scheduler ============ -->
     <section class="doc-section" id="s11">
       <details open>
-        <summary><span class="toc-num">11</span><h2>gist-scheduler</h2><span class="badge badge-api">API</span></summary>
+        <summary><span class="toc-num">11</span><h2>gist-scheduler</h2></summary>
         <div class="section-body">
                 <!-- GENERATED:gist-scheduler:INTRO:BEGIN -->
           <p>A cron job gist-server runs internally, calling back into your process on every tick.</p>
                 <!-- GENERATED:gist-scheduler:INTRO:END -->
-          <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-scheduler-config">gist-scheduler-config</a></div>
                 <!-- GENERATED:gist-scheduler:BEGIN -->
           <div class="cfgref">
               <div class="cfgref-tabs">
@@ -3216,46 +1550,17 @@ func (s *Service) DeleteObject(ctx, bucketID, fileName string) (found bool, err 
               </div>
           </div>
                 <!-- GENERATED:gist-scheduler:END -->
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-go">func RegisterScheduleFunc[dep any](schedulerID string, d dep, fn func(dep)) gist.Option</code></pre>
-          </div>
-          <p><code>dep</code> is any value you choose (often a whole <code>servicesGroup</code>),
-            captured at registration and handed to <code>fn</code> on every tick. <code>fn</code>
-            gets no <code>context.Context</code> and returns nothing — genuinely fire-and-forget,
-            so build your own context and handle your own errors inside it:</p>
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-go">gist.RegisterScheduleFunc("reconcile-stale-orders", sg, func(sg ServicesGroup) {
-    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
-    defer cancel()
-    stale, err := gistmysqlclient.FindAutoClose[model.Order](sg.OrdersDB,
-        gistmysqlclient.WithConditions(gistmysqlclient.AndConditions(
-            gistmysqlclient.NewCondition("status", gistmysqlclient.Equal, "pending"),
-            gistmysqlclient.NewCondition("created_at", gistmysqlclient.LessThan, time.Now().Add(-24*time.Hour)),
-        )),
-    )
-    if err != nil {
-        logging.Error("reconcile-stale-orders failed", map[string]any{"error": err.Error()})
-        return
-    }
-    for _, o := range stale {
-        _ = giststatemachine.Transition(ctx, sg.OrderLifecycle, "cancel", &o)
-    }
-})</code></pre>
-          </div>
         </div>
       </details>
     </section>
     <!-- ============ 12. gist-state-machine ============ -->
     <section class="doc-section" id="s12">
       <details open>
-        <summary><span class="toc-num">12</span><h2>gist-state-machine</h2><span class="badge badge-api">API</span></summary>
+        <summary><span class="toc-num">12</span><h2>gist-state-machine</h2></summary>
         <div class="section-body">
                 <!-- GENERATED:gist-state-machine:INTRO:BEGIN -->
           <p>A stateless transition validator: given a current state and a trigger name, it checks a transitions graph loaded from <code>transitions-file</code> and either allows or rejects the move. It holds no state of its own — persisting the object is entirely your responsibility, handled in the trigger's own callback.</p>
                 <!-- GENERATED:gist-state-machine:INTRO:END -->
-          <div class="config-link">Config, including the transitions-file format: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-state-machine-config">gist-state-machine-config</a></div>
                 <!-- GENERATED:gist-state-machine:BEGIN -->
           <div class="cfgref">
               <div class="cfgref-tabs">
@@ -3330,64 +1635,17 @@ func (s *Service) DeleteObject(ctx, bucketID, fileName string) (found bool, err 
               </div>
           </div>
                 <!-- GENERATED:gist-state-machine:END -->
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-go">type Statabler interface { GetState() string; SetState(state string) }
-// embed giststatemachine.Statable in your model to get both for free
-
-type TransitionFn[servicesGroup any, M Statabler] func(sg servicesGroup, ctx context.Context, statable M) error
-
-func RegisterTriggerFunc[servicesGroup any, M Statabler](
-    trigger string,
-    onAction TransitionFn[servicesGroup, M],
-    opts ...TriggerOption[servicesGroup, M],
-) *TriggerHandler[servicesGroup, M]
-
-func OnEnter[servicesGroup, M](fns ...TransitionFn[servicesGroup, M]) TriggerOption[servicesGroup, M] // guard, runs first; error aborts, state untouched
-func OnExit[servicesGroup, M](fns ...TransitionFn[servicesGroup, M]) TriggerOption[servicesGroup, M]  // runs after OnAction succeeds
-
-func Attach[servicesGroup any, M Statabler](serviceID string, handlers ...*TriggerHandler[servicesGroup, M]) gist.Option
-func Transition[M Statabler](ctx context.Context, svc *Service, trigger string, statable M) error</code></pre>
-          </div>
-          <p>Call order per <code>Transition</code>: every <code>OnEnter</code> → the RPC
-            transition attempt itself → the model's <code>SetState(newState)</code> →
-            <code>onAction</code> → every <code>OnExit</code>. An error at any step aborts
-            everything after it; <code>Transition</code> returns a plain error (not a panic) if
-            <code>trigger</code> was never <code>Attach</code>'d for that service id.</p>
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-go">var Approve = giststatemachine.RegisterTriggerFunc("approve",
-    func(sg ServicesGroup, ctx context.Context, order *model.Order) error {
-        _, err := gistmysqlclient.UpdateAutoClose(sg.OrdersDB, map[string]any{"status": order.GetState()},
-            gistmysqlclient.WithConditions(gistmysqlclient.NewCondition("id", gistmysqlclient.Equal, order.ID)))
-        return err
-    },
-    giststatemachine.OnEnter(func(sg ServicesGroup, ctx context.Context, order *model.Order) error {
-        if order.Total() <= 0 {
-            return errors.New("cannot approve a zero-value order")
-        }
-        return nil
-    }),
-)
-
-// wiring, once at startup:
-giststatemachine.Attach("order-lifecycle", Approve /* , Ship, Deliver, Cancel */)
-
-// firing, from anywhere - no reference to Approve needed:
-err := giststatemachine.Transition(ctx, sg.OrderLifecycle, "approve", &order)</code></pre>
-          </div>
         </div>
       </details>
     </section>
     <!-- ============ 13. gist-redis-client ============ -->
     <section class="doc-section" id="s13">
       <details open>
-        <summary><span class="toc-num">13</span><h2>gist-redis-client</h2><span class="badge badge-none">No API</span></summary>
+        <summary><span class="toc-num">13</span><h2>gist-redis-client</h2></summary>
         <div class="section-body">
                 <!-- GENERATED:gist-redis-client:INTRO:BEGIN -->
           <p>No client-side API — no injectable <code>Service</code> type, no package under <code>gist/services/</code> at all, confirmed by grepping the whole SDK tree. Strictly gist-server-internal: it opens a connection and pings it at startup, then nothing your own code can call — there is currently no cache-set/get exposed. Configuring it gets you a green line in the boot log and nothing more.</p>
                 <!-- GENERATED:gist-redis-client:INTRO:END -->
-          <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-redis-client-config">gist-redis-client-config</a></div>
                 <!-- GENERATED:gist-redis-client:BEGIN -->
           <div class="cfgref">
               <div class="cfgref-tabs">
@@ -3460,12 +1718,11 @@ err := giststatemachine.Transition(ctx, sg.OrderLifecycle, "approve", &order)</c
     <!-- ============ 14. gist-pub-sub-client ============ -->
     <section class="doc-section" id="s14">
       <details open>
-        <summary><span class="toc-num">14</span><h2>gist-pub-sub-client</h2><span class="badge badge-none">No API</span></summary>
+        <summary><span class="toc-num">14</span><h2>gist-pub-sub-client</h2></summary>
         <div class="section-body">
                 <!-- GENERATED:gist-pub-sub-client:INTRO:BEGIN -->
           <p>Also no client-side API — same story as <code>gist-redis-client</code>: a connectivity/readiness check against a GCP Pub/Sub endpoint, nothing your own code can call, no publish/subscribe exposed today. If <code>orderflow</code> needs a real message bus, that's <code>gist-rabbit-mq-client</code> (next section), not this one — <code>gist-pub-sub-client</code> only ever proves reachability.</p>
                 <!-- GENERATED:gist-pub-sub-client:INTRO:END -->
-          <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-pub-sub-client-config">gist-pub-sub-client-config</a></div>
                 <!-- GENERATED:gist-pub-sub-client:BEGIN -->
           <div class="cfgref">
               <div class="cfgref-tabs">
@@ -3532,12 +1789,11 @@ err := giststatemachine.Transition(ctx, sg.OrderLifecycle, "approve", &order)</c
     <!-- ============ 15. gist-rabbit-mq-client ============ -->
     <section class="doc-section" id="s15">
       <details open>
-        <summary><span class="toc-num">15</span><h2>gist-rabbit-mq-client</h2><span class="badge badge-api">API</span></summary>
+        <summary><span class="toc-num">15</span><h2>gist-rabbit-mq-client</h2></summary>
         <div class="section-body">
                 <!-- GENERATED:gist-rabbit-mq-client:INTRO:BEGIN -->
           <p>A real AMQP 0-9-1 client connection — the one messaging service in this list gist-server actually operates for you, not just checks the health of.</p>
                 <!-- GENERATED:gist-rabbit-mq-client:INTRO:END -->
-          <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-rabbit-mq-client-config">gist-rabbit-mq-client-config</a></div>
                 <!-- GENERATED:gist-rabbit-mq-client:BEGIN -->
           <div class="cfgref">
               <div class="cfgref-tabs">
@@ -3596,71 +1852,17 @@ err := giststatemachine.Transition(ctx, sg.OrderLifecycle, "approve", &order)</c
               </div>
           </div>
                 <!-- GENERATED:gist-rabbit-mq-client:END -->
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-go">func (s *Service) Publish(ctx, exchange, routingKey string, body []byte, contentType string, headers map[string]string) error
-// exchange=="" targets the default exchange; routingKey then acts as a plain queue name.
-
-func (s *Service) ExchangeDeclare(ctx, name, kind string, durable, autoDelete bool, args map[string]string) error
-func (s *Service) QueueDeclare(ctx, name string, durable, autoDelete, exclusive bool, args map[string]string) (string, error)
-// name=="" lets the broker generate one (returned) - for private per-consumer queues.
-func (s *Service) QueueBind(ctx, queue, exchange, routingKey string, args map[string]string) error</code></pre>
-          </div>
-          <p><code>args</code> is <code>map[string]string</code> only on all three — a typed AMQP
-            argument (e.g. an integer TTL) has to be passed as its string form.</p>
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-go">_ = sg.Bus.ExchangeDeclare(ctx, "orders", "topic", true, false, nil)
-_ = sg.Bus.Publish(ctx, "orders", "order.created", orderJSON, "application/json", nil)</code></pre>
-          </div>
-          <p>Consuming is a separate, package-level registration, not a method on
-            <code>Service</code>:</p>
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-go">type RabbitMQDelivery struct {
-    Body        []byte
-    ContentType string
-    Headers     map[string]string
-}
-func WithRabbitMQAutoAck() RabbitMQConsumerOption
-func RegisterRabbitMQConsumer[dep any](
-    serviceID, queue string,
-    d dep,
-    fn func(dep, context.Context, RabbitMQDelivery) error,
-    opts ...RabbitMQConsumerOption,
-) gist.Option</code></pre>
-          </div>
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-go">gist.RegisterRabbitMQConsumer("bus", "inventory-reserved", sg,
-    func(sg ServicesGroup, ctx context.Context, msg gist.RabbitMQDelivery) error {
-        var evt InventoryReservedEvent
-        if err := json.Unmarshal(msg.Body, &evt); err != nil {
-            return err // nack + requeue by default
-        }
-        return giststatemachine.Transition(ctx, sg.OrderLifecycle, "reserve", &evt.Order)
-    },
-)</code></pre>
-          </div>
-          <p>Default ack mode is manual and tied to <code>fn</code>'s return: <code>nil</code>
-            acks, a non-nil error nacks and requeues — the standard at-least-once shape.
-            <code>WithRabbitMQAutoAck()</code> acks on delivery, before <code>fn</code> even runs
-            — simpler, but a crash mid-<code>fn</code> silently drops the message rather than
-            redelivering it. gist-server owns the actual <code>Consume</code> loop and pushes to
-            your callback — the same push shape <code>gist-scheduler</code> uses for a clock
-            instead of a queue, not something you poll.</p>
         </div>
       </details>
     </section>
     <!-- ============ 16. gist-load-balancer ============ -->
     <section class="doc-section" id="s16">
       <details open>
-        <summary><span class="toc-num">16</span><h2>gist-load-balancer</h2><span class="badge badge-config">Config only</span></summary>
+        <summary><span class="toc-num">16</span><h2>gist-load-balancer</h2></summary>
         <div class="section-body">
                 <!-- GENERATED:gist-load-balancer:INTRO:BEGIN -->
           <p>A reverse-proxying round-robin load balancer in front of a fixed list of backend URLs — config-only, like <code>gist-http-server</code>: nothing to call from your own code, you just point config at it and traffic gets distributed. Modeled on <a href="https://dev.to/vivekalhat/building-a-simple-load-balancer-in-go-70d">this dev.to article</a> (round robin + periodic HTTP HEAD health checks over <code>httputil.ReverseProxy</code>), with a per-instance <code>health-check-path</code> borrowed from <a href="https://github.com/Abdulrahman-Tayara/go-lb">go-lb</a>'s per-server health endpoint. go-lb's other features (weighted/sticky/least-connections strategies, TLS, rate limiting, content-based routing) are deliberately not ported — round robin covers the actual use case, TLS conflicts with <code>gist-api-server</code>'s own "always plain HTTP, front it with a reverse proxy" stance (this service follows the same rule — no <code>protocol</code>/TLS field here either), and content-based routing already belongs to <code>gist-api-server</code>, not this service.</p>
                 <!-- GENERATED:gist-load-balancer:INTRO:END -->
-          <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-load-balancer-config">gist-load-balancer-config</a></div>
                 <!-- GENERATED:gist-load-balancer:BEGIN -->
           <div class="cfgref">
               <div class="cfgref-tabs">
@@ -3727,124 +1929,6 @@ func RegisterRabbitMQConsumer[dep any](
               </div>
           </div>
                 <!-- GENERATED:gist-load-balancer:END -->
-          <p><strong>Behavior</strong>: round robin across whichever backends are currently marked
-            healthy; every backend starts optimistically healthy (so a freshly booted instance
-            doesn't 503 everything before the first check lands), then gets a real
-            <code>HEAD</code> request to <code>health-check-path</code> every
-            <code>health-check-interval</code> — a transport error or a <code>5xx</code> response
-            marks it down, anything else marks it up. If every backend is unhealthy, responds
-            <code>503 Service Unavailable</code> rather than proxying to a known-dead one.</p>
-        </div>
-      </details>
-    </section>
-    <!-- ============ 17. gist-custom ============ -->
-    <section class="doc-section" id="s17">
-      <details open>
-        <summary><span class="toc-num">17</span><h2>gist-custom</h2><span class="badge badge-api">API</span></summary>
-        <div class="section-body">
-          <p>The extensibility point for a service kind gist-server doesn't know about. Any
-            <code>services.&lt;kind&gt;</code> array whose <code>&lt;kind&gt;</code> isn't one of
-            the 15 built-ins (see <a href="#s17-reserved-kinds">below</a>, in <strong>Full</strong>)
-            is handed through untouched, as raw JSON, to a customer-registered
-            builder — same <code>PostBuild</code> → <code>Start</code> → <code>Stop</code>
-            lifecycle every built-in service goes through.</p>
-          <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-custom-config">gist-custom-config</a></div>
-          <div class="cfgref">
-              <div class="cfgref-tabs">
-                <button type="button" class="cfgref-tab is-active" data-mode="minimal">Minimal</button>
-                <button type="button" class="cfgref-tab" data-mode="full">Full</button>
-              </div>
-              <div class="cfgref-pane" data-mode="minimal">
-                <div class="table-scroll">
-                <table class="overview-table">
-                  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
-                  <tbody>
-                  <tr><td><code>id</code></td><td>string</td><td>Unique instance ID within its kind. Required.</td></tr>
-                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely.</td></tr>
-                  </tbody>
-                </table>
-                </div>
-                <div class="code-block">
-                <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
-                <pre><code class="language-json">"loyalty-points": [
-  {
-    "id": "loyalty-points",
-    "enabled": true,
-    "points-per-dollar": 1.5
-  }
-]</code></pre>
-                </div>
-              </div>
-              <div class="cfgref-pane" data-mode="full" hidden>
-                <div class="table-scroll">
-                <table class="overview-table">
-                  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
-                  <tbody>
-                  <tr><td><code>id</code></td><td>string</td><td>Unique instance ID within its kind. Required — an entry with an empty <code>id</code> fails config loading.</td></tr>
-                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely.</td></tr>
-                  <tr><td><code>delayed-start</code></td><td>int | string</td><td>Seconds (or duration string) to wait/delay before starting this instance.</td></tr>
-                  <tr><td><code>wait-for</code></td><td>[]string</td><td>IDs of other services this instance must wait to become ready before starting.</td></tr>
-                  <tr><td><code>(anything else)</code></td><td>any</td><td>Opaque to gist-server — handed to the registered handler as part of the entry's raw JSON; <code>points-per-dollar</code> below is this service's own, not a gist-server field.</td></tr>
-                  </tbody>
-                </table>
-                </div>
-                <div class="code-block">
-                <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
-                <pre><code class="language-json">"loyalty-points": [
-  {
-    "id": "loyalty-points",
-    "enabled": true,
-    "delayed-start": "5s",
-    "wait-for": ["orders-db"],
-    "points-per-dollar": 1.5
-  }
-]</code></pre>
-                </div>
-
-                <h4 id="s17-reserved-kinds">Reserved kinds</h4>
-                <p style="margin:.4rem 0 .6rem">These <code>&lt;kind&gt;</code> names are gist-server's own built-in services and can never be reused as a custom kind — matching entries under them are loaded by their own dedicated config package instead of <code>gist-custom</code>:</p>
-                <p style="margin:.4rem 0 .6rem"><code>gist-api-server</code>, <code>gist-mysql-client</code>, <code>gist-postgres-client</code>, <code>gist-fixtures</code>, <code>gist-redis-client</code>, <code>gist-pub-sub-client</code>, <code>gist-elasticsearch-client</code>, <code>gist-google-cloud-storage-client</code>, <code>gist-http-server</code>, <code>gist-http-client</code>, <code>gist-auth</code>, <code>gist-scheduler</code>, <code>gist-state-machine</code>, <code>gist-rabbit-mq-client</code>, <code>gist-load-balancer</code>.</p>
-              </div>
-            </div>
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-go">type CustomService interface {
-    PostBuild() error
-    Start(ctx context.Context, ready func()) error
-    Stop(ctx context.Context) error
-}
-func RegisterCustomService[Config any, S CustomService](kind string, build func(Config) (S, error)) gist.Option</code></pre>
-          </div>
-          <p><code>Config</code>/<code>S</code> are both inferred from <code>build</code> — only
-            declare fields specific to your service; <code>id</code>/<code>enabled</code>/
-            <code>delayed-start</code>/<code>wait-for</code> are handled generically before
-            <code>build</code> is ever called.</p>
-          <div class="code-block">
-            <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
-            <pre><code class="language-go">type LoyaltyConfig struct {
-    PointsPerDollar float64 `json:"points-per-dollar"`
-}
-type LoyaltyService struct {
-    cfg  LoyaltyConfig
-    stop chan struct{}
-}
-
-func BuildLoyalty(cfg LoyaltyConfig) (*LoyaltyService, error) {
-    return &LoyaltyService{cfg: cfg}, nil
-}
-func (s *LoyaltyService) PostBuild() error { return nil }
-func (s *LoyaltyService) Start(_ context.Context, ready func()) error {
-    s.stop = make(chan struct{})
-    ready() // must return promptly - real work goes in a goroutine, same contract as every built-in
-    go s.run()
-    return nil
-}
-func (s *LoyaltyService) Stop(_ context.Context) error { close(s.stop); return nil }
-
-func RegisterLoyalty() gist.Option {
-    return gist.RegisterCustomService("loyalty-points", BuildLoyalty)
-}</code></pre>
-          </div>
         </div>
       </details>
     </section>
