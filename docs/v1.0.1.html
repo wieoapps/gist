@@ -128,7 +128,6 @@
   }
   .skip-link:focus{ left:0; }
 
-  /* ---------- layout ---------- */
   .layout{
     display:grid;
     grid-template-columns:280px minmax(0,1fr);
@@ -139,7 +138,6 @@
     .layout{ grid-template-columns:1fr; }
   }
 
-  /* ---------- sidebar ---------- */
   .sidebar{
     position:sticky; top:0;
     align-self:start;
@@ -182,14 +180,6 @@
   }
   .theme-toggle:hover{ border-color:var(--border-strong); color:var(--text); }
 
-  .version-badge{
-    display:flex; align-items:center; justify-content:center;
-    width:100%; box-sizing:border-box;
-    background:var(--surface-2); border:1px solid var(--border); color:var(--text-muted);
-    height:2.1rem; padding:0 .6rem; border-radius:6px; font-size:.82rem;
-    font-family:inherit; letter-spacing:.02em;
-  }
-
   .sidebar-actions{ display:flex; gap:.5rem; flex-shrink:0; }
   .btn{
     display:inline-flex; align-items:center; justify-content:center;
@@ -223,12 +213,6 @@
   }
   .toc-num{ font-family:"JetBrains Mono",monospace; color:var(--text-muted); font-size:.78em; }
 
-  /* Every top-level row (plain or foldable) reserves the same 1.2rem
-     left gutter via .toc a's padding-left above, so text always starts
-     at the same x - the chevron below is drawn as an absolutely
-     positioned overlay inside that gutter, never as a layout sibling,
-     so it can't push a foldable row's text out of alignment with a
-     plain row's. */
   .toc-group summary{
     position:relative;
     list-style:none;
@@ -236,10 +220,7 @@
     border-radius:6px;
   }
   .toc-group summary::-webkit-details-marker{ display:none; }
-  /* A real, separately clickable element (not a ::before, which can't
-     receive its own click) - the row's <a> covers the full row width
-     for navigation, so this sits on top of just the 1.2rem gutter to
-     give the group its own toggle target independent of the link. */
+
   .toc-chevron{
     position:absolute;
     left:0; top:0;
@@ -280,7 +261,6 @@
   }
   .sidebar-foot a{ color:var(--text-muted); text-decoration:underline; text-underline-offset:2px; }
 
-  /* ---------- badges ---------- */
   .badge{
     display:inline-flex; align-items:center;
     font-family:"JetBrains Mono",monospace; font-size:.64rem; letter-spacing:.05em; text-transform:uppercase;
@@ -291,7 +271,6 @@
   .badge-none{ background:var(--badge-none-bg); color:var(--badge-none-text); }
   .badge-always{ background:var(--badge-always-bg); color:var(--badge-always-text); }
 
-  /* ---------- main content ---------- */
   .content{ padding:2.4rem clamp(1.2rem, 4vw, 3.2rem) 6rem; min-width:0; }
 
   .intro{ max-width:74ch; margin-bottom:2.6rem; }
@@ -372,11 +351,6 @@
   }
   .config-link a{ color:var(--accent-strong); font-weight:600; }
 
-  /* ---------- config reference: Minimal/Full toggle ---------- */
-  /* One pair of tabs drives two sibling .cfgref-pane elements (a field
-     table + a JSON example each) - switching tabs swaps both together,
-     since they're the same underlying config shown at two levels of
-     completeness, not two different things. */
   .cfgref{ margin:1.1rem 0 1.4rem; }
   .cfgref-tabs{ display:flex; gap:.4rem; margin-bottom:.7rem; }
   .cfgref-tab{
@@ -390,7 +364,6 @@
   .cfgref-pane .overview-table{ margin:0 0 1rem; }
   .cfgref-pane .code-block{ margin:0; }
 
-  /* ---------- code blocks ---------- */
   .code-block{
     background:var(--code-bg);
     border:1px solid var(--code-border);
@@ -433,7 +406,6 @@
     color:var(--text-muted); font-size:.86rem;
   }
 
-  /* hljs token colors, tuned against --code-bg */
   .hljs-keyword,.hljs-built_in,.hljs-type{ color:#7fd6c0; }
   .hljs-string{ color:#e3c07b; }
   .hljs-number,.hljs-literal{ color:#d99a7c; }
@@ -448,10 +420,9 @@
 <div class="layout">
   <nav class="sidebar" aria-label="Service sections">
     <div class="brand">
-      <span class="brand-kicker">gist-server</span>
+      <span class="brand-kicker">gist-server v1.0.1</span>
       <h1>Documentation</h1>
     </div>
-    <div class="version-badge" id="doc-version-badge">latest</div>
     <div class="sidebar-actions">
         <button class="btn" id="expand-all" type="button" title="Expand all">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="7 8 12 13 17 8"></polyline><polyline points="7 15 12 20 17 15"></polyline></svg>
@@ -3277,7 +3248,6 @@ func AttachEndpointHandlers() gist.Option {
     document.querySelectorAll("pre code.language-go, pre code.language-json, pre code.language-bash").forEach(function(el){ window.hljs.highlightElement(el); });
   }
 
-  // ---------- theme toggle: system -> light -> dark -> system ----------
   var root = document.documentElement;
   var THEME_KEY = "service-reference:theme";
   var toggleBtn = document.getElementById("theme-toggle");
@@ -3308,11 +3278,6 @@ func AttachEndpointHandlers() gist.Option {
     try{ window.localStorage.setItem(THEME_KEY, next); }catch(e){}
   });
 
-  // ---------- sidebar foldable groups ----------
-  // The row's <a> spans the full row width for navigation, which (per
-  // HTML's summary+link interaction) swallows clicks before the native
-  // details toggle fires - so the chevron gets its own explicit toggle,
-  // and clicking the label link expands the group it jumps into.
   Array.prototype.forEach.call(document.querySelectorAll(".toc-group"), function(details){
     var chevron = details.querySelector(":scope > summary > .toc-chevron");
     if(chevron){
@@ -3328,7 +3293,6 @@ func AttachEndpointHandlers() gist.Option {
     }
   });
 
-  // ---------- expand / collapse all ----------
   var sections = Array.prototype.slice.call(document.querySelectorAll(".doc-section > details"));
   document.getElementById("expand-all").addEventListener("click", function(){
     sections.forEach(function(d){ d.open = true; });
@@ -3337,7 +3301,6 @@ func AttachEndpointHandlers() gist.Option {
     sections.forEach(function(d){ d.open = false; });
   });
 
-  // ---------- config reference: Minimal/Full toggle ----------
   document.addEventListener("click", function(e){
     var tabBtn = e.target && e.target.closest ? e.target.closest(".cfgref-tab") : null;
     if(!tabBtn) return;
@@ -3352,7 +3315,6 @@ func AttachEndpointHandlers() gist.Option {
     });
   });
 
-  // ---------- reveal cfgref "full" content when a link jumps into it ----------
   document.addEventListener("click", function(e){
     var a = e.target && e.target.closest ? e.target.closest('a[href^="#"]') : null;
     if(!a) return;
@@ -3367,7 +3329,6 @@ func AttachEndpointHandlers() gist.Option {
     if(tab) tab.click();
   });
 
-  // ---------- copy buttons ----------
   document.addEventListener("click", function(e){
     var btn = e.target && e.target.closest ? e.target.closest(".copy-btn") : null;
     if(!btn) return;
@@ -3382,7 +3343,7 @@ func AttachEndpointHandlers() gist.Option {
         document.body.appendChild(ta); ta.focus(); ta.select();
         document.execCommand("copy");
         document.body.removeChild(ta);
-      }catch(err){ /* clipboard unavailable in this context */ }
+      }catch(err){  }
     }
     if(navigator.clipboard && navigator.clipboard.writeText){
       navigator.clipboard.writeText(text).catch(function(){ fallbackCopy(text); });
@@ -3395,7 +3356,6 @@ func AttachEndpointHandlers() gist.Option {
     btn._t = window.setTimeout(function(){ btn.textContent = "Copy"; btn.classList.remove("copied"); }, 1400);
   });
 
-  // ---------- scroll-spy for the sidebar TOC ----------
   var tocLinks = Array.prototype.slice.call(document.querySelectorAll("#toc a"));
   var linkByHref = {};
   tocLinks.forEach(function(a){ linkByHref[a.getAttribute("href")] = a; });
