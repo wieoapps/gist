@@ -561,21 +561,47 @@
         <thead><tr><th>#</th><th>Service</th><th>Surface</th></tr></thead>
         <tbody>
           <tr><td>1</td><td><a href="#s1">Logging</a></td><td><span class="badge badge-always">Always on</span></td></tr>
+                <!-- GENERATED:gist-api-server:SURFACE:BEGIN -->
           <tr><td>2</td><td><a href="#s2">gist-api-server</a></td><td><span class="badge badge-api">API</span></td></tr>
+                <!-- GENERATED:gist-api-server:SURFACE:END -->
+                <!-- GENERATED:gist-mysql-client:SURFACE:BEGIN -->
           <tr><td>3</td><td><a href="#s3">gist-mysql-client</a></td><td><span class="badge badge-api">API</span></td></tr>
+                <!-- GENERATED:gist-mysql-client:SURFACE:END -->
+                <!-- GENERATED:gist-postgres-client:SURFACE:BEGIN -->
           <tr><td>4</td><td><a href="#s4">gist-postgres-client</a></td><td><span class="badge badge-api">API</span></td></tr>
+                <!-- GENERATED:gist-postgres-client:SURFACE:END -->
+                <!-- GENERATED:gist-http-server:SURFACE:BEGIN -->
           <tr><td>5</td><td><a href="#s5">gist-http-server</a></td><td><span class="badge badge-config">Config only</span></td></tr>
+                <!-- GENERATED:gist-http-server:SURFACE:END -->
           <tr><td>6</td><td><a href="#s6">gist-auth</a></td><td><span class="badge badge-none">No API</span></td></tr>
           <tr><td>7</td><td><a href="#s7">gist-fixtures</a></td><td><span class="badge badge-api">API</span></td></tr>
+                <!-- GENERATED:gist-http-client:SURFACE:BEGIN -->
           <tr><td>8</td><td><a href="#s8">gist-http-client</a></td><td><span class="badge badge-api">API</span></td></tr>
+                <!-- GENERATED:gist-http-client:SURFACE:END -->
+                <!-- GENERATED:gist-elasticsearch-client:SURFACE:BEGIN -->
           <tr><td>9</td><td><a href="#s9">gist-elasticsearch-client</a></td><td><span class="badge badge-api">API</span></td></tr>
+                <!-- GENERATED:gist-elasticsearch-client:SURFACE:END -->
+                <!-- GENERATED:gist-google-cloud-storage-client:SURFACE:BEGIN -->
           <tr><td>10</td><td><a href="#s10">gist-google-cloud-storage-client</a></td><td><span class="badge badge-api">API</span></td></tr>
+                <!-- GENERATED:gist-google-cloud-storage-client:SURFACE:END -->
+                <!-- GENERATED:gist-scheduler:SURFACE:BEGIN -->
           <tr><td>11</td><td><a href="#s11">gist-scheduler</a></td><td><span class="badge badge-api">API</span></td></tr>
+                <!-- GENERATED:gist-scheduler:SURFACE:END -->
+                <!-- GENERATED:gist-state-machine:SURFACE:BEGIN -->
           <tr><td>12</td><td><a href="#s12">gist-state-machine</a></td><td><span class="badge badge-api">API</span></td></tr>
+                <!-- GENERATED:gist-state-machine:SURFACE:END -->
+                <!-- GENERATED:gist-redis-client:SURFACE:BEGIN -->
           <tr><td>13</td><td><a href="#s13">gist-redis-client</a></td><td><span class="badge badge-none">No API</span></td></tr>
+                <!-- GENERATED:gist-redis-client:SURFACE:END -->
+                <!-- GENERATED:gist-pub-sub-client:SURFACE:BEGIN -->
           <tr><td>14</td><td><a href="#s14">gist-pub-sub-client</a></td><td><span class="badge badge-none">No API</span></td></tr>
+                <!-- GENERATED:gist-pub-sub-client:SURFACE:END -->
+                <!-- GENERATED:gist-rabbit-mq-client:SURFACE:BEGIN -->
           <tr><td>15</td><td><a href="#s15">gist-rabbit-mq-client</a></td><td><span class="badge badge-api">API</span></td></tr>
+                <!-- GENERATED:gist-rabbit-mq-client:SURFACE:END -->
+                <!-- GENERATED:gist-load-balancer:SURFACE:BEGIN -->
           <tr><td>16</td><td><a href="#s16">gist-load-balancer</a></td><td><span class="badge badge-config">Config only</span></td></tr>
+                <!-- GENERATED:gist-load-balancer:SURFACE:END -->
           <tr><td>17</td><td><a href="#s17">gist-custom</a></td><td><span class="badge badge-api">API</span></td></tr>
         </tbody>
       </table>
@@ -729,17 +755,10 @@ logging.Error("charge failed", map[string]any{
       <details open>
         <summary><span class="toc-num">02</span><h2>gist-api-server</h2><span class="badge badge-api">API</span></summary>
         <div class="section-body">
-          <p>Public HTTP listener + endpoint registry. You declare routing/doc metadata in
-            <code>endpoints.json</code> (see <a href="#s2-endpoints-json">below</a>) and bind a Go
-            handler to each <code>id</code> separately, at startup, via <code>Attach</code>. An
-            <code>id</code> with no handler serves as 501 Unimplemented automatically, not a
-            startup error — declare the shape of an endpoint before it's real.</p>
-          <p>This instance's own listener is always plain HTTP — there's no
-            <code>protocol</code>/TLS config field, since the underlying <code>net.Listen</code>
-            is never wrapped in TLS. Front it with HTTPS via a reverse proxy if you need that;
-            <code>docs.servers[]</code> (in <strong>Full</strong> below) is exactly where you'd
-            document that proxy's own URL for the OpenAPI spec, independent of this listener's
-            own address.</p>
+                <!-- GENERATED:gist-api-server:INTRO:BEGIN -->
+          <p>Public HTTP listener + endpoint registry. You declare routing/doc metadata in <code>endpoints.json</code> (see below) and bind a Go handler to each <code>id</code> separately, at startup, via <code>Attach</code>. An <code>id</code> with no handler serves as 501 Unimplemented automatically, not a startup error — declare the shape of an endpoint before it's real.</p>
+          <p>This instance's own listener is always plain HTTP — there's no <code>protocol</code>/TLS config field, since the underlying <code>net.Listen</code> is never wrapped in TLS. Front it with HTTPS via a reverse proxy if you need that; <code>docs.servers[]</code> (in <strong>Full</strong> below) is exactly where you'd document that proxy's own URL for the OpenAPI spec, independent of this listener's own address.</p>
+                <!-- GENERATED:gist-api-server:INTRO:END -->
           <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-api-server">gist-api-server</a></div>
                 <!-- GENERATED:gist-api-server:BEGIN -->
           <div class="cfgref">
@@ -1043,13 +1062,9 @@ func AttachEndpointHandlers() gist.Option {
       <details open>
         <summary><span class="toc-num">03</span><h2>gist-mysql-client</h2><span class="badge badge-api">API</span></summary>
         <div class="section-body">
-          <p>MySQL connection pool with a generic repo layer (<code>Find</code>/<code>Save</code>/
-            <code>Update</code>/<code>Delete</code>), a transaction API, and a small condition/
-            sort DSL — not a raw-SQL client, not an ORM in the ActiveRecord sense.
-            <strong><a href="#s4">gist-postgres-client</a> (next) is API-identical</strong> — same
-            functions, same option/condition/sort types, same model tag vocabulary. Only the
-            package name (<code>gistmysqlclient</code> vs <code>gistpostgresclient</code>), the
-            injected field's underlying RPC connection, and error-message prefixes differ.</p>
+                <!-- GENERATED:gist-mysql-client:INTRO:BEGIN -->
+          <p>MySQL connection pool with a generic repo layer (<code>Find</code>/<code>Save</code>/<code>Update</code>/<code>Delete</code>), a transaction API, and a small condition/sort DSL — not a raw-SQL client, not an ORM in the ActiveRecord sense. <strong>gist-postgres-client (next) is API-identical</strong> — same functions, same option/condition/sort types, same model tag vocabulary. Only the package name (<code>gistmysqlclient</code> vs <code>gistpostgresclient</code>), the injected field's underlying RPC connection, and error-message prefixes differ.</p>
+                <!-- GENERATED:gist-mysql-client:INTRO:END -->
           <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-mysql-client-config">gist-mysql-client-config</a></div>
                 <!-- GENERATED:gist-mysql-client:BEGIN -->
           <div class="cfgref">
@@ -1287,13 +1302,9 @@ func (tr *Transaction) Rollback() error</code></pre>
       <details open>
         <summary><span class="toc-num">04</span><h2>gist-postgres-client</h2><span class="badge badge-api">API</span></summary>
         <div class="section-body">
-          <p>PostgreSQL connection pool with a generic repo layer (<code>Find</code>/<code>Save</code>/
-            <code>Update</code>/<code>Delete</code>), a transaction API, and a small condition/
-            sort DSL — not a raw-SQL client, not an ORM in the ActiveRecord sense.
-            <strong><a href="#s3">gist-mysql-client</a> (previous) is API-identical</strong> — same
-            functions, same option/condition/sort types, same model tag vocabulary. Only the
-            package name (<code>gistpostgresclient</code> vs <code>gistmysqlclient</code>), the
-            injected field's underlying RPC connection, and error-message prefixes differ.</p>
+                <!-- GENERATED:gist-postgres-client:INTRO:BEGIN -->
+          <p>PostgreSQL connection pool with a generic repo layer (<code>Find</code>/<code>Save</code>/<code>Update</code>/<code>Delete</code>), a transaction API, and a small condition/sort DSL — not a raw-SQL client, not an ORM in the ActiveRecord sense. <strong>gist-mysql-client (previous) is API-identical</strong> — same functions, same option/condition/sort types, same model tag vocabulary. Only the package name (<code>gistpostgresclient</code> vs <code>gistmysqlclient</code>), the injected field's underlying RPC connection, and error-message prefixes differ.</p>
+                <!-- GENERATED:gist-postgres-client:INTRO:END -->
           <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-postgres-client-config">gist-postgres-client-config</a></div>
                 <!-- GENERATED:gist-postgres-client:BEGIN -->
           <div class="cfgref">
@@ -1529,11 +1540,9 @@ func (tr *Transaction) Rollback() error</code></pre>
       <details open>
         <summary><span class="toc-num">05</span><h2>gist-http-server</h2><span class="badge badge-config">Config only</span></summary>
         <div class="section-body">
-          <p>Static file server. No client-side package exists — <code>www-files</code>,
-            <code>hostname</code>, <code>port</code> in config is the entire surface, with
-            nothing to call or hook into from Go. Point <code>www-files</code> at a directory
-            (e.g. generated invoice PDFs written there by another service) and it's served, full
-            stop.</p>
+                <!-- GENERATED:gist-http-server:INTRO:BEGIN -->
+          <p>Static file server. No client-side package exists — <code>www-files</code>, <code>hostname</code>, <code>port</code> in config is the entire surface, with nothing to call or hook into from Go. Point <code>www-files</code> at a directory (e.g. generated invoice PDFs written there by another service) and it's served, full stop.</p>
+                <!-- GENERATED:gist-http-server:INTRO:END -->
           <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-http-server-config">gist-http-server-config</a></div>
                 <!-- GENERATED:gist-http-server:BEGIN -->
           <div class="cfgref">
@@ -2803,9 +2812,9 @@ func (tr *Transaction) Rollback() error</code></pre>
       <details open>
         <summary><span class="toc-num">08</span><h2>gist-http-client</h2><span class="badge badge-api">API</span></summary>
         <div class="section-body">
-          <p>Outbound HTTP client — five verb-specific methods, not a <code>Do(Request{...})</code>
-            shape. <code>endpoint</code> is joined against the instance's configured
-            <code>base-url</code>; per-request behavior is typed options, one package per verb.</p>
+                <!-- GENERATED:gist-http-client:INTRO:BEGIN -->
+          <p>Outbound HTTP client — five verb-specific methods, not a <code>Do(Request{...})</code> shape. <code>endpoint</code> is joined against the instance's configured <code>base-url</code>; per-request behavior is typed options, one package per verb.</p>
+                <!-- GENERATED:gist-http-client:INTRO:END -->
           <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-http-client-config">gist-http-client-config</a></div>
                 <!-- GENERATED:gist-http-client:BEGIN -->
           <div class="cfgref">
@@ -2929,11 +2938,9 @@ json.Unmarshal(resp.Body, &charge)</code></pre>
       <details open>
         <summary><span class="toc-num">09</span><h2>gist-elasticsearch-client</h2><span class="badge badge-api">API</span></summary>
         <div class="section-body">
-          <p>Index + query one Elasticsearch cluster. Seven methods, all with a consistent
-            two-layer error model worth internalizing once: a transport error and a wire-level
-            error both surface as the returned <code>error</code> (wrapped
-            <code>"gistelasticsearchclient: &lt;op&gt;: %w"</code>); "not found" is never an error, it's
-            a <code>bool</code> return.</p>
+                <!-- GENERATED:gist-elasticsearch-client:INTRO:BEGIN -->
+          <p>Index + query one Elasticsearch cluster. Seven methods, all with a consistent two-layer error model worth internalizing once: a transport error and a wire-level error both surface as the returned <code>error</code> (wrapped <code>"gistelasticsearchclient: &lt;op&gt;: %w"</code>); "not found" is never an error, it's a <code>bool</code> return.</p>
+                <!-- GENERATED:gist-elasticsearch-client:INTRO:END -->
           <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-elasticsearch-client-config">gist-elasticsearch-client-config</a></div>
                 <!-- GENERATED:gist-elasticsearch-client:BEGIN -->
           <div class="cfgref">
@@ -3038,10 +3045,9 @@ for _, hit := range result.Hits {
       <details open>
         <summary><span class="toc-num">10</span><h2>gist-google-cloud-storage-client</h2><span class="badge badge-api">API</span></summary>
         <div class="section-body">
-          <p>Bucket + object CRUD against real GCS or a local emulator (<code>endpoint</code> in
-            config). <code>bucketID</code> in every method is the config's own <code>buckets</code>
-            map key (e.g. <code>"receipts"</code>), never the real GCS bucket name — that mapping
-            happens server-side, so the real name never appears in your code.</p>
+                <!-- GENERATED:gist-google-cloud-storage-client:INTRO:BEGIN -->
+          <p>Bucket + object CRUD against real GCS or a local emulator (<code>endpoint</code> in config). <code>bucketID</code> in every method is the config's own <code>buckets</code> map key (e.g. <code>"receipts"</code>), never the real GCS bucket name — that mapping happens server-side, so the real name never appears in your code.</p>
+                <!-- GENERATED:gist-google-cloud-storage-client:INTRO:END -->
           <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-google-cloud-storage-client-config">gist-google-cloud-storage-client-config</a></div>
                 <!-- GENERATED:gist-google-cloud-storage-client:BEGIN -->
           <div class="cfgref">
@@ -3150,8 +3156,9 @@ func (s *Service) DeleteObject(ctx, bucketID, fileName string) (found bool, err 
       <details open>
         <summary><span class="toc-num">11</span><h2>gist-scheduler</h2><span class="badge badge-api">API</span></summary>
         <div class="section-body">
-          <p>A cron job gist-server runs internally, calling back into your process on every
-            tick.</p>
+                <!-- GENERATED:gist-scheduler:INTRO:BEGIN -->
+          <p>A cron job gist-server runs internally, calling back into your process on every tick.</p>
+                <!-- GENERATED:gist-scheduler:INTRO:END -->
           <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-scheduler-config">gist-scheduler-config</a></div>
                 <!-- GENERATED:gist-scheduler:BEGIN -->
           <div class="cfgref">
@@ -3245,10 +3252,9 @@ func (s *Service) DeleteObject(ctx, bucketID, fileName string) (found bool, err 
       <details open>
         <summary><span class="toc-num">12</span><h2>gist-state-machine</h2><span class="badge badge-api">API</span></summary>
         <div class="section-body">
-          <p>A stateless transition validator: given a current state and a trigger name, it
-            checks a transitions graph loaded from <code>transitions-file</code> and either
-            allows or rejects the move. It holds no state of its own — persisting the object is
-            entirely your responsibility, handled in the trigger's own callback.</p>
+                <!-- GENERATED:gist-state-machine:INTRO:BEGIN -->
+          <p>A stateless transition validator: given a current state and a trigger name, it checks a transitions graph loaded from <code>transitions-file</code> and either allows or rejects the move. It holds no state of its own — persisting the object is entirely your responsibility, handled in the trigger's own callback.</p>
+                <!-- GENERATED:gist-state-machine:INTRO:END -->
           <div class="config-link">Config, including the transitions-file format: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-state-machine-config">gist-state-machine-config</a></div>
                 <!-- GENERATED:gist-state-machine:BEGIN -->
           <div class="cfgref">
@@ -3378,11 +3384,9 @@ err := giststatemachine.Transition(ctx, sg.OrderLifecycle, "approve", &order)</c
       <details open>
         <summary><span class="toc-num">13</span><h2>gist-redis-client</h2><span class="badge badge-none">No API</span></summary>
         <div class="section-body">
-          <p>No client-side API — no injectable <code>Service</code> type, no package under
-            <code>gist/services/</code> at all, confirmed by grepping the whole SDK tree. Strictly
-            gist-server-internal: it opens a connection and pings it at startup, then nothing your
-            own code can call — there is currently no cache-set/get exposed. Configuring it gets
-            you a green line in the boot log and nothing more.</p>
+                <!-- GENERATED:gist-redis-client:INTRO:BEGIN -->
+          <p>No client-side API — no injectable <code>Service</code> type, no package under <code>gist/services/</code> at all, confirmed by grepping the whole SDK tree. Strictly gist-server-internal: it opens a connection and pings it at startup, then nothing your own code can call — there is currently no cache-set/get exposed. Configuring it gets you a green line in the boot log and nothing more.</p>
+                <!-- GENERATED:gist-redis-client:INTRO:END -->
           <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-redis-client-config">gist-redis-client-config</a></div>
                 <!-- GENERATED:gist-redis-client:BEGIN -->
           <div class="cfgref">
@@ -3458,11 +3462,9 @@ err := giststatemachine.Transition(ctx, sg.OrderLifecycle, "approve", &order)</c
       <details open>
         <summary><span class="toc-num">14</span><h2>gist-pub-sub-client</h2><span class="badge badge-none">No API</span></summary>
         <div class="section-body">
-          <p>Also no client-side API — same story as <code>gist-redis-client</code>: a
-            connectivity/readiness check against a GCP Pub/Sub endpoint, nothing your own code can
-            call, no publish/subscribe exposed today. If <code>orderflow</code> needs a real
-            message bus, that's <code>gist-rabbit-mq-client</code> (next section), not this one —
-            <code>gist-pub-sub-client</code> only ever proves reachability.</p>
+                <!-- GENERATED:gist-pub-sub-client:INTRO:BEGIN -->
+          <p>Also no client-side API — same story as <code>gist-redis-client</code>: a connectivity/readiness check against a GCP Pub/Sub endpoint, nothing your own code can call, no publish/subscribe exposed today. If <code>orderflow</code> needs a real message bus, that's <code>gist-rabbit-mq-client</code> (next section), not this one — <code>gist-pub-sub-client</code> only ever proves reachability.</p>
+                <!-- GENERATED:gist-pub-sub-client:INTRO:END -->
           <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-pub-sub-client-config">gist-pub-sub-client-config</a></div>
                 <!-- GENERATED:gist-pub-sub-client:BEGIN -->
           <div class="cfgref">
@@ -3532,8 +3534,9 @@ err := giststatemachine.Transition(ctx, sg.OrderLifecycle, "approve", &order)</c
       <details open>
         <summary><span class="toc-num">15</span><h2>gist-rabbit-mq-client</h2><span class="badge badge-api">API</span></summary>
         <div class="section-body">
-          <p>A real AMQP 0-9-1 client connection — the one messaging service in this list
-            gist-server actually operates for you, not just checks the health of.</p>
+                <!-- GENERATED:gist-rabbit-mq-client:INTRO:BEGIN -->
+          <p>A real AMQP 0-9-1 client connection — the one messaging service in this list gist-server actually operates for you, not just checks the health of.</p>
+                <!-- GENERATED:gist-rabbit-mq-client:INTRO:END -->
           <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-rabbit-mq-client-config">gist-rabbit-mq-client-config</a></div>
                 <!-- GENERATED:gist-rabbit-mq-client:BEGIN -->
           <div class="cfgref">
@@ -3654,20 +3657,9 @@ func RegisterRabbitMQConsumer[dep any](
       <details open>
         <summary><span class="toc-num">16</span><h2>gist-load-balancer</h2><span class="badge badge-config">Config only</span></summary>
         <div class="section-body">
-          <p>A reverse-proxying round-robin load balancer in front of a fixed list of backend
-            URLs — config-only, like <code>gist-http-server</code>: nothing to call from your own
-            code, you just point config at it and traffic gets distributed. Modeled on
-            <a href="https://dev.to/vivekalhat/building-a-simple-load-balancer-in-go-70d">this
-            dev.to article</a> (round robin + periodic HTTP HEAD health checks over
-            <code>httputil.ReverseProxy</code>), with a per-instance <code>health-check-path</code>
-            borrowed from <a href="https://github.com/Abdulrahman-Tayara/go-lb">go-lb</a>'s
-            per-server health endpoint. go-lb's other features (weighted/sticky/least-connections
-            strategies, TLS, rate limiting, content-based routing) are deliberately not ported —
-            round robin covers the actual use case, TLS conflicts with
-            <code>gist-api-server</code>'s own "always plain HTTP, front it with a reverse proxy"
-            stance (this service follows the same rule — no <code>protocol</code>/TLS field here
-            either), and content-based routing already belongs to <code>gist-api-server</code>,
-            not this service.</p>
+                <!-- GENERATED:gist-load-balancer:INTRO:BEGIN -->
+          <p>A reverse-proxying round-robin load balancer in front of a fixed list of backend URLs — config-only, like <code>gist-http-server</code>: nothing to call from your own code, you just point config at it and traffic gets distributed. Modeled on <a href="https://dev.to/vivekalhat/building-a-simple-load-balancer-in-go-70d">this dev.to article</a> (round robin + periodic HTTP HEAD health checks over <code>httputil.ReverseProxy</code>), with a per-instance <code>health-check-path</code> borrowed from <a href="https://github.com/Abdulrahman-Tayara/go-lb">go-lb</a>'s per-server health endpoint. go-lb's other features (weighted/sticky/least-connections strategies, TLS, rate limiting, content-based routing) are deliberately not ported — round robin covers the actual use case, TLS conflicts with <code>gist-api-server</code>'s own "always plain HTTP, front it with a reverse proxy" stance (this service follows the same rule — no <code>protocol</code>/TLS field here either), and content-based routing already belongs to <code>gist-api-server</code>, not this service.</p>
+                <!-- GENERATED:gist-load-balancer:INTRO:END -->
           <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-load-balancer-config">gist-load-balancer-config</a></div>
                 <!-- GENERATED:gist-load-balancer:BEGIN -->
           <div class="cfgref">
