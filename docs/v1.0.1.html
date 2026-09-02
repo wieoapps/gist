@@ -182,15 +182,13 @@
   }
   .theme-toggle:hover{ border-color:var(--border-strong); color:var(--text); }
 
-  .version-select{
-    display:block; width:100%; box-sizing:border-box;
-    background:var(--surface); border:1px solid var(--border); color:var(--text);
+  .version-badge{
+    display:flex; align-items:center; justify-content:center;
+    width:100%; box-sizing:border-box;
+    background:var(--surface-2); border:1px solid var(--border); color:var(--text-muted);
     height:2.1rem; padding:0 .6rem; border-radius:6px; font-size:.82rem;
-    font-family:inherit; cursor:pointer;
-    transition:border-color .15s ease, color .15s ease;
+    font-family:inherit; letter-spacing:.02em;
   }
-  .version-select:hover{ border-color:var(--accent); color:var(--accent-strong); }
-  .version-select:focus-visible{ outline:2px solid var(--accent); outline-offset:2px; }
 
   .sidebar-actions{ display:flex; gap:.5rem; flex-shrink:0; }
   .btn{
@@ -453,10 +451,7 @@
       <span class="brand-kicker">gist-server</span>
       <h1>Documentation</h1>
     </div>
-    <select class="version-select" id="doc-version-select" aria-label="Documentation version"
-      onchange="if(this.value) location.href = this.value;">
-      <option value="index.html">latest (current)</option>
-    </select>
+    <div class="version-badge" id="doc-version-badge">latest</div>
     <div class="sidebar-actions">
         <button class="btn" id="expand-all" type="button" title="Expand all">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="7 8 12 13 17 8"></polyline><polyline points="7 15 12 20 17 15"></polyline></svg>
@@ -1946,85 +1941,6 @@ func AttachEndpointHandlers() gist.Option {
   if(window.hljs){
     document.querySelectorAll("pre code.language-go, pre code.language-json, pre code.language-bash").forEach(function(el){ window.hljs.highlightElement(el); });
   }
-
-  // ---------- version dropdown: lists whatever vX.Y.Z.html snapshots
-  // actually exist in this GitHub Pages repo right now, fetched from
-  // GitHub's Contents API (Pages itself has no directory-listing
-  // endpoint) - release.sh only has to drop a new file in the repo, this
-  // page never needs its own <option> list edited or regenerated.
-  // Cached in localStorage for an hour: that API is capped at 60
-  // unauthenticated requests/hour per visitor IP, and a docs page with
-  // any real traffic would burn through that on page-load alone
-  // otherwise.
-  (function(){
-    var sel = document.getElementById("doc-version-select");
-    if(!sel) return;
-    var file = location.pathname.split("/").pop() || "index.html";
-
-    function selectByValue(value){
-      for (var i = 0; i < sel.options.length; i++){
-        if (sel.options[i].value === value){ sel.selectedIndex = i; return true; }
-      }
-      return false;
-    }
-    selectByValue(file);
-
-    // Descending numeric compare on the vN.N.N in each filename - a
-    // plain string sort would put "v1.0.10" before "v1.0.9".
-    function compareVersionsDesc(a, b){
-      var na = a.match(/(\d+)\.(\d+)\.(\d+)/), nb = b.match(/(\d+)\.(\d+)\.(\d+)/);
-      if (!na || !nb) return 0;
-      for (var i = 1; i <= 3; i++){
-        var diff = parseInt(nb[i], 10) - parseInt(na[i], 10);
-        if (diff !== 0) return diff;
-      }
-      return 0;
-    }
-
-    function populate(names){
-      while (sel.options.length > 1) sel.remove(1);
-      names.forEach(function(name){
-        var opt = document.createElement("option");
-        opt.value = name;
-        opt.textContent = name.replace(/\.html$/, "");
-        sel.appendChild(opt);
-      });
-      selectByValue(file);
-    }
-
-    var CACHE_KEY = "gist-docs:versions:index:v1";
-    var CACHE_TTL_MS = 60 * 60 * 1000;
-
-    function readCache(){
-      try {
-        var raw = localStorage.getItem(CACHE_KEY);
-        if (!raw) return null;
-        var cached = JSON.parse(raw);
-        if (Date.now() - cached.time > CACHE_TTL_MS) return null;
-        return cached.names;
-      } catch (e) { return null; }
-    }
-    function writeCache(names){
-      try { localStorage.setItem(CACHE_KEY, JSON.stringify({ time: Date.now(), names: names })); } catch (e) {}
-    }
-
-    var cached = readCache();
-    if (cached) populate(cached);
-
-    fetch("https://api.github.com/repos/wieoapps/gist/contents/docs")
-      .then(function(r){ return r.ok ? r.json() : Promise.reject(r.status); })
-      .then(function(items){
-        var names = items
-          .map(function(it){ return it.name; })
-          .filter(function(name){ return /^v\d+\.\d+\.\d+\.html$/.test(name); })
-          .sort(compareVersionsDesc);
-        writeCache(names);
-        populate(names);
-      })
-      .catch(function(err){
-        console.warn("gist-server docs: could not load the version list from GitHub", err);
-      });
-  })();
 
   // ---------- theme toggle: system -> light -> dark -> system ----------
   var root = document.documentElement;
