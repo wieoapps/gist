@@ -561,21 +561,47 @@
         <thead><tr><th>#</th><th>Service</th><th>Surface</th></tr></thead>
         <tbody>
           <tr><td>1</td><td><a href="#s1">Logging</a></td><td><span class="badge badge-always">Always on</span></td></tr>
+                <!-- GENERATED:gist-api-server:SURFACE:BEGIN -->
           <tr><td>2</td><td><a href="#s2">gist-api-server</a></td><td><span class="badge badge-api">API</span></td></tr>
+                <!-- GENERATED:gist-api-server:SURFACE:END -->
+                <!-- GENERATED:gist-mysql-client:SURFACE:BEGIN -->
           <tr><td>3</td><td><a href="#s3">gist-mysql-client</a></td><td><span class="badge badge-api">API</span></td></tr>
+                <!-- GENERATED:gist-mysql-client:SURFACE:END -->
+                <!-- GENERATED:gist-postgres-client:SURFACE:BEGIN -->
           <tr><td>4</td><td><a href="#s4">gist-postgres-client</a></td><td><span class="badge badge-api">API</span></td></tr>
+                <!-- GENERATED:gist-postgres-client:SURFACE:END -->
+                <!-- GENERATED:gist-http-server:SURFACE:BEGIN -->
           <tr><td>5</td><td><a href="#s5">gist-http-server</a></td><td><span class="badge badge-config">Config only</span></td></tr>
+                <!-- GENERATED:gist-http-server:SURFACE:END -->
           <tr><td>6</td><td><a href="#s6">gist-auth</a></td><td><span class="badge badge-none">No API</span></td></tr>
           <tr><td>7</td><td><a href="#s7">gist-fixtures</a></td><td><span class="badge badge-api">API</span></td></tr>
+                <!-- GENERATED:gist-http-client:SURFACE:BEGIN -->
           <tr><td>8</td><td><a href="#s8">gist-http-client</a></td><td><span class="badge badge-api">API</span></td></tr>
+                <!-- GENERATED:gist-http-client:SURFACE:END -->
+                <!-- GENERATED:gist-elasticsearch-client:SURFACE:BEGIN -->
           <tr><td>9</td><td><a href="#s9">gist-elasticsearch-client</a></td><td><span class="badge badge-api">API</span></td></tr>
+                <!-- GENERATED:gist-elasticsearch-client:SURFACE:END -->
+                <!-- GENERATED:gist-google-cloud-storage-client:SURFACE:BEGIN -->
           <tr><td>10</td><td><a href="#s10">gist-google-cloud-storage-client</a></td><td><span class="badge badge-api">API</span></td></tr>
+                <!-- GENERATED:gist-google-cloud-storage-client:SURFACE:END -->
+                <!-- GENERATED:gist-scheduler:SURFACE:BEGIN -->
           <tr><td>11</td><td><a href="#s11">gist-scheduler</a></td><td><span class="badge badge-api">API</span></td></tr>
+                <!-- GENERATED:gist-scheduler:SURFACE:END -->
+                <!-- GENERATED:gist-state-machine:SURFACE:BEGIN -->
           <tr><td>12</td><td><a href="#s12">gist-state-machine</a></td><td><span class="badge badge-api">API</span></td></tr>
+                <!-- GENERATED:gist-state-machine:SURFACE:END -->
+                <!-- GENERATED:gist-redis-client:SURFACE:BEGIN -->
           <tr><td>13</td><td><a href="#s13">gist-redis-client</a></td><td><span class="badge badge-none">No API</span></td></tr>
+                <!-- GENERATED:gist-redis-client:SURFACE:END -->
+                <!-- GENERATED:gist-pub-sub-client:SURFACE:BEGIN -->
           <tr><td>14</td><td><a href="#s14">gist-pub-sub-client</a></td><td><span class="badge badge-none">No API</span></td></tr>
+                <!-- GENERATED:gist-pub-sub-client:SURFACE:END -->
+                <!-- GENERATED:gist-rabbit-mq-client:SURFACE:BEGIN -->
           <tr><td>15</td><td><a href="#s15">gist-rabbit-mq-client</a></td><td><span class="badge badge-api">API</span></td></tr>
+                <!-- GENERATED:gist-rabbit-mq-client:SURFACE:END -->
+                <!-- GENERATED:gist-load-balancer:SURFACE:BEGIN -->
           <tr><td>16</td><td><a href="#s16">gist-load-balancer</a></td><td><span class="badge badge-config">Config only</span></td></tr>
+                <!-- GENERATED:gist-load-balancer:SURFACE:END -->
           <tr><td>17</td><td><a href="#s17">gist-custom</a></td><td><span class="badge badge-api">API</span></td></tr>
         </tbody>
       </table>
@@ -729,18 +755,12 @@ logging.Error("charge failed", map[string]any{
       <details open>
         <summary><span class="toc-num">02</span><h2>gist-api-server</h2><span class="badge badge-api">API</span></summary>
         <div class="section-body">
-          <p>Public HTTP listener + endpoint registry. You declare routing/doc metadata in
-            <code>endpoints.json</code> (see <a href="#s2-endpoints-json">below</a>) and bind a Go
-            handler to each <code>id</code> separately, at startup, via <code>Attach</code>. An
-            <code>id</code> with no handler serves as 501 Unimplemented automatically, not a
-            startup error — declare the shape of an endpoint before it's real.</p>
-          <p>This instance's own listener is always plain HTTP — there's no
-            <code>protocol</code>/TLS config field, since the underlying <code>net.Listen</code>
-            is never wrapped in TLS. Front it with HTTPS via a reverse proxy if you need that;
-            <code>docs.servers[]</code> (in <strong>Full</strong> below) is exactly where you'd
-            document that proxy's own URL for the OpenAPI spec, independent of this listener's
-            own address.</p>
+                <!-- GENERATED:gist-api-server:INTRO:BEGIN -->
+          <p>Public HTTP listener + endpoint registry. You declare routing/doc metadata in <code>endpoints.json</code> (see below) and bind a Go handler to each <code>id</code> separately, at startup, via <code>Attach</code>. An <code>id</code> with no handler serves as 501 Unimplemented automatically, not a startup error — declare the shape of an endpoint before it's real.</p>
+          <p>This instance's own listener is always plain HTTP — there's no <code>protocol</code>/TLS config field, since the underlying <code>net.Listen</code> is never wrapped in TLS. Front it with HTTPS via a reverse proxy if you need that; <code>docs.servers[]</code> (in <strong>Full</strong> below) is exactly where you'd document that proxy's own URL for the OpenAPI spec, independent of this listener's own address.</p>
+                <!-- GENERATED:gist-api-server:INTRO:END -->
           <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-api-server">gist-api-server</a></div>
+                <!-- GENERATED:gist-api-server:BEGIN -->
           <div class="cfgref">
               <div class="cfgref-tabs">
                 <button type="button" class="cfgref-tab is-active" data-mode="minimal">Minimal</button>
@@ -751,11 +771,11 @@ logging.Error("charge failed", map[string]any{
                 <table class="overview-table">
                   <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
                   <tbody>
-                  <tr><td><code>id</code></td><td>string</td><td>Unique instance ID; endpoint handlers register against it via <code>Attach</code>.</td></tr>
-                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely.</td></tr>
+                  <tr><td><code>id</code></td><td>string</td><td>Unique instance ID; endpoint handlers register against it via <code>gistapiserver.Attach</code>.</td></tr>
+                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely (no listener started).</td></tr>
                   <tr><td><code>hostname</code></td><td>string</td><td>Bind address for the HTTP listener.</td></tr>
                   <tr><td><code>port</code></td><td>int</td><td>Bind port for the HTTP listener.</td></tr>
-                  <tr><td><code>endpoints-file</code></td><td>string</td><td>Path to the endpoints JSON file loaded into <code>Endpoints</code>.</td></tr>
+                  <tr><td><code>endpoints-file</code></td><td>string</td><td>Path to the endpoints JSON file (route/doc metadata) loaded into <code>Endpoints</code>.</td></tr>
                   </tbody>
                 </table>
                 </div>
@@ -781,21 +801,21 @@ logging.Error("charge failed", map[string]any{
                   <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely (no listener started).</td></tr>
                   <tr><td><code>delayed-start</code></td><td>int | string</td><td>Seconds (or duration string) to wait/delay before starting this instance.</td></tr>
                   <tr><td><code>wait-for</code></td><td>[]string</td><td>IDs of other services this instance must wait to become ready before starting.</td></tr>
-                  <tr><td><code>api-key</code></td><td>string</td><td>If set, requires clients to send this value in the <code>x-api-key</code> header on every request.</td></tr>
-                  <tr><td><code>auths</code></td><td><a href="#s2-authconf">[]AuthConf</a></td><td>Catalog of JWT auth schemes endpoints can reference by <code>token-type</code>.</td></tr>
-                  <tr><td><code>description</code></td><td>string</td><td>API description shown in the OpenAPI/docs schema.</td></tr>
-                  <tr><td><code>docs</code></td><td><a href="#s2-docs">Docs</a></td><td>OpenAPI documentation UI settings.</td></tr>
-                  <tr><td><code>endpoints-file</code></td><td>string</td><td>Path to the endpoints JSON file (route/doc metadata) loaded into <code>Endpoints</code>.</td></tr>
-                  <tr><td><code>headers</code></td><td>map[string]string</td><td>Static response headers added to every response.</td></tr>
-                  <tr><td><code>hostname</code></td><td>string</td><td>Bind address for the HTTP listener.</td></tr>
-                  <tr><td><code>middlewares</code></td><td>[]string</td><td>Instance-wide middleware names applied to every endpoint (e.g. <code>gzip</code>).</td></tr>
-                  <tr><td><code>ping-endpoint</code></td><td>string</td><td>Path that serves a trivial liveness/heartbeat response (skipped if empty or <code>/</code>).</td></tr>
-                  <tr><td><code>port</code></td><td>int</td><td>Bind port for the HTTP listener.</td></tr>
-                  <tr><td><code>prepend-version-to-path</code></td><td>bool</td><td>If <code>true</code>, routes are mounted at <code>/v{version}{path}</code> instead of <code>{path}</code>.</td></tr>
-                  <tr><td><code>rate-limiter</code></td><td>int</td><td>Max requests allowed before responses are rate-limited; <code>0</code> disables it.</td></tr>
-                  <tr><td><code>timeouts</code></td><td><a href="#s2-timeouts">Timeouts</a></td><td>Server read/write/idle timeouts (<code>read</code>/<code>write</code>/<code>idle</code>, each int | string).</td></tr>
                   <tr><td><code>title</code></td><td>string</td><td>API title shown in the OpenAPI/docs schema.</td></tr>
+                  <tr><td><code>description</code></td><td>string</td><td>API description shown in the OpenAPI/docs schema.</td></tr>
                   <tr><td><code>version</code></td><td><a href="#s2-version">Version</a></td><td>API version (<code>ma</code>/<code>mi</code>/<code>pa</code>) shown as <code>vMA.MI.PA</code> in docs.</td></tr>
+                  <tr><td><code>prepend-version-to-path</code></td><td>bool</td><td>If <code>true</code>, routes are mounted at <code>/v{version}{path}</code> instead of <code>{path}</code>.</td></tr>
+                  <tr><td><code>hostname</code></td><td>string</td><td>Bind address for the HTTP listener.</td></tr>
+                  <tr><td><code>port</code></td><td>int</td><td>Bind port for the HTTP listener.</td></tr>
+                  <tr><td><code>timeouts</code></td><td><a href="#s2-timeouts">Timeouts</a></td><td>Server read/write/idle timeouts (<code>read</code>/<code>write</code>/<code>idle</code>, each int | string).</td></tr>
+                  <tr><td><code>headers</code></td><td>map[string]string</td><td>Static response headers added to every response.</td></tr>
+                  <tr><td><code>api-key</code></td><td>string</td><td>If set, requires clients to send this value in the <code>x-api-key</code> header on every request.</td></tr>
+                  <tr><td><code>rate-limiter</code></td><td>int</td><td>Max requests allowed before responses are rate-limited; <code>0</code> disables it.</td></tr>
+                  <tr><td><code>ping-endpoint</code></td><td>string</td><td>Path that serves a trivial liveness/heartbeat response (skipped if empty or <code>/</code>).</td></tr>
+                  <tr><td><code>endpoints-file</code></td><td>string</td><td>Path to the endpoints JSON file (route/doc metadata) loaded into <code>Endpoints</code>.</td></tr>
+                  <tr><td><code>middlewares</code></td><td>[]string</td><td>Instance-wide middleware names applied to every endpoint (e.g. <code>gzip</code>).</td></tr>
+                  <tr><td><code>auths</code></td><td><a href="#s2-authconf">[]AuthConf</a></td><td>Catalog of JWT auth schemes endpoints can reference by <code>token-type</code>.</td></tr>
+                  <tr><td><code>docs</code></td><td><a href="#s2-docs">Docs</a></td><td>OpenAPI documentation UI settings.</td></tr>
                   </tbody>
                 </table>
                 </div>
@@ -807,7 +827,29 @@ logging.Error("charge failed", map[string]any{
     "enabled": true,
     "delayed-start": "5s",
     "wait-for": ["orders-db"],
+    "title": "orderflow API",
+    "description": "Order processing API for orderflow.",
+    "version": {
+      "ma": 1,
+      "mi": 0,
+      "pa": 0
+    },
+    "prepend-version-to-path": true,
+    "hostname": "0.0.0.0",
+    "port": 8080,
+    "timeouts": {
+      "read": 10,
+      "write": 10,
+      "idle": 5
+    },
+    "headers": {
+      "X-Service": "orderflow-api"
+    },
     "api-key": "orderflow-internal-key",
+    "rate-limiter": 100,
+    "ping-endpoint": "/ping",
+    "endpoints-file": "./config/endpoints.json",
+    "middlewares": ["gzip"],
     "auths": [
       {
         "environment": "prod",
@@ -818,7 +860,6 @@ logging.Error("charge failed", map[string]any{
         "max-age": 3600
       }
     ],
-    "description": "Order processing API for orderflow.",
     "docs": {
       "enabled": true,
       "ui": "scalar",
@@ -834,22 +875,32 @@ logging.Error("charge failed", map[string]any{
       "tag-unimplemented-endpoints": true,
       "tag-mockable-endpoints": true,
       "enforce-example-data": true
-    },
-    "endpoints-file": "./config/endpoints.json",
-    "headers": { "X-Service": "orderflow-api" },
-    "hostname": "0.0.0.0",
-    "middlewares": ["gzip"],
-    "ping-endpoint": "/ping",
-    "port": 8080,
-    "prepend-version-to-path": true,
-    "rate-limiter": 100,
-    "timeouts": { "read": 10, "write": 10, "idle": 5 },
-    "title": "orderflow API",
-    "version": { "ma": 1, "mi": 0, "pa": 0 }
+    }
   }
 ]</code></pre>
                 </div>
-
+                <h4 id="s2-version">version (Version)</h4>
+                <div class="table-scroll">
+                <table class="overview-table">
+                  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                  <tbody>
+                  <tr><td><code>ma</code></td><td>int</td><td>Major version.</td></tr>
+                  <tr><td><code>mi</code></td><td>int</td><td>Minor version.</td></tr>
+                  <tr><td><code>pa</code></td><td>int</td><td>Patch version.</td></tr>
+                  </tbody>
+                </table>
+                </div>
+                <h4 id="s2-timeouts">timeouts (Timeouts)</h4>
+                <div class="table-scroll">
+                <table class="overview-table">
+                  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                  <tbody>
+                  <tr><td><code>read</code></td><td>int | string</td><td>Max seconds (or duration string) to read an incoming request.</td></tr>
+                  <tr><td><code>write</code></td><td>int | string</td><td>Max seconds (or duration string) to write a response.</td></tr>
+                  <tr><td><code>idle</code></td><td>int | string</td><td>Max seconds (or duration string) a keep-alive connection can stay idle.</td></tr>
+                  </tbody>
+                </table>
+                </div>
                 <h4 id="s2-authconf">auths[] (AuthConf)</h4>
                 <div class="table-scroll">
                 <table class="overview-table">
@@ -864,31 +915,6 @@ logging.Error("charge failed", map[string]any{
                   </tbody>
                 </table>
                 </div>
-
-                <h4 id="s2-version">version (Version)</h4>
-                <div class="table-scroll">
-                <table class="overview-table">
-                  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
-                  <tbody>
-                  <tr><td><code>ma</code></td><td>int</td><td>Major version.</td></tr>
-                  <tr><td><code>mi</code></td><td>int</td><td>Minor version.</td></tr>
-                  <tr><td><code>pa</code></td><td>int</td><td>Patch version.</td></tr>
-                  </tbody>
-                </table>
-                </div>
-
-                <h4 id="s2-timeouts">timeouts (Timeouts)</h4>
-                <div class="table-scroll">
-                <table class="overview-table">
-                  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
-                  <tbody>
-                  <tr><td><code>read</code></td><td>int | string</td><td>Max seconds (or duration string) to read an incoming request.</td></tr>
-                  <tr><td><code>write</code></td><td>int | string</td><td>Max seconds (or duration string) to write a response.</td></tr>
-                  <tr><td><code>idle</code></td><td>int | string</td><td>Max seconds (or duration string) a keep-alive connection can stay idle.</td></tr>
-                  </tbody>
-                </table>
-                </div>
-
                 <h4 id="s2-docs">docs (Docs)</h4>
                 <div class="table-scroll">
                 <table class="overview-table">
@@ -904,7 +930,6 @@ logging.Error("charge failed", map[string]any{
                   </tbody>
                 </table>
                 </div>
-
                 <h4 id="s2-server">docs.servers[] (Server)</h4>
                 <div class="table-scroll">
                 <table class="overview-table">
@@ -917,7 +942,6 @@ logging.Error("charge failed", map[string]any{
                   </tbody>
                 </table>
                 </div>
-
                 <h4 id="s2-endpoints-json">endpoints.json</h4>
           <p>The file <code>endpoints-file</code> points at is a JSON array — one entry per
             route, matched to a real handler at startup by <code>id</code>. An <code>id</code>
@@ -1028,7 +1052,8 @@ func AttachEndpointHandlers() gist.Option {
             <code>.WithMessage(fmt string, values ...any) ExpectedError</code> and
             <code>.WithoutMessage()</code>.</p>
               </div>
-            </div>
+          </div>
+                <!-- GENERATED:gist-api-server:END -->
         </div>
       </details>
     </section>
@@ -1037,14 +1062,11 @@ func AttachEndpointHandlers() gist.Option {
       <details open>
         <summary><span class="toc-num">03</span><h2>gist-mysql-client</h2><span class="badge badge-api">API</span></summary>
         <div class="section-body">
-          <p>MySQL connection pool with a generic repo layer (<code>Find</code>/<code>Save</code>/
-            <code>Update</code>/<code>Delete</code>), a transaction API, and a small condition/
-            sort DSL — not a raw-SQL client, not an ORM in the ActiveRecord sense.
-            <strong><a href="#s4">gist-postgres-client</a> (next) is API-identical</strong> — same
-            functions, same option/condition/sort types, same model tag vocabulary. Only the
-            package name (<code>gistmysqlclient</code> vs <code>gistpostgresclient</code>), the
-            injected field's underlying RPC connection, and error-message prefixes differ.</p>
+                <!-- GENERATED:gist-mysql-client:INTRO:BEGIN -->
+          <p>MySQL connection pool with a generic repo layer (<code>Find</code>/<code>Save</code>/<code>Update</code>/<code>Delete</code>), a transaction API, and a small condition/sort DSL — not a raw-SQL client, not an ORM in the ActiveRecord sense. <strong>gist-postgres-client (next) is API-identical</strong> — same functions, same option/condition/sort types, same model tag vocabulary. Only the package name (<code>gistmysqlclient</code> vs <code>gistpostgresclient</code>), the injected field's underlying RPC connection, and error-message prefixes differ.</p>
+                <!-- GENERATED:gist-mysql-client:INTRO:END -->
           <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-mysql-client-config">gist-mysql-client-config</a></div>
+                <!-- GENERATED:gist-mysql-client:BEGIN -->
           <div class="cfgref">
               <div class="cfgref-tabs">
                 <button type="button" class="cfgref-tab is-active" data-mode="minimal">Minimal</button>
@@ -1056,12 +1078,12 @@ func AttachEndpointHandlers() gist.Option {
                   <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
                   <tbody>
                   <tr><td><code>id</code></td><td>string</td><td>Unique instance ID for this connection pool.</td></tr>
-                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely.</td></tr>
+                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely (no pool started).</td></tr>
                   <tr><td><code>host</code></td><td>string</td><td>Primary database hostname.</td></tr>
-                  <tr><td><code>port</code></td><td>int</td><td>Primary database port.</td></tr>
-                  <tr><td><code>database</code></td><td>string</td><td>Primary database name.</td></tr>
                   <tr><td><code>user</code></td><td>string</td><td>Primary database username.</td></tr>
                   <tr><td><code>password</code></td><td>string</td><td>Primary database password.</td></tr>
+                  <tr><td><code>database</code></td><td>string</td><td>Primary database name.</td></tr>
+                  <tr><td><code>port</code></td><td>int</td><td>Primary database port.</td></tr>
                   </tbody>
                 </table>
                 </div>
@@ -1072,10 +1094,10 @@ func AttachEndpointHandlers() gist.Option {
     "id": "orders-db",
     "enabled": true,
     "host": "127.0.0.1",
-    "port": 3306,
-    "database": "orderflow",
     "user": "orderflow",
-    "password": "orderflow"
+    "password": "orderflow",
+    "database": "orderflow",
+    "port": 3306
   }
 ]</code></pre>
                 </div>
@@ -1087,22 +1109,22 @@ func AttachEndpointHandlers() gist.Option {
                   <tbody>
                   <tr><td><code>id</code></td><td>string</td><td>Unique instance ID for this connection pool.</td></tr>
                   <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely (no pool started).</td></tr>
-                  <tr><td><code>delayed-start</code></td><td>int | string</td><td>Seconds (or duration string) to wait/delay before starting this instance.</td></tr>
-                  <tr><td><code>wait-for</code></td><td>[]string</td><td>IDs of other services this instance must wait to become ready before starting.</td></tr>
-                  <tr><td><code>conn-max-lifetime-minutes</code></td><td>int | string</td><td>Max minutes (or duration string) a connection to the primary may be reused before being closed.</td></tr>
+                  <tr><td><code>host</code></td><td>string</td><td>Primary database hostname.</td></tr>
+                  <tr><td><code>user</code></td><td>string</td><td>Primary database username.</td></tr>
+                  <tr><td><code>password</code></td><td>string</td><td>Primary database password.</td></tr>
+                  <tr><td><code>database</code></td><td>string</td><td>Primary database name.</td></tr>
+                  <tr><td><code>port</code></td><td>int</td><td>Primary database port.</td></tr>
                   <tr><td><code>connection-ping</code></td><td>int | string</td><td>Seconds (or duration string) between health-check pings; <code>0</code> disables the ping monitor.</td></tr>
                   <tr><td><code>connection-retries</code></td><td>int</td><td>Reconnect attempts the ping monitor makes after a failed ping before giving up.</td></tr>
-                  <tr><td><code>database</code></td><td>string</td><td>Primary database name.</td></tr>
-                  <tr><td><code>host</code></td><td>string</td><td>Primary database hostname.</td></tr>
-                  <tr><td><code>max-idle-conns</code></td><td>int</td><td>Max number of idle connections kept open to the primary.</td></tr>
-                  <tr><td><code>max-open-conns</code></td><td>int</td><td>Max number of open connections to the primary.</td></tr>
-                  <tr><td><code>parse-time</code></td><td>bool</td><td><strong>mysql only.</strong> Enables the driver's <code>parseTime</code> option, scanning <code>DATE</code>/<code>DATETIME</code> columns into <code>time.Time</code>.</td></tr>
-                  <tr><td><code>password</code></td><td>string</td><td>Primary database password.</td></tr>
-                  <tr><td><code>port</code></td><td>int</td><td>Primary database port.</td></tr>
-                  <tr><td><code>query-timeout</code></td><td>int | string</td><td>Per-query timeout (or duration string).</td></tr>
-                  <tr><td><code>replicas</code></td><td><a href="#s3-replicaconfig">[]ReplicaConfig</a></td><td><code>host</code>/<code>port</code>/<code>user</code>/<code>password</code>/<code>database</code> (optional, defaulting to the primary's) plus its own <code>max-open-conns</code>/<code>max-idle-conns</code>/<code>conn-max-lifetime-minutes</code>.</td></tr>
                   <tr><td><code>ssl-mode</code></td><td>bool</td><td>Enables TLS on the connection.</td></tr>
-                  <tr><td><code>user</code></td><td>string</td><td>Primary database username.</td></tr>
+                  <tr><td><code>query-timeout</code></td><td>int | string</td><td>Per-query timeout (or duration string).</td></tr>
+                  <tr><td><code>parse-time</code></td><td>bool</td><td><strong>mysql only.</strong> Enables the driver's <code>parseTime</code> option, scanning <code>DATE</code>/<code>DATETIME</code> columns into <code>time.Time</code>.</td></tr>
+                  <tr><td><code>max-open-conns</code></td><td>int</td><td>Max number of open connections to the primary.</td></tr>
+                  <tr><td><code>max-idle-conns</code></td><td>int</td><td>Max number of idle connections kept open to the primary.</td></tr>
+                  <tr><td><code>conn-max-lifetime-minutes</code></td><td>int | string</td><td>Max minutes (or duration string) a connection to the primary may be reused before being closed.</td></tr>
+                  <tr><td><code>replicas</code></td><td><a href="#s3-replicaconfig">[]ReplicaConfig</a></td><td><code>host</code>/<code>port</code>/<code>user</code>/<code>password</code>/<code>database</code> (optional, defaulting to the primary's) plus its own <code>max-open-conns</code>/<code>max-idle-conns</code>/<code>conn-max-lifetime-minutes</code>.</td></tr>
+                  <tr><td><code>delayed-start</code></td><td>int | string</td><td>Seconds (or duration string) to wait/delay before starting this instance.</td></tr>
+                  <tr><td><code>wait-for</code></td><td>[]string</td><td>IDs of other services this instance must wait to become ready before starting.</td></tr>
                   </tbody>
                 </table>
                 </div>
@@ -1112,18 +1134,16 @@ func AttachEndpointHandlers() gist.Option {
   {
     "id": "orders-db",
     "enabled": true,
-    "delayed-start": "5s",
-    "wait-for": [],
     "host": "127.0.0.1",
-    "port": 3306,
-    "database": "orderflow",
     "user": "orderflow",
     "password": "orderflow",
-    "ssl-mode": true,
-    "parse-time": true,
+    "database": "orderflow",
+    "port": 3306,
     "connection-ping": "30s",
     "connection-retries": 3,
+    "ssl-mode": true,
     "query-timeout": "5s",
+    "parse-time": true,
     "max-open-conns": 25,
     "max-idle-conns": 10,
     "conn-max-lifetime-minutes": "2h",
@@ -1138,11 +1158,12 @@ func AttachEndpointHandlers() gist.Option {
         "max-idle-conns": 5,
         "conn-max-lifetime-minutes": 30
       }
-    ]
+    ],
+    "delayed-start": "5s",
+    "wait-for": []
   }
 ]</code></pre>
                 </div>
-
                 <h4 id="s3-replicaconfig">replicas[] (ReplicaConfig)</h4>
                 <p style="margin:.4rem 0 .6rem">Same shape for both <code>gist-mysql-client</code> and <code>gist-postgres-client</code>. A replica always inherits the primary's <code>ssl-mode</code> — there is no per-replica SSL setting.</p>
                 <div class="table-scroll">
@@ -1161,7 +1182,8 @@ func AttachEndpointHandlers() gist.Option {
                 </table>
                 </div>
               </div>
-            </div>
+          </div>
+                <!-- GENERATED:gist-mysql-client:END -->
 
           <h3>Model tags</h3>
           <div class="code-block">
@@ -1280,14 +1302,11 @@ func (tr *Transaction) Rollback() error</code></pre>
       <details open>
         <summary><span class="toc-num">04</span><h2>gist-postgres-client</h2><span class="badge badge-api">API</span></summary>
         <div class="section-body">
-          <p>PostgreSQL connection pool with a generic repo layer (<code>Find</code>/<code>Save</code>/
-            <code>Update</code>/<code>Delete</code>), a transaction API, and a small condition/
-            sort DSL — not a raw-SQL client, not an ORM in the ActiveRecord sense.
-            <strong><a href="#s3">gist-mysql-client</a> (previous) is API-identical</strong> — same
-            functions, same option/condition/sort types, same model tag vocabulary. Only the
-            package name (<code>gistpostgresclient</code> vs <code>gistmysqlclient</code>), the
-            injected field's underlying RPC connection, and error-message prefixes differ.</p>
+                <!-- GENERATED:gist-postgres-client:INTRO:BEGIN -->
+          <p>PostgreSQL connection pool with a generic repo layer (<code>Find</code>/<code>Save</code>/<code>Update</code>/<code>Delete</code>), a transaction API, and a small condition/sort DSL — not a raw-SQL client, not an ORM in the ActiveRecord sense. <strong>gist-mysql-client (previous) is API-identical</strong> — same functions, same option/condition/sort types, same model tag vocabulary. Only the package name (<code>gistpostgresclient</code> vs <code>gistmysqlclient</code>), the injected field's underlying RPC connection, and error-message prefixes differ.</p>
+                <!-- GENERATED:gist-postgres-client:INTRO:END -->
           <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-postgres-client-config">gist-postgres-client-config</a></div>
+                <!-- GENERATED:gist-postgres-client:BEGIN -->
           <div class="cfgref">
               <div class="cfgref-tabs">
                 <button type="button" class="cfgref-tab is-active" data-mode="minimal">Minimal</button>
@@ -1299,12 +1318,12 @@ func (tr *Transaction) Rollback() error</code></pre>
                   <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
                   <tbody>
                   <tr><td><code>id</code></td><td>string</td><td>Unique instance ID for this connection pool.</td></tr>
-                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely.</td></tr>
+                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely (no pool started).</td></tr>
                   <tr><td><code>host</code></td><td>string</td><td>Primary database hostname.</td></tr>
-                  <tr><td><code>port</code></td><td>int</td><td>Primary database port.</td></tr>
-                  <tr><td><code>database</code></td><td>string</td><td>Primary database name.</td></tr>
                   <tr><td><code>user</code></td><td>string</td><td>Primary database username.</td></tr>
                   <tr><td><code>password</code></td><td>string</td><td>Primary database password.</td></tr>
+                  <tr><td><code>database</code></td><td>string</td><td>Primary database name.</td></tr>
+                  <tr><td><code>port</code></td><td>int</td><td>Primary database port.</td></tr>
                   </tbody>
                 </table>
                 </div>
@@ -1315,10 +1334,10 @@ func (tr *Transaction) Rollback() error</code></pre>
     "id": "orders-db",
     "enabled": true,
     "host": "127.0.0.1",
-    "port": 5432,
-    "database": "orderflow",
     "user": "orderflow",
-    "password": "orderflow"
+    "password": "orderflow",
+    "database": "orderflow",
+    "port": 5432
   }
 ]</code></pre>
                 </div>
@@ -1330,21 +1349,21 @@ func (tr *Transaction) Rollback() error</code></pre>
                   <tbody>
                   <tr><td><code>id</code></td><td>string</td><td>Unique instance ID for this connection pool.</td></tr>
                   <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely (no pool started).</td></tr>
-                  <tr><td><code>delayed-start</code></td><td>int | string</td><td>Seconds (or duration string) to wait/delay before starting this instance.</td></tr>
-                  <tr><td><code>wait-for</code></td><td>[]string</td><td>IDs of other services this instance must wait to become ready before starting.</td></tr>
-                  <tr><td><code>conn-max-lifetime-minutes</code></td><td>int | string</td><td>Max minutes (or duration string) a connection to the primary may be reused before being closed.</td></tr>
+                  <tr><td><code>host</code></td><td>string</td><td>Primary database hostname.</td></tr>
+                  <tr><td><code>user</code></td><td>string</td><td>Primary database username.</td></tr>
+                  <tr><td><code>password</code></td><td>string</td><td>Primary database password.</td></tr>
+                  <tr><td><code>database</code></td><td>string</td><td>Primary database name.</td></tr>
+                  <tr><td><code>port</code></td><td>int</td><td>Primary database port.</td></tr>
                   <tr><td><code>connection-ping</code></td><td>int | string</td><td>Seconds (or duration string) between health-check pings; <code>0</code> disables the ping monitor.</td></tr>
                   <tr><td><code>connection-retries</code></td><td>int</td><td>Reconnect attempts the ping monitor makes after a failed ping before giving up.</td></tr>
-                  <tr><td><code>database</code></td><td>string</td><td>Primary database name.</td></tr>
-                  <tr><td><code>host</code></td><td>string</td><td>Primary database hostname.</td></tr>
-                  <tr><td><code>max-idle-conns</code></td><td>int</td><td>Max number of idle connections kept open to the primary.</td></tr>
-                  <tr><td><code>max-open-conns</code></td><td>int</td><td>Max number of open connections to the primary.</td></tr>
-                  <tr><td><code>password</code></td><td>string</td><td>Primary database password.</td></tr>
-                  <tr><td><code>port</code></td><td>int</td><td>Primary database port.</td></tr>
-                  <tr><td><code>query-timeout</code></td><td>int | string</td><td>Per-query timeout (or duration string).</td></tr>
-                  <tr><td><code>replicas</code></td><td><a href="#s4-replicaconfig">[]ReplicaConfig</a></td><td><code>host</code>/<code>port</code>/<code>user</code>/<code>password</code>/<code>database</code> (optional, defaulting to the primary's) plus its own <code>max-open-conns</code>/<code>max-idle-conns</code>/<code>conn-max-lifetime-minutes</code>.</td></tr>
                   <tr><td><code>ssl-mode</code></td><td>bool</td><td>Enables TLS on the connection (maps to libpq's <code>sslmode=require</code>/<code>disable</code>; no other sslmode values are supported).</td></tr>
-                  <tr><td><code>user</code></td><td>string</td><td>Primary database username.</td></tr>
+                  <tr><td><code>query-timeout</code></td><td>int | string</td><td>Per-query timeout (or duration string).</td></tr>
+                  <tr><td><code>max-open-conns</code></td><td>int</td><td>Max number of open connections to the primary.</td></tr>
+                  <tr><td><code>max-idle-conns</code></td><td>int</td><td>Max number of idle connections kept open to the primary.</td></tr>
+                  <tr><td><code>conn-max-lifetime-minutes</code></td><td>int | string</td><td>Max minutes (or duration string) a connection to the primary may be reused before being closed.</td></tr>
+                  <tr><td><code>replicas</code></td><td><a href="#s4-replicaconfig">[]ReplicaConfig</a></td><td><code>host</code>/<code>port</code>/<code>user</code>/<code>password</code>/<code>database</code> (optional, defaulting to the primary's) plus its own <code>max-open-conns</code>/<code>max-idle-conns</code>/<code>conn-max-lifetime-minutes</code>.</td></tr>
+                  <tr><td><code>delayed-start</code></td><td>int | string</td><td>Seconds (or duration string) to wait/delay before starting this instance.</td></tr>
+                  <tr><td><code>wait-for</code></td><td>[]string</td><td>IDs of other services this instance must wait to become ready before starting.</td></tr>
                   </tbody>
                 </table>
                 </div>
@@ -1354,16 +1373,14 @@ func (tr *Transaction) Rollback() error</code></pre>
   {
     "id": "orders-db",
     "enabled": true,
-    "delayed-start": "5s",
-    "wait-for": [],
     "host": "127.0.0.1",
-    "port": 5432,
-    "database": "orderflow",
     "user": "orderflow",
     "password": "orderflow",
-    "ssl-mode": true,
+    "database": "orderflow",
+    "port": 5432,
     "connection-ping": "30s",
     "connection-retries": 3,
+    "ssl-mode": true,
     "query-timeout": "5s",
     "max-open-conns": 25,
     "max-idle-conns": 10,
@@ -1379,11 +1396,12 @@ func (tr *Transaction) Rollback() error</code></pre>
         "max-idle-conns": 5,
         "conn-max-lifetime-minutes": 30
       }
-    ]
+    ],
+    "delayed-start": "5s",
+    "wait-for": []
   }
 ]</code></pre>
                 </div>
-
                 <h4 id="s4-replicaconfig">replicas[] (ReplicaConfig)</h4>
                 <p style="margin:.4rem 0 .6rem">Same shape for both <code>gist-mysql-client</code> and <code>gist-postgres-client</code>. A replica always inherits the primary's <code>ssl-mode</code> — there is no per-replica SSL setting.</p>
                 <div class="table-scroll">
@@ -1402,7 +1420,8 @@ func (tr *Transaction) Rollback() error</code></pre>
                 </table>
                 </div>
               </div>
-            </div>
+          </div>
+                <!-- GENERATED:gist-postgres-client:END -->
 
           <h3>Model tags</h3>
           <div class="code-block">
@@ -1521,12 +1540,11 @@ func (tr *Transaction) Rollback() error</code></pre>
       <details open>
         <summary><span class="toc-num">05</span><h2>gist-http-server</h2><span class="badge badge-config">Config only</span></summary>
         <div class="section-body">
-          <p>Static file server. No client-side package exists — <code>www-files</code>,
-            <code>hostname</code>, <code>port</code> in config is the entire surface, with
-            nothing to call or hook into from Go. Point <code>www-files</code> at a directory
-            (e.g. generated invoice PDFs written there by another service) and it's served, full
-            stop.</p>
+                <!-- GENERATED:gist-http-server:INTRO:BEGIN -->
+          <p>Static file server. No client-side package exists — <code>www-files</code>, <code>hostname</code>, <code>port</code> in config is the entire surface, with nothing to call or hook into from Go. Point <code>www-files</code> at a directory (e.g. generated invoice PDFs written there by another service) and it's served, full stop.</p>
+                <!-- GENERATED:gist-http-server:INTRO:END -->
           <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-http-server-config">gist-http-server-config</a></div>
+                <!-- GENERATED:gist-http-server:BEGIN -->
           <div class="cfgref">
               <div class="cfgref-tabs">
                 <button type="button" class="cfgref-tab is-active" data-mode="minimal">Minimal</button>
@@ -1538,10 +1556,10 @@ func (tr *Transaction) Rollback() error</code></pre>
                   <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
                   <tbody>
                   <tr><td><code>id</code></td><td>string</td><td>Unique instance ID for this HTTP server.</td></tr>
-                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely.</td></tr>
+                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely (no listener started).</td></tr>
                   <tr><td><code>hostname</code></td><td>string</td><td>Bind address for the HTTP listener; defaults to <code>0.0.0.0</code>.</td></tr>
                   <tr><td><code>port</code></td><td>int</td><td>Bind port for the HTTP listener; defaults to <code>80</code>.</td></tr>
-                  <tr><td><code>www-files</code></td><td>string</td><td>Directory path served as static files.</td></tr>
+                  <tr><td><code>www-files</code></td><td>string</td><td>Directory path served as static files (<code>http.FileServer</code>).</td></tr>
                   </tbody>
                 </table>
                 </div>
@@ -1565,13 +1583,13 @@ func (tr *Transaction) Rollback() error</code></pre>
                   <tbody>
                   <tr><td><code>id</code></td><td>string</td><td>Unique instance ID for this HTTP server.</td></tr>
                   <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely (no listener started).</td></tr>
+                  <tr><td><code>protocol</code></td><td>string</td><td>Scheme this instance is addressed by; defaults to <code>http</code>.</td></tr>
+                  <tr><td><code>hostname</code></td><td>string</td><td>Bind address for the HTTP listener; defaults to <code>0.0.0.0</code>.</td></tr>
+                  <tr><td><code>port</code></td><td>int</td><td>Bind port for the HTTP listener; defaults to <code>80</code>.</td></tr>
+                  <tr><td><code>www-files</code></td><td>string</td><td>Directory path served as static files (<code>http.FileServer</code>).</td></tr>
+                  <tr><td><code>name</code></td><td>string</td><td>Display label for this instance; not otherwise used at runtime.</td></tr>
                   <tr><td><code>delayed-start</code></td><td>int | string</td><td>Seconds (or duration string) to wait/delay before starting this instance.</td></tr>
                   <tr><td><code>wait-for</code></td><td>[]string</td><td>IDs of other services this instance must wait to become ready before starting.</td></tr>
-                  <tr><td><code>hostname</code></td><td>string</td><td>Bind address for the HTTP listener; defaults to <code>0.0.0.0</code>.</td></tr>
-                  <tr><td><code>name</code></td><td>string</td><td>Display label for this instance; not otherwise used at runtime.</td></tr>
-                  <tr><td><code>port</code></td><td>int</td><td>Bind port for the HTTP listener; defaults to <code>80</code>.</td></tr>
-                  <tr><td><code>protocol</code></td><td>string</td><td>Scheme this instance is addressed by; defaults to <code>http</code>.</td></tr>
-                  <tr><td><code>www-files</code></td><td>string</td><td>Directory path served as static files (<code>http.FileServer</code>).</td></tr>
                   </tbody>
                 </table>
                 </div>
@@ -1581,18 +1599,19 @@ func (tr *Transaction) Rollback() error</code></pre>
   {
     "id": "invoices",
     "enabled": true,
-    "delayed-start": "5s",
-    "wait-for": [],
-    "hostname": "0.0.0.0",
-    "name": "Invoices static server",
-    "port": 8081,
     "protocol": "http",
-    "www-files": "./public/invoices"
+    "hostname": "0.0.0.0",
+    "port": 8081,
+    "www-files": "./public/invoices",
+    "name": "Invoices static server",
+    "delayed-start": "5s",
+    "wait-for": []
   }
 ]</code></pre>
                 </div>
               </div>
-            </div>
+          </div>
+                <!-- GENERATED:gist-http-server:END -->
         </div>
       </details>
     </section>
@@ -2793,10 +2812,11 @@ func (tr *Transaction) Rollback() error</code></pre>
       <details open>
         <summary><span class="toc-num">08</span><h2>gist-http-client</h2><span class="badge badge-api">API</span></summary>
         <div class="section-body">
-          <p>Outbound HTTP client — five verb-specific methods, not a <code>Do(Request{...})</code>
-            shape. <code>endpoint</code> is joined against the instance's configured
-            <code>base-url</code>; per-request behavior is typed options, one package per verb.</p>
+                <!-- GENERATED:gist-http-client:INTRO:BEGIN -->
+          <p>Outbound HTTP client — five verb-specific methods, not a <code>Do(Request{...})</code> shape. <code>endpoint</code> is joined against the instance's configured <code>base-url</code>; per-request behavior is typed options, one package per verb.</p>
+                <!-- GENERATED:gist-http-client:INTRO:END -->
           <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-http-client-config">gist-http-client-config</a></div>
+                <!-- GENERATED:gist-http-client:BEGIN -->
           <div class="cfgref">
               <div class="cfgref-tabs">
                 <button type="button" class="cfgref-tab is-active" data-mode="minimal">Minimal</button>
@@ -2821,7 +2841,7 @@ func (tr *Transaction) Rollback() error</code></pre>
     "id": "payment-gateway",
     "enabled": true,
     "base-url": "https://api.paymentgateway.example.com",
-    "timeout": 5
+    "timeout": "5s"
   }
 ]</code></pre>
                 </div>
@@ -2833,12 +2853,12 @@ func (tr *Transaction) Rollback() error</code></pre>
                   <tbody>
                   <tr><td><code>id</code></td><td>string</td><td>Unique instance ID for this HTTP client.</td></tr>
                   <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely.</td></tr>
-                  <tr><td><code>delayed-start</code></td><td>int | string</td><td>Seconds (or duration string) to wait/delay before starting this instance.</td></tr>
-                  <tr><td><code>wait-for</code></td><td>[]string</td><td>IDs of other services this instance must wait to become ready before starting.</td></tr>
                   <tr><td><code>base-url</code></td><td>string</td><td>Base URL every request from this client is made against.</td></tr>
                   <tr><td><code>default-headers</code></td><td>map[string]string</td><td>Headers merged into every outgoing request.</td></tr>
                   <tr><td><code>timeout</code></td><td>int | string</td><td>Request timeout (or duration string).</td></tr>
                   <tr><td><code>tls</code></td><td><a href="#s8-tlsconfig">TLSConfig</a></td><td>Custom TLS transport settings — <code>enabled</code> (bool) and <code>insecure-skip-verify</code> (bool, trust self-signed certs).</td></tr>
+                  <tr><td><code>delayed-start</code></td><td>int | string</td><td>Seconds (or duration string) to wait/delay before starting this instance.</td></tr>
+                  <tr><td><code>wait-for</code></td><td>[]string</td><td>IDs of other services this instance must wait to become ready before starting.</td></tr>
                   </tbody>
                 </table>
                 </div>
@@ -2848,16 +2868,20 @@ func (tr *Transaction) Rollback() error</code></pre>
   {
     "id": "payment-gateway",
     "enabled": true,
-    "delayed-start": "5s",
-    "wait-for": [],
     "base-url": "https://api.paymentgateway.example.com",
-    "default-headers": { "X-Client": "orderflow" },
+    "default-headers": {
+      "X-Client": "orderflow"
+    },
     "timeout": "5s",
-    "tls": { "enabled": true, "insecure-skip-verify": false }
+    "tls": {
+      "enabled": true,
+      "insecure-skip-verify": false
+    },
+    "delayed-start": "5s",
+    "wait-for": []
   }
 ]</code></pre>
                 </div>
-
                 <h4 id="s8-tlsconfig">tls (TLSConfig)</h4>
                 <div class="table-scroll">
                 <table class="overview-table">
@@ -2869,7 +2893,8 @@ func (tr *Transaction) Rollback() error</code></pre>
                 </table>
                 </div>
               </div>
-            </div>
+          </div>
+                <!-- GENERATED:gist-http-client:END -->
           <div class="code-block">
             <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
             <pre><code class="language-go">func (s *Service) Get(ctx, endpoint string, options ...get.Option) Response
@@ -2913,12 +2938,11 @@ json.Unmarshal(resp.Body, &charge)</code></pre>
       <details open>
         <summary><span class="toc-num">09</span><h2>gist-elasticsearch-client</h2><span class="badge badge-api">API</span></summary>
         <div class="section-body">
-          <p>Index + query one Elasticsearch cluster. Seven methods, all with a consistent
-            two-layer error model worth internalizing once: a transport error and a wire-level
-            error both surface as the returned <code>error</code> (wrapped
-            <code>"gistelasticsearchclient: &lt;op&gt;: %w"</code>); "not found" is never an error, it's
-            a <code>bool</code> return.</p>
+                <!-- GENERATED:gist-elasticsearch-client:INTRO:BEGIN -->
+          <p>Index + query one Elasticsearch cluster. Seven methods, all with a consistent two-layer error model worth internalizing once: a transport error and a wire-level error both surface as the returned <code>error</code> (wrapped <code>"gistelasticsearchclient: &lt;op&gt;: %w"</code>); "not found" is never an error, it's a <code>bool</code> return.</p>
+                <!-- GENERATED:gist-elasticsearch-client:INTRO:END -->
           <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-elasticsearch-client-config">gist-elasticsearch-client-config</a></div>
+                <!-- GENERATED:gist-elasticsearch-client:BEGIN -->
           <div class="cfgref">
               <div class="cfgref-tabs">
                 <button type="button" class="cfgref-tab is-active" data-mode="minimal">Minimal</button>
@@ -2953,12 +2977,12 @@ json.Unmarshal(resp.Body, &charge)</code></pre>
                   <tbody>
                   <tr><td><code>id</code></td><td>string</td><td>Unique instance ID.</td></tr>
                   <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely.</td></tr>
-                  <tr><td><code>delayed-start</code></td><td>int | string</td><td>Seconds (or duration string) to wait/delay before starting this instance.</td></tr>
-                  <tr><td><code>wait-for</code></td><td>[]string</td><td>IDs of other services this instance must wait to become ready before starting.</td></tr>
                   <tr><td><code>hosts</code></td><td>[]string</td><td>Elasticsearch node URLs the client connects to.</td></tr>
+                  <tr><td><code>user</code></td><td>string</td><td>Username for basic auth against the cluster.</td></tr>
                   <tr><td><code>password</code></td><td>string</td><td>Password for basic auth against the cluster.</td></tr>
                   <tr><td><code>timeout</code></td><td>int | string</td><td>Seconds (or duration string) before a request is cancelled via context timeout.</td></tr>
-                  <tr><td><code>user</code></td><td>string</td><td>Username for basic auth against the cluster.</td></tr>
+                  <tr><td><code>delayed-start</code></td><td>int | string</td><td>Seconds (or duration string) to wait/delay before starting this instance.</td></tr>
+                  <tr><td><code>wait-for</code></td><td>[]string</td><td>IDs of other services this instance must wait to become ready before starting.</td></tr>
                   </tbody>
                 </table>
                 </div>
@@ -2968,17 +2992,18 @@ json.Unmarshal(resp.Body, &charge)</code></pre>
   {
     "id": "order-index",
     "enabled": true,
-    "delayed-start": "5s",
-    "wait-for": [],
     "hosts": ["http://127.0.0.1:9200"],
+    "user": "elastic",
     "password": "orderflow",
     "timeout": "10s",
-    "user": "elastic"
+    "delayed-start": "5s",
+    "wait-for": []
   }
 ]</code></pre>
                 </div>
               </div>
-            </div>
+          </div>
+                <!-- GENERATED:gist-elasticsearch-client:END -->
           <div class="code-block">
             <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
             <pre><code class="language-go">func (s *Service) CreateItem(ctx, index, id string, item any) (created bool, actualID string, err error)
@@ -3020,11 +3045,11 @@ for _, hit := range result.Hits {
       <details open>
         <summary><span class="toc-num">10</span><h2>gist-google-cloud-storage-client</h2><span class="badge badge-api">API</span></summary>
         <div class="section-body">
-          <p>Bucket + object CRUD against real GCS or a local emulator (<code>endpoint</code> in
-            config). <code>bucketID</code> in every method is the config's own <code>buckets</code>
-            map key (e.g. <code>"receipts"</code>), never the real GCS bucket name — that mapping
-            happens server-side, so the real name never appears in your code.</p>
+                <!-- GENERATED:gist-google-cloud-storage-client:INTRO:BEGIN -->
+          <p>Bucket + object CRUD against real GCS or a local emulator (<code>endpoint</code> in config). <code>bucketID</code> in every method is the config's own <code>buckets</code> map key (e.g. <code>"receipts"</code>), never the real GCS bucket name — that mapping happens server-side, so the real name never appears in your code.</p>
+                <!-- GENERATED:gist-google-cloud-storage-client:INTRO:END -->
           <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-google-cloud-storage-client-config">gist-google-cloud-storage-client-config</a></div>
+                <!-- GENERATED:gist-google-cloud-storage-client:BEGIN -->
           <div class="cfgref">
               <div class="cfgref-tabs">
                 <button type="button" class="cfgref-tab is-active" data-mode="minimal">Minimal</button>
@@ -3037,7 +3062,7 @@ for _, hit := range result.Hits {
                   <tbody>
                   <tr><td><code>id</code></td><td>string</td><td>Unique instance ID.</td></tr>
                   <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely.</td></tr>
-                  <tr><td><code>buckets</code></td><td>map[string]string</td><td>Maps a customer-chosen bucket ID (used in API calls) to the real GCS bucket name.</td></tr>
+                  <tr><td><code>buckets</code></td><td>map[string]string</td><td>Maps a customer-chosen bucket ID to the real GCS bucket name.</td></tr>
                   </tbody>
                 </table>
                 </div>
@@ -3047,7 +3072,9 @@ for _, hit := range result.Hits {
   {
     "id": "receipts",
     "enabled": true,
-    "buckets": { "receipts": "orderflow-receipts" }
+    "buckets": {
+      "receipts": "orderflow-receipts"
+    }
   }
 ]</code></pre>
                 </div>
@@ -3059,12 +3086,12 @@ for _, hit := range result.Hits {
                   <tbody>
                   <tr><td><code>id</code></td><td>string</td><td>Unique instance ID.</td></tr>
                   <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely.</td></tr>
+                  <tr><td><code>buckets</code></td><td>map[string]string</td><td>Maps a customer-chosen bucket ID to the real GCS bucket name.</td></tr>
+                  <tr><td><code>scope</code></td><td>string</td><td>OAuth scope used to build the Application Default Credentials token source.</td></tr>
+                  <tr><td><code>project-id</code></td><td>string</td><td>GCS project bucket creation is billed/attributed to; only needed for <code>CreateBucket</code>.</td></tr>
+                  <tr><td><code>endpoint</code></td><td>string</td><td>When set, points the client at a local emulator instead of real GCS; left empty, uses real GCS with real ADC auth.</td></tr>
                   <tr><td><code>delayed-start</code></td><td>int | string</td><td>Seconds (or duration string) to wait/delay before starting this instance.</td></tr>
                   <tr><td><code>wait-for</code></td><td>[]string</td><td>IDs of other services this instance must wait to become ready before starting.</td></tr>
-                  <tr><td><code>buckets</code></td><td>map[string]string</td><td>Maps a customer-chosen bucket ID to the real GCS bucket name.</td></tr>
-                  <tr><td><code>endpoint</code></td><td>string</td><td>When set, points the client at a local emulator instead of real GCS; left empty, uses real GCS with real ADC auth.</td></tr>
-                  <tr><td><code>project-id</code></td><td>string</td><td>GCS project bucket creation is billed/attributed to; only needed for <code>CreateBucket</code>.</td></tr>
-                  <tr><td><code>scope</code></td><td>string</td><td>OAuth scope used to build the Application Default Credentials token source.</td></tr>
                   </tbody>
                 </table>
                 </div>
@@ -3074,17 +3101,20 @@ for _, hit := range result.Hits {
   {
     "id": "receipts",
     "enabled": true,
-    "delayed-start": "5s",
-    "wait-for": [],
-    "buckets": { "receipts": "orderflow-receipts" },
-    "endpoint": "",
+    "buckets": {
+      "receipts": "orderflow-receipts"
+    },
+    "scope": "https://www.googleapis.com/auth/devstorage.read_write",
     "project-id": "orderflow-prod",
-    "scope": "https://www.googleapis.com/auth/devstorage.read_write"
+    "endpoint": "",
+    "delayed-start": "5s",
+    "wait-for": []
   }
 ]</code></pre>
                 </div>
               </div>
-            </div>
+          </div>
+                <!-- GENERATED:gist-google-cloud-storage-client:END -->
           <div class="code-block">
             <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
             <pre><code class="language-go">func (s *Service) Exists(ctx, bucketID, fileName string) (bool, error)
@@ -3126,9 +3156,11 @@ func (s *Service) DeleteObject(ctx, bucketID, fileName string) (found bool, err 
       <details open>
         <summary><span class="toc-num">11</span><h2>gist-scheduler</h2><span class="badge badge-api">API</span></summary>
         <div class="section-body">
-          <p>A cron job gist-server runs internally, calling back into your process on every
-            tick.</p>
+                <!-- GENERATED:gist-scheduler:INTRO:BEGIN -->
+          <p>A cron job gist-server runs internally, calling back into your process on every tick.</p>
+                <!-- GENERATED:gist-scheduler:INTRO:END -->
           <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-scheduler-config">gist-scheduler-config</a></div>
+                <!-- GENERATED:gist-scheduler:BEGIN -->
           <div class="cfgref">
               <div class="cfgref-tabs">
                 <button type="button" class="cfgref-tab is-active" data-mode="minimal">Minimal</button>
@@ -3140,7 +3172,7 @@ func (s *Service) DeleteObject(ctx, bucketID, fileName string) (found bool, err 
                   <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
                   <tbody>
                   <tr><td><code>id</code></td><td>string</td><td>Unique instance ID; matched against the registered schedule function.</td></tr>
-                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely.</td></tr>
+                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely (no cron job started).</td></tr>
                   <tr><td><code>schedule</code></td><td>string</td><td>Standard cron expression controlling when the tick callback fires.</td></tr>
                   </tbody>
                 </table>
@@ -3163,9 +3195,9 @@ func (s *Service) DeleteObject(ctx, bucketID, fileName string) (found bool, err 
                   <tbody>
                   <tr><td><code>id</code></td><td>string</td><td>Unique instance ID; matched against the registered schedule function.</td></tr>
                   <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely (no cron job started).</td></tr>
+                  <tr><td><code>schedule</code></td><td>string</td><td>Standard cron expression controlling when the tick callback fires.</td></tr>
                   <tr><td><code>delayed-start</code></td><td>int | string</td><td>Seconds (or duration string) to wait/delay before starting this instance.</td></tr>
                   <tr><td><code>wait-for</code></td><td>[]string</td><td>IDs of other services this instance must wait to become ready before starting.</td></tr>
-                  <tr><td><code>schedule</code></td><td>string</td><td>Standard cron expression controlling when the tick callback fires.</td></tr>
                   </tbody>
                 </table>
                 </div>
@@ -3175,14 +3207,15 @@ func (s *Service) DeleteObject(ctx, bucketID, fileName string) (found bool, err 
   {
     "id": "reconcile-stale-orders",
     "enabled": true,
+    "schedule": "0 3 * * *",
     "delayed-start": "5s",
-    "wait-for": ["orders-db"],
-    "schedule": "0 3 * * *"
+    "wait-for": ["orders-db"]
   }
 ]</code></pre>
                 </div>
               </div>
-            </div>
+          </div>
+                <!-- GENERATED:gist-scheduler:END -->
           <div class="code-block">
             <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
             <pre><code class="language-go">func RegisterScheduleFunc[dep any](schedulerID string, d dep, fn func(dep)) gist.Option</code></pre>
@@ -3219,11 +3252,11 @@ func (s *Service) DeleteObject(ctx, bucketID, fileName string) (found bool, err 
       <details open>
         <summary><span class="toc-num">12</span><h2>gist-state-machine</h2><span class="badge badge-api">API</span></summary>
         <div class="section-body">
-          <p>A stateless transition validator: given a current state and a trigger name, it
-            checks a transitions graph loaded from <code>transitions-file</code> and either
-            allows or rejects the move. It holds no state of its own — persisting the object is
-            entirely your responsibility, handled in the trigger's own callback.</p>
+                <!-- GENERATED:gist-state-machine:INTRO:BEGIN -->
+          <p>A stateless transition validator: given a current state and a trigger name, it checks a transitions graph loaded from <code>transitions-file</code> and either allows or rejects the move. It holds no state of its own — persisting the object is entirely your responsibility, handled in the trigger's own callback.</p>
+                <!-- GENERATED:gist-state-machine:INTRO:END -->
           <div class="config-link">Config, including the transitions-file format: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-state-machine-config">gist-state-machine-config</a></div>
+                <!-- GENERATED:gist-state-machine:BEGIN -->
           <div class="cfgref">
               <div class="cfgref-tabs">
                 <button type="button" class="cfgref-tab is-active" data-mode="minimal">Minimal</button>
@@ -3237,7 +3270,7 @@ func (s *Service) DeleteObject(ctx, bucketID, fileName string) (found bool, err 
                   <tr><td><code>id</code></td><td>string</td><td>Unique instance ID for this state machine.</td></tr>
                   <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely.</td></tr>
                   <tr><td><code>initial-state</code></td><td>string</td><td>Default starting state for a new object under this machine.</td></tr>
-                  <tr><td><code>transitions-file</code></td><td>string</td><td>Path to the transitions JSON file, loaded into <a href="#s12-transitions-file"><code>Transitions</code></a>.</td></tr>
+                  <tr><td><code>transitions-file</code></td><td>string</td><td>Path to the transitions JSON file, loaded into <code>Transitions</code>.</td></tr>
                   </tbody>
                 </table>
                 </div>
@@ -3260,10 +3293,10 @@ func (s *Service) DeleteObject(ctx, bucketID, fileName string) (found bool, err 
                   <tbody>
                   <tr><td><code>id</code></td><td>string</td><td>Unique instance ID for this state machine.</td></tr>
                   <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely.</td></tr>
+                  <tr><td><code>initial-state</code></td><td>string</td><td>Default starting state for a new object under this machine.</td></tr>
+                  <tr><td><code>transitions-file</code></td><td>string</td><td>Path to the transitions JSON file, loaded into <code>Transitions</code>.</td></tr>
                   <tr><td><code>delayed-start</code></td><td>int | string</td><td>Seconds (or duration string) to wait/delay before starting this instance.</td></tr>
                   <tr><td><code>wait-for</code></td><td>[]string</td><td>IDs of other services this instance must wait to become ready before starting.</td></tr>
-                  <tr><td><code>initial-state</code></td><td>string</td><td>Default starting state for a new object under this machine.</td></tr>
-                  <tr><td><code>transitions-file</code></td><td>string</td><td>Path to the transitions JSON file, loaded into <a href="#s12-transitions-file"><code>Transitions</code></a>.</td></tr>
                   </tbody>
                 </table>
                 </div>
@@ -3273,10 +3306,10 @@ func (s *Service) DeleteObject(ctx, bucketID, fileName string) (found bool, err 
   {
     "id": "order-lifecycle",
     "enabled": true,
-    "delayed-start": "5s",
-    "wait-for": ["orders-db"],
     "initial-state": "pending",
-    "transitions-file": "./config/order-transitions.json"
+    "transitions-file": "./config/order-transitions.json",
+    "delayed-start": "5s",
+    "wait-for": ["orders-db"]
   }
 ]</code></pre>
                 </div>
@@ -3295,7 +3328,8 @@ func (s *Service) DeleteObject(ctx, bucketID, fileName string) (found bool, err 
                 </table>
                 </div>
               </div>
-            </div>
+          </div>
+                <!-- GENERATED:gist-state-machine:END -->
           <div class="code-block">
             <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
             <pre><code class="language-go">type Statabler interface { GetState() string; SetState(state string) }
@@ -3350,12 +3384,11 @@ err := giststatemachine.Transition(ctx, sg.OrderLifecycle, "approve", &order)</c
       <details open>
         <summary><span class="toc-num">13</span><h2>gist-redis-client</h2><span class="badge badge-none">No API</span></summary>
         <div class="section-body">
-          <p>No client-side API — no injectable <code>Service</code> type, no package under
-            <code>gist/services/</code> at all, confirmed by grepping the whole SDK tree. Strictly
-            gist-server-internal: it opens a connection and pings it at startup, then nothing your
-            own code can call — there is currently no cache-set/get exposed. Configuring it gets
-            you a green line in the boot log and nothing more.</p>
+                <!-- GENERATED:gist-redis-client:INTRO:BEGIN -->
+          <p>No client-side API — no injectable <code>Service</code> type, no package under <code>gist/services/</code> at all, confirmed by grepping the whole SDK tree. Strictly gist-server-internal: it opens a connection and pings it at startup, then nothing your own code can call — there is currently no cache-set/get exposed. Configuring it gets you a green line in the boot log and nothing more.</p>
+                <!-- GENERATED:gist-redis-client:INTRO:END -->
           <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-redis-client-config">gist-redis-client-config</a></div>
+                <!-- GENERATED:gist-redis-client:BEGIN -->
           <div class="cfgref">
               <div class="cfgref-tabs">
                 <button type="button" class="cfgref-tab is-active" data-mode="minimal">Minimal</button>
@@ -3367,7 +3400,7 @@ err := giststatemachine.Transition(ctx, sg.OrderLifecycle, "approve", &order)</c
                   <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
                   <tbody>
                   <tr><td><code>id</code></td><td>string</td><td>Unique instance ID for this Redis connection.</td></tr>
-                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely.</td></tr>
+                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely (no connection attempted).</td></tr>
                   <tr><td><code>host</code></td><td>string</td><td>Redis server hostname/IP.</td></tr>
                   <tr><td><code>port</code></td><td>int</td><td>Redis server port.</td></tr>
                   </tbody>
@@ -3392,13 +3425,13 @@ err := giststatemachine.Transition(ctx, sg.OrderLifecycle, "approve", &order)</c
                   <tbody>
                   <tr><td><code>id</code></td><td>string</td><td>Unique instance ID for this Redis connection.</td></tr>
                   <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely (no connection attempted).</td></tr>
+                  <tr><td><code>host</code></td><td>string</td><td>Redis server hostname/IP.</td></tr>
+                  <tr><td><code>port</code></td><td>int</td><td>Redis server port.</td></tr>
+                  <tr><td><code>database</code></td><td>int</td><td>Redis logical database index (<code>SELECT</code>/<code>DB</code> option).</td></tr>
+                  <tr><td><code>password</code></td><td>string</td><td>Authenticates via Redis AUTH when set. Left empty, no AUTH is sent.</td></tr>
+                  <tr><td><code>timeout</code></td><td>int | string</td><td>Seconds (or duration string) allowed for the startup connectivity ping.</td></tr>
                   <tr><td><code>delayed-start</code></td><td>int | string</td><td>Seconds (or duration string) to wait/delay before starting this instance.</td></tr>
                   <tr><td><code>wait-for</code></td><td>[]string</td><td>IDs of other services this instance must wait to become ready before starting.</td></tr>
-                  <tr><td><code>database</code></td><td>int</td><td>Redis logical database index (<code>SELECT</code>/<code>DB</code> option).</td></tr>
-                  <tr><td><code>host</code></td><td>string</td><td>Redis server hostname/IP.</td></tr>
-                  <tr><td><code>password</code></td><td>string</td><td>Authenticates via Redis AUTH when set. Left empty, no AUTH is sent.</td></tr>
-                  <tr><td><code>port</code></td><td>int</td><td>Redis server port.</td></tr>
-                  <tr><td><code>timeout</code></td><td>int | string</td><td>Seconds (or duration string) allowed for the startup connectivity ping.</td></tr>
                   </tbody>
                 </table>
                 </div>
@@ -3408,18 +3441,19 @@ err := giststatemachine.Transition(ctx, sg.OrderLifecycle, "approve", &order)</c
   {
     "id": "order-cache",
     "enabled": true,
-    "delayed-start": "5s",
-    "wait-for": [],
-    "database": 0,
     "host": "127.0.0.1",
-    "password": "orderflow",
     "port": 6379,
-    "timeout": "5s"
+    "database": 0,
+    "password": "orderflow",
+    "timeout": "5s",
+    "delayed-start": "5s",
+    "wait-for": []
   }
 ]</code></pre>
                 </div>
               </div>
-            </div>
+          </div>
+                <!-- GENERATED:gist-redis-client:END -->
         </div>
       </details>
     </section>
@@ -3428,12 +3462,11 @@ err := giststatemachine.Transition(ctx, sg.OrderLifecycle, "approve", &order)</c
       <details open>
         <summary><span class="toc-num">14</span><h2>gist-pub-sub-client</h2><span class="badge badge-none">No API</span></summary>
         <div class="section-body">
-          <p>Also no client-side API — same story as <code>gist-redis-client</code>: a
-            connectivity/readiness check against a GCP Pub/Sub endpoint, nothing your own code can
-            call, no publish/subscribe exposed today. If <code>orderflow</code> needs a real
-            message bus, that's <code>gist-rabbit-mq-client</code> (next section), not this one —
-            <code>gist-pub-sub-client</code> only ever proves reachability.</p>
+                <!-- GENERATED:gist-pub-sub-client:INTRO:BEGIN -->
+          <p>Also no client-side API — same story as <code>gist-redis-client</code>: a connectivity/readiness check against a GCP Pub/Sub endpoint, nothing your own code can call, no publish/subscribe exposed today. If <code>orderflow</code> needs a real message bus, that's <code>gist-rabbit-mq-client</code> (next section), not this one — <code>gist-pub-sub-client</code> only ever proves reachability.</p>
+                <!-- GENERATED:gist-pub-sub-client:INTRO:END -->
           <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-pub-sub-client-config">gist-pub-sub-client-config</a></div>
+                <!-- GENERATED:gist-pub-sub-client:BEGIN -->
           <div class="cfgref">
               <div class="cfgref-tabs">
                 <button type="button" class="cfgref-tab is-active" data-mode="minimal">Minimal</button>
@@ -3468,11 +3501,11 @@ err := giststatemachine.Transition(ctx, sg.OrderLifecycle, "approve", &order)</c
                   <tbody>
                   <tr><td><code>id</code></td><td>string</td><td>Unique instance ID for this Pub/Sub connection.</td></tr>
                   <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely.</td></tr>
+                  <tr><td><code>project-id</code></td><td>string</td><td>GCP project ID; used to build the topics-list readiness check URL.</td></tr>
+                  <tr><td><code>endpoint</code></td><td>string</td><td>Points the check at a local emulator instead of real Pub/Sub — <code>host:port</code>, no scheme.</td></tr>
+                  <tr><td><code>timeout</code></td><td>int | string</td><td>Seconds (or duration string) before the readiness check is aborted.</td></tr>
                   <tr><td><code>delayed-start</code></td><td>int | string</td><td>Seconds (or duration string) to wait/delay before starting this instance.</td></tr>
                   <tr><td><code>wait-for</code></td><td>[]string</td><td>IDs of other services this instance must wait to become ready before starting.</td></tr>
-                  <tr><td><code>endpoint</code></td><td>string</td><td>Points the check at a local emulator instead of real Pub/Sub — <code>host:port</code>, no scheme.</td></tr>
-                  <tr><td><code>project-id</code></td><td>string</td><td>GCP project ID; used to build the topics-list readiness check URL.</td></tr>
-                  <tr><td><code>timeout</code></td><td>int | string</td><td>Seconds (or duration string) before the readiness check is aborted.</td></tr>
                   </tbody>
                 </table>
                 </div>
@@ -3482,16 +3515,17 @@ err := giststatemachine.Transition(ctx, sg.OrderLifecycle, "approve", &order)</c
   {
     "id": "order-events",
     "enabled": true,
-    "delayed-start": "5s",
-    "wait-for": [],
-    "endpoint": "127.0.0.1:8085",
     "project-id": "orderflow",
-    "timeout": "5s"
+    "endpoint": "127.0.0.1:8085",
+    "timeout": "5s",
+    "delayed-start": "5s",
+    "wait-for": []
   }
 ]</code></pre>
                 </div>
               </div>
-            </div>
+          </div>
+                <!-- GENERATED:gist-pub-sub-client:END -->
         </div>
       </details>
     </section>
@@ -3500,9 +3534,11 @@ err := giststatemachine.Transition(ctx, sg.OrderLifecycle, "approve", &order)</c
       <details open>
         <summary><span class="toc-num">15</span><h2>gist-rabbit-mq-client</h2><span class="badge badge-api">API</span></summary>
         <div class="section-body">
-          <p>A real AMQP 0-9-1 client connection — the one messaging service in this list
-            gist-server actually operates for you, not just checks the health of.</p>
+                <!-- GENERATED:gist-rabbit-mq-client:INTRO:BEGIN -->
+          <p>A real AMQP 0-9-1 client connection — the one messaging service in this list gist-server actually operates for you, not just checks the health of.</p>
+                <!-- GENERATED:gist-rabbit-mq-client:INTRO:END -->
           <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-rabbit-mq-client-config">gist-rabbit-mq-client-config</a></div>
+                <!-- GENERATED:gist-rabbit-mq-client:BEGIN -->
           <div class="cfgref">
               <div class="cfgref-tabs">
                 <button type="button" class="cfgref-tab is-active" data-mode="minimal">Minimal</button>
@@ -3515,7 +3551,7 @@ err := giststatemachine.Transition(ctx, sg.OrderLifecycle, "approve", &order)</c
                   <tbody>
                   <tr><td><code>id</code></td><td>string</td><td>Unique instance ID for this RabbitMQ connection.</td></tr>
                   <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely.</td></tr>
-                  <tr><td><code>url</code></td><td>string</td><td>Full AMQP connection URL, e.g. <code>amqp://user:pass@host:5672/vhost</code>.</td></tr>
+                  <tr><td><code>url</code></td><td>string</td><td>Full AMQP connection URL — credentials and vhost live in the URL.</td></tr>
                   </tbody>
                 </table>
                 </div>
@@ -3537,10 +3573,10 @@ err := giststatemachine.Transition(ctx, sg.OrderLifecycle, "approve", &order)</c
                   <tbody>
                   <tr><td><code>id</code></td><td>string</td><td>Unique instance ID for this RabbitMQ connection.</td></tr>
                   <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely.</td></tr>
+                  <tr><td><code>url</code></td><td>string</td><td>Full AMQP connection URL — credentials and vhost live in the URL.</td></tr>
+                  <tr><td><code>timeout</code></td><td>int | string</td><td>Seconds (or duration string) before a connection/operation is aborted.</td></tr>
                   <tr><td><code>delayed-start</code></td><td>int | string</td><td>Seconds (or duration string) to wait/delay before starting this instance.</td></tr>
                   <tr><td><code>wait-for</code></td><td>[]string</td><td>IDs of other services this instance must wait to become ready before starting.</td></tr>
-                  <tr><td><code>timeout</code></td><td>int | string</td><td>Seconds (or duration string) before a connection/operation is aborted.</td></tr>
-                  <tr><td><code>url</code></td><td>string</td><td>Full AMQP connection URL — credentials and vhost live in the URL.</td></tr>
                   </tbody>
                 </table>
                 </div>
@@ -3550,15 +3586,16 @@ err := giststatemachine.Transition(ctx, sg.OrderLifecycle, "approve", &order)</c
   {
     "id": "bus",
     "enabled": true,
-    "delayed-start": "5s",
-    "wait-for": [],
+    "url": "amqp://orderflow:orderflow@127.0.0.1:5672/",
     "timeout": "10s",
-    "url": "amqp://orderflow:orderflow@127.0.0.1:5672/"
+    "delayed-start": "5s",
+    "wait-for": []
   }
 ]</code></pre>
                 </div>
               </div>
-            </div>
+          </div>
+                <!-- GENERATED:gist-rabbit-mq-client:END -->
           <div class="code-block">
             <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
             <pre><code class="language-go">func (s *Service) Publish(ctx, exchange, routingKey string, body []byte, contentType string, headers map[string]string) error
@@ -3620,21 +3657,11 @@ func RegisterRabbitMQConsumer[dep any](
       <details open>
         <summary><span class="toc-num">16</span><h2>gist-load-balancer</h2><span class="badge badge-config">Config only</span></summary>
         <div class="section-body">
-          <p>A reverse-proxying round-robin load balancer in front of a fixed list of backend
-            URLs — config-only, like <code>gist-http-server</code>: nothing to call from your own
-            code, you just point config at it and traffic gets distributed. Modeled on
-            <a href="https://dev.to/vivekalhat/building-a-simple-load-balancer-in-go-70d">this
-            dev.to article</a> (round robin + periodic HTTP HEAD health checks over
-            <code>httputil.ReverseProxy</code>), with a per-instance <code>health-check-path</code>
-            borrowed from <a href="https://github.com/Abdulrahman-Tayara/go-lb">go-lb</a>'s
-            per-server health endpoint. go-lb's other features (weighted/sticky/least-connections
-            strategies, TLS, rate limiting, content-based routing) are deliberately not ported —
-            round robin covers the actual use case, TLS conflicts with
-            <code>gist-api-server</code>'s own "always plain HTTP, front it with a reverse proxy"
-            stance (this service follows the same rule — no <code>protocol</code>/TLS field here
-            either), and content-based routing already belongs to <code>gist-api-server</code>,
-            not this service.</p>
+                <!-- GENERATED:gist-load-balancer:INTRO:BEGIN -->
+          <p>A reverse-proxying round-robin load balancer in front of a fixed list of backend URLs — config-only, like <code>gist-http-server</code>: nothing to call from your own code, you just point config at it and traffic gets distributed. Modeled on <a href="https://dev.to/vivekalhat/building-a-simple-load-balancer-in-go-70d">this dev.to article</a> (round robin + periodic HTTP HEAD health checks over <code>httputil.ReverseProxy</code>), with a per-instance <code>health-check-path</code> borrowed from <a href="https://github.com/Abdulrahman-Tayara/go-lb">go-lb</a>'s per-server health endpoint. go-lb's other features (weighted/sticky/least-connections strategies, TLS, rate limiting, content-based routing) are deliberately not ported — round robin covers the actual use case, TLS conflicts with <code>gist-api-server</code>'s own "always plain HTTP, front it with a reverse proxy" stance (this service follows the same rule — no <code>protocol</code>/TLS field here either), and content-based routing already belongs to <code>gist-api-server</code>, not this service.</p>
+                <!-- GENERATED:gist-load-balancer:INTRO:END -->
           <div class="config-link">Config: <a href="https://claude.ai/code/artifact/348f5780-1067-4945-b0f7-ea4e96940648#gist-load-balancer-config">gist-load-balancer-config</a></div>
+                <!-- GENERATED:gist-load-balancer:BEGIN -->
           <div class="cfgref">
               <div class="cfgref-tabs">
                 <button type="button" class="cfgref-tab is-active" data-mode="minimal">Minimal</button>
@@ -3646,9 +3673,9 @@ func RegisterRabbitMQConsumer[dep any](
                   <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
                   <tbody>
                   <tr><td><code>id</code></td><td>string</td><td>Unique instance ID for this load balancer.</td></tr>
-                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely.</td></tr>
-                  <tr><td><code>port</code></td><td>int</td><td>Bind port for the load balancer's listener. Required — no default.</td></tr>
-                  <tr><td><code>backends</code></td><td>[]string</td><td>Absolute backend URLs traffic is round-robin distributed across. At least one is required.</td></tr>
+                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely (no listener started).</td></tr>
+                  <tr><td><code>backends</code></td><td>[]string</td><td>Absolute backend URLs (scheme + host required) traffic is round-robin distributed across. At least one is required.</td></tr>
+                  <tr><td><code>port</code></td><td>int</td><td>Bind port for the listener. Required — no default.</td></tr>
                   </tbody>
                 </table>
                 </div>
@@ -3658,11 +3685,8 @@ func RegisterRabbitMQConsumer[dep any](
   {
     "id": "orders-api-lb",
     "enabled": true,
-    "port": 9000,
-    "backends": [
-      "http://127.0.0.1:8080",
-      "http://127.0.0.1:8081"
-    ]
+    "backends": ["http://127.0.0.1:8080", "http://127.0.0.1:8081"],
+    "port": 9000
   }
 ]</code></pre>
                 </div>
@@ -3692,10 +3716,7 @@ func RegisterRabbitMQConsumer[dep any](
     "enabled": true,
     "delayed-start": "5s",
     "wait-for": [],
-    "backends": [
-      "http://127.0.0.1:8080",
-      "http://127.0.0.1:8081"
-    ],
+    "backends": ["http://127.0.0.1:8080", "http://127.0.0.1:8081"],
     "health-check-interval": "10s",
     "health-check-path": "/ping",
     "hostname": "0.0.0.0",
@@ -3704,7 +3725,8 @@ func RegisterRabbitMQConsumer[dep any](
 ]</code></pre>
                 </div>
               </div>
-            </div>
+          </div>
+                <!-- GENERATED:gist-load-balancer:END -->
           <p><strong>Behavior</strong>: round robin across whichever backends are currently marked
             healthy; every backend starts optimistically healthy (so a freshly booted instance
             doesn't 503 everything before the first check lands), then gets a real
