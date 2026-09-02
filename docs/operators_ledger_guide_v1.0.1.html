@@ -1,0 +1,1868 @@
+<!DOCTYPE html>
+<title>The Operator's Ledger</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Chakra+Petch:wght@500;600;700&family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /*
+    Deliberately single-theme: a CRT/neon-signage look loses its point in
+    daylight-paper mode, so this commits to one dark world instead of
+    switching on prefers-color-scheme. Every color is still an explicit
+    token (never inherited), so the page holds on any host ground.
+  */
+  :root{
+    --void:#05060a;
+    --panel:#0b0e18;
+    --panel-2:#10131f;
+    --text:#d9ecef;
+    --text-muted:#5f7c86;
+    --line:#1d3038;
+    --cyan:#00f0ff;
+    --cyan-dim:#0a8fa3;
+    --magenta:#ff2bd6;
+    --amber:#ffb703;
+    --shadow:rgba(0,240,255,.15);
+  }
+
+  *{box-sizing:border-box;}
+
+  body{
+    position:relative;
+    background:var(--void);
+    color:var(--text);
+    font-family:"Rajdhani","Chakra Petch",system-ui,sans-serif;
+    font-weight:500;
+    font-size:1.06rem;
+    line-height:1.65;
+  }
+  /* faint circuit grid, fixed under everything */
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    background-image:
+      linear-gradient(rgba(0,240,255,.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,240,255,.05) 1px, transparent 1px);
+    background-size:38px 38px;
+    pointer-events:none;
+    z-index:0;
+  }
+  /* CRT scanlines, fixed under everything */
+  body::after{
+    content:"";
+    position:fixed; inset:0;
+    background:repeating-linear-gradient(
+      to bottom, rgba(0,0,0,0) 0, rgba(0,0,0,0) 2px,
+      rgba(0,240,255,.025) 3px, rgba(0,0,0,0) 4px
+    );
+    pointer-events:none;
+    z-index:0;
+  }
+
+  ::selection{ background:var(--magenta); color:var(--void); }
+
+  a{ color:var(--cyan); }
+
+  code{
+    font-family:"JetBrains Mono",monospace;
+    font-size:.92em;
+    color:var(--cyan);
+    background:color-mix(in srgb, var(--cyan) 10%, transparent);
+    padding:.05em .3em;
+  }
+  .snippet code{ background:none; padding:0; font-size:.82rem; }
+
+  .wrap{
+    position:relative;
+    z-index:1;
+    max-width:740px;
+    margin:0 auto;
+    padding:3.5rem 1.5rem 6rem;
+  }
+
+  h1,h2,h3{
+    font-family:"Chakra Petch", system-ui, sans-serif;
+    font-weight:700;
+    text-transform:uppercase;
+    letter-spacing:.01em;
+    text-wrap:balance;
+    line-height:1.15;
+    margin:0;
+    color:var(--text);
+  }
+
+  .eyebrow{
+    font-family:"JetBrains Mono",monospace;
+    font-size:.72rem;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--magenta);
+    display:flex;
+    align-items:center;
+    gap:.6em;
+  }
+  .eyebrow::before{
+    content:"//";
+    color:var(--cyan-dim);
+  }
+
+  /* ---------- hero ---------- */
+  .hero{
+    display:flex;
+    flex-direction:column;
+    align-items:flex-start;
+    gap:1.1rem;
+    margin-bottom:2.6rem;
+  }
+  .lantern{
+    width:56px; height:56px;
+    filter:drop-shadow(0 0 12px var(--cyan)) drop-shadow(0 0 26px color-mix(in srgb, var(--magenta) 45%, transparent));
+  }
+  @media (prefers-reduced-motion: no-preference){
+    .lantern{ animation:corePulse 3.2s ease-in-out infinite; }
+  }
+  @keyframes corePulse{
+    0%,100%{ filter:drop-shadow(0 0 10px var(--cyan)) drop-shadow(0 0 22px color-mix(in srgb, var(--magenta) 40%, transparent)); }
+    50%{ filter:drop-shadow(0 0 18px var(--cyan)) drop-shadow(0 0 34px color-mix(in srgb, var(--magenta) 60%, transparent)); }
+  }
+  .hero h1{
+    font-family:"Orbitron", "Chakra Petch", sans-serif;
+    font-size:clamp(1.9rem, 3.4vw + 1rem, 2.7rem);
+    font-weight:900;
+    letter-spacing:.02em;
+    text-shadow:0 0 14px color-mix(in srgb, var(--cyan) 55%, transparent);
+  }
+  .hero p.lede{
+    color:var(--text-muted);
+    font-size:1.12rem;
+    max-width:58ch;
+  }
+  .note-block{
+    border-top:1px dashed var(--line);
+    padding-top:1.6rem;
+    margin-top:.4rem;
+  }
+  .note-block p{
+    font-family:"JetBrains Mono",monospace;
+    font-size:.95rem;
+    color:var(--cyan);
+    max-width:58ch;
+    line-height:1.7;
+  }
+
+  /* ---------- selector panel ---------- */
+  .panel{
+    position:relative;
+    background:var(--panel);
+    border:1px solid var(--line);
+    padding:1.8rem;
+    margin:2.6rem 0 3.2rem;
+    box-shadow:0 0 0 1px rgba(0,0,0,.4), 0 0 32px var(--shadow);
+  }
+  /* HUD corner brackets */
+  .panel::before, .panel::after{
+    content:"";
+    position:absolute;
+    width:16px; height:16px;
+    border:2px solid var(--cyan);
+  }
+  .panel::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+  .panel::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+
+  .panel-head{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:space-between;
+    align-items:baseline;
+    gap:.8rem;
+    margin-bottom:.35rem;
+  }
+  .panel-head h2{ font-size:1.25rem; font-weight:700; }
+  .panel-sub{ color:var(--text-muted); font-size:.92rem; margin:.5rem 0 1.4rem; max-width:56ch; }
+
+  .panel-actions{ display:flex; gap:.6rem; }
+  .btn{
+    font-family:"JetBrains Mono",monospace;
+    font-size:.72rem;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    background:var(--panel-2);
+    border:1px solid var(--cyan-dim);
+    color:var(--cyan);
+    padding:.5rem .7rem;
+    cursor:pointer;
+    transition:border-color .15s ease, color .15s ease, box-shadow .15s ease;
+  }
+  .btn::before{ content:"["; margin-right:.35em; color:var(--text-muted); }
+  .btn::after{ content:"]"; margin-left:.35em; color:var(--text-muted); }
+  .btn:hover{ border-color:var(--magenta); color:var(--magenta); box-shadow:0 0 12px color-mix(in srgb, var(--magenta) 40%, transparent); }
+  .btn:focus-visible, .seal:focus-within{ outline:2px solid var(--cyan); outline-offset:2px; }
+
+  .status-line{
+    font-family:"JetBrains Mono",monospace;
+    font-size:.78rem;
+    color:var(--text-muted);
+    margin:0 0 1.3rem;
+    font-variant-numeric:tabular-nums;
+  }
+  .status-line strong{ color:var(--cyan); font-weight:600; }
+
+  /* ---------- rank bar ---------- */
+  .rankbar-row{
+    display:flex;
+    align-items:center;
+    flex-wrap:wrap;
+    gap:.85rem;
+    margin:0 0 1.5rem;
+  }
+  .rankbar{ display:flex; gap:3px; }
+  .rankbar-seg{
+    width:15px; height:11px;
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    clip-path:polygon(18% 0, 100% 0, 82% 100%, 0 100%);
+    transition:background .2s ease, border-color .2s ease, box-shadow .2s ease;
+  }
+  .rankbar-seg.lit{
+    background:var(--cyan);
+    border-color:var(--cyan);
+    box-shadow:0 0 8px color-mix(in srgb, var(--cyan) 65%, transparent);
+  }
+  .rankbar-seg.lit.maxed{
+    background:var(--magenta);
+    border-color:var(--magenta);
+    box-shadow:0 0 10px color-mix(in srgb, var(--magenta) 65%, transparent);
+  }
+  @media (max-width:400px){
+    /* 16 fixed-width segments in an unwrapping flex row (one per
+       chapter) - at the default size this is wider than the content
+       area below ~333px viewport width, pushing the whole page into
+       horizontal scroll. Shrinking the segments themselves keeps it one
+       clean bar instead of wrapping or scrolling it. */
+    .rankbar{ gap:2px; }
+    .rankbar-seg{ width:11px; height:8px; }
+  }
+  .rank-label{
+    font-family:"JetBrains Mono",monospace;
+    font-size:.74rem;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    color:var(--text-muted);
+    white-space:nowrap;
+    font-variant-numeric:tabular-nums;
+  }
+  .rank-label strong{ color:var(--cyan); font-weight:600; }
+
+  /* ---------- achievement log ---------- */
+  .achievements{
+    position:relative;
+    background:var(--panel);
+    border:1px solid var(--line);
+    padding:1.8rem;
+    margin:0 0 3.2rem;
+    box-shadow:0 0 0 1px rgba(0,0,0,.4), 0 0 32px var(--shadow);
+  }
+  .achievements::before, .achievements::after{
+    content:"";
+    position:absolute;
+    width:16px; height:16px;
+    border:2px solid var(--magenta);
+  }
+  .achievements::before{ top:-1px; left:-1px; border-right:none; border-bottom:none; }
+  .achievements::after{ bottom:-1px; right:-1px; border-left:none; border-top:none; }
+  .achievements h2{ font-size:1.25rem; font-weight:700; }
+  .badges{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(220px, 1fr));
+    gap:.7rem;
+    margin-top:1.4rem;
+  }
+  .badge{
+    display:flex;
+    flex-direction:column;
+    gap:.35rem;
+    padding:.9rem 1rem;
+    border:1px solid var(--line);
+    background:var(--panel-2);
+    transition:border-color .2s ease, box-shadow .2s ease, opacity .2s ease;
+  }
+  .badge-name{
+    font-family:"Chakra Petch",sans-serif;
+    font-weight:600;
+    font-size:.82rem;
+    text-transform:uppercase;
+    letter-spacing:.02em;
+    display:flex;
+    align-items:center;
+    gap:.5em;
+    color:var(--text);
+  }
+  .badge-name::before{ content:"◇"; font-size:.7em; color:var(--text-muted); }
+  .badge-desc{ font-size:.78rem; color:var(--text-muted); line-height:1.4; }
+  .badge.locked{ opacity:.5; }
+  .badge.unlocked{
+    border-color:var(--cyan-dim);
+    box-shadow:0 0 14px color-mix(in srgb, var(--cyan) 16%, transparent);
+  }
+  .badge.unlocked .badge-name{ color:var(--magenta); }
+  .badge.unlocked .badge-name::before{ content:"◆"; color:var(--magenta); }
+  @media (prefers-reduced-motion: no-preference){
+    .badge.pop{ animation:badgePop .6s ease; }
+  }
+  @keyframes badgePop{
+    0%{ transform:scale(1); }
+    35%{ transform:scale(1.045); box-shadow:0 0 26px color-mix(in srgb, var(--magenta) 65%, transparent); }
+    100%{ transform:scale(1); }
+  }
+
+  .seals{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(148px, 1fr));
+    gap:.7rem;
+  }
+  .seal{
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+    gap:.5rem;
+    padding:1.1rem .6rem .9rem;
+    border:1px solid var(--line);
+    cursor:pointer;
+    background:var(--panel-2);
+    transition:border-color .15s ease, transform .15s ease, box-shadow .15s ease;
+    user-select:none;
+  }
+  .seal:hover{ transform:translateY(-2px); border-color:var(--cyan-dim); }
+  .seal input{ position:absolute; opacity:0; pointer-events:none; }
+
+  .seal-ring{
+    width:46px; height:46px;
+    clip-path:polygon(50% 0%, 93% 25%, 93% 75%, 50% 100%, 7% 75%, 7% 25%);
+    border:2px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    font-family:"Orbitron",sans-serif;
+    font-weight:700;
+    font-size:.98rem;
+    color:var(--text-muted);
+    transition:all .18s ease;
+  }
+  .seal.is-selected{ border-color:var(--cyan-dim); box-shadow:0 0 18px color-mix(in srgb, var(--cyan) 22%, transparent); }
+  .seal.is-selected .seal-ring{
+    border-color:var(--cyan);
+    background:var(--cyan);
+    color:var(--void);
+    box-shadow:0 0 16px color-mix(in srgb, var(--cyan) 70%, transparent);
+  }
+  .seal.reserved .seal-ring{ border-style:dashed; border-color:var(--amber); }
+  .seal.reserved.is-selected{ box-shadow:0 0 18px color-mix(in srgb, var(--amber) 25%, transparent); }
+  .seal.reserved.is-selected .seal-ring{ background:transparent; color:var(--amber); border-style:dashed; border-color:var(--amber); box-shadow:none; }
+
+  .seal-name{ font-family:"Chakra Petch",sans-serif; font-weight:600; font-size:.86rem; text-transform:uppercase; letter-spacing:.02em; }
+  .seal-hook{ font-size:.78rem; color:var(--text-muted); line-height:1.35; }
+  .seal-flag{
+    font-family:"JetBrains Mono",monospace;
+    font-size:.6rem;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--amber);
+  }
+
+  /* ---------- chapters ---------- */
+  .entry{
+    padding:2.4rem 0;
+    border-top:1px solid var(--line);
+  }
+  .entry:first-of-type{ border-top:none; padding-top:0; }
+
+  @media (prefers-reduced-motion: no-preference){
+    .entry.enter{ animation:glitchIn .45s steps(6, end) both; }
+  }
+  @keyframes glitchIn{
+    0%{ opacity:0; transform:translateX(-6px); clip-path:inset(0 0 60% 0); }
+    30%{ opacity:1; transform:translateX(3px); clip-path:inset(0 0 30% 0); }
+    55%{ transform:translateX(-2px); clip-path:inset(20% 0 0 0); }
+    100%{ opacity:1; transform:translateX(0); clip-path:inset(0 0 0 0); }
+  }
+
+  .entry-num{
+    font-family:"JetBrains Mono",monospace;
+    font-size:.78rem;
+    color:var(--magenta);
+    letter-spacing:.04em;
+  }
+  .entry-num::before{ content:"> "; color:var(--cyan-dim); }
+  .entry h2{
+    font-size:clamp(1.3rem, 1.6vw + 1rem, 1.65rem);
+    font-weight:700;
+    margin:.4rem 0 1rem;
+  }
+  .entry p{ margin:0 0 1rem; max-width:66ch; }
+  .entry .tag-reserved{
+    display:inline-block;
+    font-family:"JetBrains Mono",monospace;
+    font-size:.68rem;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--amber);
+    border:1px dashed var(--amber);
+    padding:.15rem .6rem;
+    margin-bottom:1rem;
+  }
+
+  .snippet{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-left:3px solid var(--cyan-dim);
+    padding:0 0 .15rem;
+    margin:0 0 1.2rem;
+    overflow-x:auto;
+  }
+  .snippet-label{
+    font-family:"JetBrains Mono",monospace;
+    font-size:.66rem;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    color:var(--text-muted);
+    padding:.55rem 1rem;
+    display:flex;
+    align-items:center;
+    border-bottom:1px solid var(--line);
+  }
+  .snippet-label::before{
+    content:"";
+    width:7px; height:7px; border-radius:50%;
+    background:var(--magenta);
+    box-shadow:13px 0 var(--amber), 26px 0 var(--cyan);
+    margin-right:2.6rem;
+    flex:none;
+  }
+  .copy-btn{
+    font-family:"JetBrains Mono",monospace;
+    font-size:.62rem;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    background:transparent;
+    border:1px solid var(--line);
+    color:var(--text-muted);
+    padding:.2rem .6rem;
+    cursor:pointer;
+    margin-left:auto;
+    flex:none;
+    transition:border-color .15s ease, color .15s ease;
+  }
+  .copy-btn:hover{ border-color:var(--cyan-dim); color:var(--cyan); }
+  .copy-btn:focus-visible{ outline:2px solid var(--cyan); outline-offset:2px; }
+  .copy-btn.copied{ border-color:var(--magenta); color:var(--magenta); }
+
+  .snippet pre{ margin:0; padding:.8rem 1rem 1rem; }
+  .snippet code{
+    font-family:"JetBrains Mono",monospace;
+    font-size:.82rem;
+    line-height:1.6;
+    color:var(--cyan);
+    white-space:pre;
+  }
+
+  /* ---------- config reference (collapsed, deliberately quiet) ---------- */
+  .cfgref{
+    margin:0 0 1.2rem;
+    border:1px solid var(--line);
+    background:var(--panel);
+  }
+  .cfgref summary{
+    cursor:pointer;
+    list-style:none;
+    padding:.55rem .9rem;
+    font-family:"JetBrains Mono",monospace;
+    font-size:.72rem;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    color:var(--text-muted);
+    display:flex;
+    align-items:center;
+    gap:.55em;
+    transition:color .15s ease;
+  }
+  .cfgref summary::-webkit-details-marker{ display:none; }
+  .cfgref summary::before{
+    content:"▸";
+    color:var(--cyan-dim);
+    display:inline-block;
+    transition:transform .15s ease;
+  }
+  .cfgref[open] summary::before{ transform:rotate(90deg); }
+  .cfgref summary:hover{ color:var(--cyan); }
+  .cfgref summary code{ font-size:.9em; }
+  .cfgref-body{ padding:.2rem .9rem .9rem; border-top:1px dashed var(--line); }
+  .cfgref-note{ color:var(--text-muted); font-size:.8rem; margin:.8rem 0 .9rem; max-width:60ch; }
+  .cfgref-tabs{ display:flex; gap:.4rem; margin:0 0 .8rem; }
+  .cfgref-tab{
+    font-family:"JetBrains Mono",monospace;
+    font-size:.66rem;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    background:var(--panel-2);
+    border:1px solid var(--line);
+    color:var(--text-muted);
+    padding:.3rem .65rem;
+    cursor:pointer;
+    transition:border-color .15s ease, color .15s ease;
+  }
+  .cfgref-tab.is-active{ border-color:var(--cyan-dim); color:var(--cyan); }
+  .cfgref-tab:hover{ color:var(--cyan); }
+  .cfgref .snippet{ margin:0; }
+
+  .boot{
+    margin:0 0 2.8rem;
+    padding-top:1.8rem;
+    border-top:1px dashed var(--line);
+  }
+  .version-select{
+    font-family:"JetBrains Mono",monospace;
+    font-size:.72rem;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+    background:var(--panel-2);
+    border:1px solid var(--cyan-dim);
+    color:var(--cyan);
+    padding:.4rem .6rem;
+    cursor:pointer;
+    align-self:flex-start;
+  }
+  .version-select:hover{ border-color:var(--cyan); box-shadow:0 0 8px var(--shadow); }
+  .version-select:focus-visible{ outline:2px solid var(--cyan); outline-offset:2px; }
+
+  .boot .eyebrow{ margin-bottom:.7rem; }
+  .boot p{ max-width:66ch; margin:0 0 1.1rem; }
+
+  .empty-state{
+    color:var(--text-muted);
+    font-family:"JetBrains Mono",monospace;
+    font-size:.98rem;
+    padding:2rem 0;
+    border-top:1px dashed var(--line);
+    text-align:center;
+  }
+  .empty-state::before{ content:"["; color:var(--cyan-dim); margin-right:.4em; }
+  .empty-state::after{ content:"]"; color:var(--cyan-dim); margin-left:.4em; }
+
+  /* ---------- epilogue table ---------- */
+  .epilogue{ margin-top:3rem; padding-top:2.4rem; border-top:1px solid var(--line); }
+  .table-wrap{ overflow-x:auto; margin-top:1.4rem; border:1px solid var(--line); }
+  table{ width:100%; border-collapse:collapse; font-size:.86rem; font-family:"JetBrains Mono",monospace; }
+  th{
+    font-size:.66rem;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    color:var(--text-muted);
+    text-align:left;
+    padding:.6rem .7rem;
+    background:var(--panel-2);
+    border-bottom:1px solid var(--line);
+  }
+  td{
+    padding:.65rem .7rem;
+    border-bottom:1px solid var(--line);
+    vertical-align:top;
+  }
+  td:first-child, th:first-child{ font-variant-numeric:tabular-nums; width:2.2em; color:var(--cyan-dim); }
+  tr.dim td{ color:var(--text-muted); opacity:.5; }
+  .lit-pill, .unlit-pill{
+    font-size:.64rem;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    padding:.15rem .55rem;
+    white-space:nowrap;
+    border:1px solid;
+  }
+  .lit-pill{ background:color-mix(in srgb, var(--cyan) 14%, transparent); color:var(--cyan); border-color:var(--cyan-dim); }
+  .unlit-pill{ border-color:var(--line); color:var(--text-muted); }
+
+  footer{
+    margin-top:3rem;
+    color:var(--magenta);
+    font-family:"JetBrains Mono",monospace;
+    font-size:.88rem;
+  }
+</style>
+
+<div class="wrap">
+
+  <div class="hero">
+    <svg class="lantern" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M32 4v8" stroke="var(--magenta)" stroke-width="2" stroke-linecap="round"/>
+      <rect x="20" y="14" width="24" height="6" rx="2" fill="var(--magenta)"/>
+      <path d="M18 24c0-2 2-4 4-4h20c2 0 4 2 4 4v20c0 2-2 4-4 4H22c-2 0-4-2-4-4V24Z" fill="var(--cyan)" opacity="0.18"/>
+      <path d="M18 24c0-2 2-4 4-4h20c2 0 4 2 4 4v20c0 2-2 4-4 4H22c-2 0-4-2-4-4V24Z" stroke="var(--cyan)" stroke-width="2"/>
+      <circle cx="32" cy="34" r="7" fill="var(--cyan)"/>
+      <rect x="20" y="48" width="24" height="6" rx="2" fill="var(--magenta)"/>
+      <path d="M32 54v6" stroke="var(--magenta)" stroke-width="2" stroke-linecap="round"/>
+    </svg>
+    <p class="eyebrow">A gist-server transmission</p>
+    <select class="version-select" id="doc-version-select" aria-label="Guide version"
+      onchange="if(this.value) location.href = this.value;">
+      <option value="operators_ledger_guide_latest.html">latest (current)</option>
+    </select>
+    <h1>The Operator's Ledger</h1>
+    <p class="lede">You've inherited a dead Sysop's rig and one tool that compiles into almost
+      anything &mdash; but only one process at a time. Boot the daemons below, and the Exchange
+      comes online around exactly what's running.</p>
+    <div class="note-block">
+      <p>&gt; LAST LOG, SYSOP_v1: this unit doesn't run everything at once. It compiles one true
+        process at a time &mdash; but it compiles it clean. State exactly what you need in the
+        manifest, and it holds that shape until you say otherwise.</p>
+    </div>
+  </div>
+
+  <div class="boot">
+    <span class="entry-num">Boot sequence &middot; gist-server</span>
+    <h2>The Cold Rig</h2>
+    <p>Nobody's seen the last Sysop in three weeks. What's left in the safehouse is a dead
+      terminal, a rack that hasn't been powered down, and a note taped over the drive bay: the
+      Gist doesn't come with a project. It never did. You don't inherit an Exchange &mdash; you
+      have to stand one up, from a cold rig, tonight.</p>
+    <p>So you don't hand-wire a module and a manifest out of nothing. You point the rig's own
+      binary at itself and let it build its own scaffolding.</p>
+    <div class="snippet">
+      <span class="snippet-label">terminal</span>
+      <pre><code>./bin/gist-server -new-project meridianexchange -generate-config gist-api-server
+cd meridianexchange
+go get github.com/wieoapps/gist-sdk</code></pre>
+    </div>
+    <p>It refuses outright if a rig's already standing at that path &mdash; no clobbering
+      somebody else's build by accident. What it hands back instead is a bare skeleton: a
+      <code>go.mod</code>, a <code>main.go</code> that does nothing yet, and a manifest sitting
+      at <code>config/config.json</code> with exactly one process already named in it &mdash;
+      <code>file-job</code>, the uplink desk from the first chapter, waiting for you to give it a
+      body. Boot the rig and <code>gistsdk.NewApp</code> reads that manifest without you touching
+      a single wire. Everything from here is the same move, over and over: one more entry, one
+      more process, until the rig is the Exchange again.</p>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head">
+      <h2>Compile your loadout</h2>
+      <div class="panel-actions">
+        <button class="btn" id="kindle-all" type="button">Compile all</button>
+        <button class="btn" id="douse-all" type="button">Purge all</button>
+      </div>
+    </div>
+    <p class="panel-sub">Each node is a process the Gist can compile into &mdash; a real
+      gist-server service. Boot the ones your Exchange needs; the log below grows to match. Every
+      entry also folds out a config reference &mdash; collapsed by default, minimal vs. every
+      parameter set.</p>
+    <p class="status-line" id="status-line"></p>
+    <div class="rankbar-row">
+      <div class="rankbar" id="rankbar"></div>
+      <span class="rank-label" id="rank-label"></span>
+    </div>
+    <div class="seals" id="seals"></div>
+  </div>
+
+  <div class="achievements">
+    <p class="eyebrow">Field intel</p>
+    <h2>Achievement log</h2>
+    <p class="panel-sub">Logged automatically off exactly which daemons are running &mdash;
+      not every loadout earns a medal, but a few of them mean something.</p>
+    <div class="badges" id="badges"></div>
+  </div>
+
+  <main id="entries"></main>
+
+  <p class="empty-state" id="empty-state">No daemons running. Compile one above to boot the Exchange.</p>
+
+  <div class="epilogue">
+    <p class="eyebrow">Epilogue</p>
+    <h2>Full system access</h2>
+    <p>Whether you've compiled one process or all fifteen, this is the whole map the Gist can
+      hold &mdash; every daemon it's capable of running, and what each one is really called.</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>#</th><th>Chapter</th><th>Service</th><th>Status</th></tr>
+        </thead>
+        <tbody id="epilogue-body"></tbody>
+      </table>
+    </div>
+    <p>Want the real API behind any single one of these &mdash; exact signatures, not paraphrased?
+      That's what <code>SERVICE_REFERENCE.md</code> is for, and it covers all sixteen processes
+      this rig can compile into, not just the ones this transmission happened to use. This
+      transmission exists to show <em>why</em> an Operator reaches for each daemon in the first
+      place &mdash; usually the harder thing for a reference doc to teach.</p>
+  </div>
+
+  <footer>&gt; The core's still warm. What ships next?</footer>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ---------- version dropdown: lists whatever
+  // operators_ledger_guide_vX.Y.Z.html snapshots actually exist in this
+  // GitHub Pages repo right now, fetched from GitHub's Contents API
+  // (Pages itself has no directory-listing endpoint) - release.sh only
+  // has to drop a new file in the repo, this page never needs its own
+  // <option> list edited or regenerated. Cached in localStorage for an
+  // hour: that API is capped at 60 unauthenticated requests/hour per
+  // visitor IP, and a docs page with any real traffic would burn through
+  // that on page-load alone otherwise.
+  (function(){
+    var sel = document.getElementById("doc-version-select");
+    if(!sel) return;
+    var file = location.pathname.split("/").pop() || "operators_ledger_guide_latest.html";
+
+    function selectByValue(value){
+      for (var i = 0; i < sel.options.length; i++){
+        if (sel.options[i].value === value){ sel.selectedIndex = i; return true; }
+      }
+      return false;
+    }
+    selectByValue(file);
+
+    // Descending numeric compare on the vN.N.N in each filename - a
+    // plain string sort would put "v1.0.10" before "v1.0.9".
+    function compareVersionsDesc(a, b){
+      var na = a.match(/(\d+)\.(\d+)\.(\d+)/), nb = b.match(/(\d+)\.(\d+)\.(\d+)/);
+      if (!na || !nb) return 0;
+      for (var i = 1; i <= 3; i++){
+        var diff = parseInt(nb[i], 10) - parseInt(na[i], 10);
+        if (diff !== 0) return diff;
+      }
+      return 0;
+    }
+
+    function populate(names){
+      while (sel.options.length > 1) sel.remove(1);
+      names.forEach(function(name){
+        var opt = document.createElement("option");
+        opt.value = name;
+        opt.textContent = name.replace(/^operators_ledger_guide_/, "").replace(/\.html$/, "");
+        sel.appendChild(opt);
+      });
+      selectByValue(file);
+    }
+
+    var CACHE_KEY = "gist-docs:versions:ledger:v1";
+    var CACHE_TTL_MS = 60 * 60 * 1000;
+
+    function readCache(){
+      try {
+        var raw = localStorage.getItem(CACHE_KEY);
+        if (!raw) return null;
+        var cached = JSON.parse(raw);
+        if (Date.now() - cached.time > CACHE_TTL_MS) return null;
+        return cached.names;
+      } catch (e) { return null; }
+    }
+    function writeCache(names){
+      try { localStorage.setItem(CACHE_KEY, JSON.stringify({ time: Date.now(), names: names })); } catch (e) {}
+    }
+
+    var cached = readCache();
+    if (cached) populate(cached);
+
+    fetch("https://api.github.com/repos/wieoapps/gist/contents/docs")
+      .then(function(r){ return r.ok ? r.json() : Promise.reject(r.status); })
+      .then(function(items){
+        var names = items
+          .map(function(it){ return it.name; })
+          .filter(function(name){ return /^operators_ledger_guide_v\d+\.\d+\.\d+\.html$/.test(name); })
+          .sort(compareVersionsDesc);
+        writeCache(names);
+        populate(names);
+      })
+      .catch(function(err){
+        console.warn("gist-server docs: could not load the version list from GitHub", err);
+      });
+  })();
+
+  var CHAPTERS = [
+    {
+      key: "api-server", num: 1, name: "Uplink Desk", hook: "Promise a payload before it's real",
+      service: "gist-api-server", title: "The Promise Before the Proof",
+      body: [
+        "First client pings before you've even got coffee running. She wants to post a job — pickup, drop point, deadline — and get a confirmation back. You have nothing real to give her yet. But you don't need the real thing to promise the shape of the thing: you declare the route before you wire it.",
+        "In <code>config/endpoints.json</code>, you write down that <code>POST /jobs</code> exists — its id, its method, its path, the shape of what goes in and what comes back — without a single line of Go behind it yet."
+      ],
+      snippets: [
+        { label: "config/endpoints.json", code: "{\n  \"id\": \"file-job\",        // matched against the handler registered via gRPC\n  \"method\": \"POST\",        // HTTP method\n  \"path\": \"/jobs\",         // URL path\n  \"tags\": [\"jobs\"]         // grouping tags shown in the docs UI\n}" }
+      ],
+      tail: "Boot the app and open <code>/docs</code>. There it is: <code>POST /jobs</code>, flagged <strong>unimplemented</strong> in swagger, because gist-api-server's <code>docs</code> block has <code>tag-unimplemented-endpoints</code> on and it never lies about what's real. You hand the client a mock confirmation — a hardcoded response wired through <code>gistapi.EndpointHandler</code>, <code>?mock=true</code> and all — and she disconnects satisfied, not knowing the rig behind the endpoint is still a well-dressed illusion.",
+      cfg: [ { service: "gist-api-server",
+        minimal:
+`"gist-api-server": [
+  {
+    "id": "uplink-desk",                          // unique instance ID
+    "enabled": true,                              // turns this instance on/off
+    "hostname": "0.0.0.0",                        // bind address for the HTTP listener
+    "port": 8080,                                 // bind port for the HTTP listener
+    "endpoints-file": "./config/endpoints.json"   // route/doc metadata for every endpoint
+  }
+]`,
+        full:
+`"gist-api-server": [
+  {
+    "id": "uplink-desk",                 // instance ID, matched by gistapiserver.Attach
+    "enabled": true,                     // turns this instance on/off
+    "delayed-start": 0,                  // seconds to wait before booting
+    "wait-for": ["exchange-db"],         // ids of other services to wait ready first
+    "api-key": "",                       // set to require x-api-key on every request
+    "auths": [
+      {
+        "environment": "prod",           // environment this auth scheme is valid for
+        "token-type": "session",         // name endpoints require to use this scheme
+        "issuer": "meridian-exchange",   // expected JWT iss claim
+        "audience": "exchange-clients",  // expected JWT aud claim
+        "signing-string": "...",         // secret/key used to verify the JWT signature
+        "max-age": 3600                  // max token age in seconds before it's rejected
+      }
+    ],
+    "description": "Meridian Exchange public API",  // shown in the OpenAPI/docs schema
+    "docs": {
+      "enabled": true,                   // turns on the OpenAPI spec + docs UI
+      "ui": "swagger",                   // docs UI renderer
+      "path": "/docs",                   // base path the docs UI is served under
+      "servers": [
+        {
+          "description": "prod",                   // label for this server in the OpenAPI spec
+          "protocol": "https",                      // scheme for this server's URL
+          "hostname": "exchange.meridian.local",    // hostname for this server's URL
+          "port": 443                               // port for this server's URL
+        }
+      ],
+      "tag-unimplemented-endpoints": true, // tags handlerless endpoints as unimplemented
+      "tag-mockable-endpoints": true,      // tags endpoints that have mock data configured
+      "enforce-example-data": true         // fails startup on fields missing an example tag
+    },
+    "endpoints-file": "./config/endpoints.json",  // route/doc metadata for every endpoint
+    "headers": { "x-powered-by": "the-gist" },    // static headers added to every response
+    "hostname": "0.0.0.0",               // bind address for the HTTP listener
+    "middlewares": ["gzip"],             // instance-wide middleware applied to every endpoint
+    "ping-endpoint": "/ping",            // trivial liveness/heartbeat route
+    "port": 8080,                        // bind port for the HTTP listener
+    "prepend-version-to-path": true,     // mounts routes at /v{version}{path}
+    "protocol": "http",                  // scheme used to build BaseURL()
+    "rate-limiter": 100,                 // max requests per window, 0 disables it
+    "timeouts": {
+      "read": 10,                        // max seconds to read an incoming request
+      "write": 10,                       // max seconds to write a response
+      "idle": 5                          // max seconds a keep-alive connection stays idle
+    },
+    "title": "Meridian Exchange",        // shown in the OpenAPI/docs schema
+    "version": {
+      "ma": 1,                           // major version
+      "mi": 0,                           // minor version
+      "pa": 0                            // patch version
+    }
+  }
+]` } ]
+    },
+    {
+      key: "mysql", num: 2, name: "Cold Vault", hook: "Records that survive a reboot",
+      service: "gist-mysql-client", title: "Data That Doesn't Rot",
+      body: [
+        "By midnight, three more clients have posted jobs, and the confirmations you sent this morning are already gone — nothing wrote them down anywhere but stdout. A ledger that forgets on restart isn't a ledger. You need storage that survives a reboot."
+      ],
+      snippets: [
+        { label: "config.json", code: "\"gist-mysql-client\": [\n  {\n    \"id\": \"exchange-db\",             // unique instance ID for this connection pool\n    \"host\": \"127.0.0.1\",             // primary database hostname\n    \"port\": 13306,                    // primary database port\n    \"database\": \"meridian_exchange\", // primary database name\n    \"user\": \"exchange\",              // primary database username\n    \"password\": \"exchange\"           // primary database password\n  }\n]" }
+      ],
+      tail: "You add a <code>Job</code> model — client, drop point, deadline, status — tagged the way gist-mysql-client expects, then rewrite <code>file-job</code>'s handler to insert a real row against <code>sg.ExchangeDb</code>. Now when the client pings back tomorrow, the answer comes from a table, not your memory. (Running on Postgres instead? gist-postgres-client is the same shape, different backend.)",
+      cfg: [ { service: "gist-mysql-client",
+        minimal:
+`"gist-mysql-client": [
+  {
+    "id": "exchange-db",                 // unique instance ID for this connection pool
+    "enabled": true,                     // turns this instance on/off
+    "host": "127.0.0.1",                 // primary database hostname
+    "port": 13306,                       // primary database port
+    "database": "meridian_exchange",     // primary database name
+    "user": "exchange",                  // primary database username
+    "password": "exchange"               // primary database password
+  }
+]`,
+        full:
+`"gist-mysql-client": [
+  {
+    "id": "exchange-db",                 // unique instance ID for this connection pool
+    "enabled": true,                     // turns this instance on/off
+    "delayed-start": 0,                  // seconds to wait before booting
+    "wait-for": [],                      // ids of other services to wait ready first
+    "conn-max-lifetime-minutes": 30,     // max minutes a primary connection is reused
+    "connection-ping": 10,               // seconds between health-check pings, 0 disables
+    "connection-retries": 3,             // reconnect attempts after a failed ping
+    "database": "meridian_exchange",     // primary database name
+    "host": "127.0.0.1",                 // primary database hostname
+    "max-idle-conns": 5,                 // max idle connections kept open to the primary
+    "max-open-conns": 20,                // max open connections to the primary
+    "parse-time": true,                  // scan DATE/DATETIME into time.Time
+    "password": "exchange",              // primary database password
+    "port": 13306,                       // primary database port
+    "query-timeout": 5,                  // seconds per query
+    "replicas": [
+      {
+        "host": "127.0.0.1",                // replica hostname
+        "port": 13307,                      // replica port
+        "max-open-conns": 10,               // max open connections to this replica
+        "max-idle-conns": 3,                // max idle connections to this replica
+        "conn-max-lifetime-minutes": 30     // max minutes a replica connection is reused
+      }
+    ],
+    "ssl-mode": false,                   // enables TLS; replicas always inherit this
+    "user": "exchange"                   // primary database username
+  }
+]` } ]
+    },
+    {
+      key: "postgres", num: 3, name: "Parallel Vault", hook: "Same ledger, a partner's own engine",
+      service: "gist-postgres-client", title: "The Other Backend",
+      body: [
+        "A logistics partner wants to co-run the Exchange's freight leg — but their own ops team only trusts Postgres, full stop, and they're not migrating their monitoring and backup tooling to match your stack. You don't argue the point. The Gist's repo layer doesn't care which engine is underneath."
+      ],
+      snippets: [
+        { label: "config.json", code: "\"gist-postgres-client\": [\n  {\n    \"id\": \"partner-ledger\",           // unique instance ID for this connection pool\n    \"host\": \"10.20.0.14\",             // primary database hostname\n    \"port\": 5432,                      // primary database port\n    \"database\": \"meridian_partner\",   // primary database name\n    \"user\": \"exchange\",               // primary database username\n    \"password\": \"exchange\"            // primary database password\n  }\n]" }
+      ],
+      tail: "Same <code>Job</code> model, same <code>Find</code>/<code>Save</code>/<code>Update</code>/<code>Delete</code>, same condition DSL and transaction API you already wrote for the Cold Vault — swap <code>gistmysqlclient</code> for <code>gistpostgresclient</code> in the import and the field-injection tag, and every line you already wrote compiles against the partner's engine unchanged. The one field that doesn't carry over is <code>parse-time</code> — mysql-only, since Postgres's driver never needed it.",
+      cfg: [ { service: "gist-postgres-client",
+        minimal:
+`"gist-postgres-client": [
+  {
+    "id": "partner-ledger",              // unique instance ID for this connection pool
+    "enabled": true,                     // turns this instance on/off
+    "host": "10.20.0.14",                // primary database hostname
+    "port": 5432,                        // primary database port
+    "database": "meridian_partner",      // primary database name
+    "user": "exchange",                  // primary database username
+    "password": "exchange"               // primary database password
+  }
+]`,
+        full:
+`"gist-postgres-client": [
+  {
+    "id": "partner-ledger",              // unique instance ID for this connection pool
+    "enabled": true,                     // turns this instance on/off
+    "delayed-start": 0,                  // seconds to wait before booting
+    "wait-for": [],                      // ids of other services to wait ready first
+    "conn-max-lifetime-minutes": 30,     // max minutes a primary connection is reused
+    "connection-ping": 10,               // seconds between health-check pings, 0 disables
+    "connection-retries": 3,             // reconnect attempts after a failed ping
+    "database": "meridian_partner",      // primary database name
+    "host": "10.20.0.14",                // primary database hostname
+    "max-idle-conns": 5,                 // max idle connections kept open to the primary
+    "max-open-conns": 20,                // max open connections to the primary
+    "password": "exchange",              // primary database password
+    "port": 5432,                        // primary database port
+    "query-timeout": 5,                  // seconds per query
+    "replicas": [
+      {
+        "host": "10.20.0.15",               // replica hostname
+        "port": 5433,                       // replica port
+        "max-open-conns": 10,               // max open connections to this replica
+        "max-idle-conns": 3,                // max idle connections to this replica
+        "conn-max-lifetime-minutes": 30     // max minutes a replica connection is reused
+      }
+    ],
+    "ssl-mode": false,                   // maps to libpq's sslmode=require/disable
+    "user": "exchange"                   // primary database username
+  }
+]` } ]
+    },
+    {
+      key: "http-server", num: 4, name: "Public Relay", hook: "A channel anyone can tune into",
+      service: "gist-http-server", title: "The Open Channel",
+      body: [
+        "Not everything needs a login or a database row. The Exchange's rate card and rules of engagement just need to be readable, by anyone, without asking the Gist to think about it at all. You open a plain public relay."
+      ],
+      snippets: [
+        { label: "config.json", code: "\"gist-http-server\": [\n  {\n    \"id\": \"public-relay\",     // unique instance ID for this HTTP server\n    \"hostname\": \"0.0.0.0\",   // bind address for the HTTP listener\n    \"port\": 8081,              // bind port for the HTTP listener\n    \"www-files\": \"./public\"   // directory served as static files\n  }\n]" }
+      ],
+      tail: "That's the whole chapter, and that's the point: gist-http-server is a static file server with no callback into your code at all — no handler, nothing to register. Drop files in <code>./public</code> and the Gist serves them off its own dedicated listener. Some processes it compiles into are this quiet.",
+      cfg: [ { service: "gist-http-server",
+        minimal:
+`"gist-http-server": [
+  {
+    "id": "public-relay",                // unique instance ID for this HTTP server
+    "enabled": true,                     // turns this instance on/off
+    "hostname": "0.0.0.0",               // bind address for the HTTP listener
+    "port": 8081,                        // bind port for the HTTP listener
+    "www-files": "./public"              // directory served as static files
+  }
+]`,
+        full:
+`"gist-http-server": [
+  {
+    "id": "public-relay",                // unique instance ID for this HTTP server
+    "enabled": true,                     // turns this instance on/off
+    "delayed-start": 0,                  // seconds to wait before booting
+    "wait-for": [],                      // ids of other services to wait ready first
+    "hostname": "0.0.0.0",               // bind address, defaults to 0.0.0.0
+    "name": "Public Relay",              // display label only, unused at runtime
+    "port": 8081,                        // bind port, defaults to 80
+    "protocol": "http",                  // scheme this instance is addressed by
+    "www-files": "./public"              // directory served as static files
+  }
+]` } ]
+    },
+    {
+      key: "load-balancer", num: 5, name: "Traffic Control", hook: "One listener isn't enough anymore",
+      service: "gist-load-balancer", title: "The Second Door",
+      body: [
+        "A district-wide rush hits the Uplink Desk at once — every runner in Meridian filing a job in the same ten minutes — and one listener starts queuing requests it can't answer fast enough. You don't rewrite the handler. You open a second door and split the traffic between them."
+      ],
+      snippets: [
+        { label: "config.json", code: "\"gist-load-balancer\": [\n  {\n    \"id\": \"desk-router\",       // unique instance ID for this load balancer\n    \"port\": 9000,                // bind port for the load balancer's listener\n    \"backends\": [\n      \"http://127.0.0.1:8080\",  // uplink desk, instance one\n      \"http://127.0.0.1:8090\"   // uplink desk, instance two\n    ]\n  }\n]" }
+      ],
+      tail: "No handler to write, no callback into your code — like the Public Relay, this process is entirely config: round robin across whichever backend is currently marked healthy, a real <code>HEAD</code> request to each one on a timer, and a clean <code>503</code> instead of a hung connection if every instance goes dark at once. Two Uplink Desks now answer as one door.",
+      cfg: [ { service: "gist-load-balancer",
+        minimal:
+`"gist-load-balancer": [
+  {
+    "id": "desk-router",                  // unique instance ID for this load balancer
+    "enabled": true,                      // turns this instance on/off
+    "port": 9000,                         // bind port for the load balancer's listener
+    "backends": [
+      "http://127.0.0.1:8080",
+      "http://127.0.0.1:8090"
+    ]                                     // backend URLs traffic is round-robin distributed across
+  }
+]`,
+        full:
+`"gist-load-balancer": [
+  {
+    "id": "desk-router",                  // unique instance ID for this load balancer
+    "enabled": true,                      // turns this instance on/off
+    "delayed-start": 0,                   // seconds to wait before booting
+    "wait-for": [],                       // ids of other services to wait ready first
+    "backends": [
+      "http://127.0.0.1:8080",
+      "http://127.0.0.1:8090"
+    ],                                    // backend URLs traffic is round-robin distributed across
+    "health-check-interval": 10,          // seconds between health checks of every backend
+    "health-check-path": "/ping",         // path HEAD-requested to check each backend's health
+    "hostname": "0.0.0.0",                // bind address for the listener
+    "port": 9000                          // bind port for the listener
+  }
+]` } ]
+    },
+    {
+      key: "auth", num: 6, name: "ID Scan", hook: "Know who's really behind the handle",
+      service: "gist-auth", title: "The Checkpoint",
+      body: [
+        "Word gets out, and forged handles start posting jobs under other runners' names. You need to know who's actually on the other end of the line before you let them write anything to the ledger."
+      ],
+      snippets: [
+        { label: "config.json", code: "\"gist-auth\": [\n  {\n    \"id\": \"checkpoint\",       // unique instance ID for this OAuth provider\n    \"hostname\": \"0.0.0.0\",   // bind address for this instance's listener\n    \"port\": 8082,              // bind port for this instance's listener\n    \"provider\": \"gitea\",      // apple, gitea, or google\n    \"callback-url\": \"https://exchange.meridian.local/auth/callback\", // OAuth redirect URL\n    \"client-id\": \"...\",       // OAuth client ID\n    \"client-secret\": \"...\",   // OAuth client secret\n    \"session-secret\": \"...\",  // key used to sign the session cookie store\n    \"scopes\": [\"read:user\"]  // OAuth scopes requested\n  }\n]" }
+      ],
+      tail: "This process is unusual: it needs no callback into your code at all, because the whole OAuth handshake — redirect, exchange, session — already lives inside it, exposed as three plain routes (begin, callback, logout) on its own small listener. From here on, every ledger entry has a real identity attached, not just whoever pinged the endpoint.",
+      cfg: [ { service: "gist-auth",
+        minimal:
+`"gist-auth": [
+  {
+    "id": "checkpoint",                  // unique instance ID for this OAuth provider
+    "enabled": true,                     // turns this instance on/off
+    "hostname": "0.0.0.0",               // bind address for this instance's listener
+    "port": 8082,                        // bind port for this instance's listener
+    "provider": "gitea",                 // apple, gitea, or google
+    "auth-url": "https://git.meridian.local/login/oauth/authorize",     // gitea's authorization endpoint
+    "token-url": "https://git.meridian.local/login/oauth/access_token", // gitea's token endpoint
+    "profile-url": "https://git.meridian.local/api/v1/user",            // gitea's user-profile endpoint
+    "callback-url": "https://exchange.meridian.local/auth/callback",    // OAuth redirect URL
+    "client-id": "...",                  // OAuth client ID
+    "client-secret": "...",              // OAuth client secret
+    "session-secret": "...",             // key used to sign the session cookie store
+    "scopes": ["read:user"]              // OAuth scopes requested
+  }
+]`,
+        full:
+`"gist-auth": [
+  {
+    "id": "checkpoint",                  // unique instance ID; one instance per provider
+    "enabled": true,                     // turns this instance on/off
+    "delayed-start": 0,                  // seconds to wait before booting
+    "wait-for": [],                      // ids of other services to wait ready first
+    "auth-url": "https://git.meridian.local/login/oauth/authorize",   // gitea only
+    "callback-url": "https://exchange.meridian.local/auth/callback",  // OAuth redirect URL
+    "client-id": "...",                  // OAuth client ID, used by all providers
+    "client-secret": "...",              // gitea/google only
+    "hostname": "0.0.0.0",               // bind address for this instance's listener
+    "key-id": "...",                     // apple only
+    "port": 8082,                        // bind port for this instance's listener
+    "private-key": "-----BEGIN PRIVATE KEY-----...",  // apple only, derives client-secret
+    "profile-url": "https://git.meridian.local/api/v1/user",          // gitea only
+    "provider": "gitea",                 // apple, gitea, or google
+    "scopes": ["read:user"],             // OAuth scopes requested
+    "server-url": "",                    // accepted, never actually read
+    "session-secret": "...",             // key used to sign the session cookie store
+    "team-id": "...",                    // apple only
+    "token-url": "https://git.meridian.local/login/oauth/access_token" // gitea only
+  }
+]` } ]
+    },
+    {
+      key: "fixtures", num: 7, name: "Ghostwriter", hook: "A live Exchange by sunrise",
+      service: "gist-fixtures", title: "Ghost Shift",
+      body: [
+        "Your first backer's touring the rig tomorrow to decide whether this thing is worth funding, and right now the ledger has exactly the four jobs you typed in by hand. An Exchange with four jobs in it looks like an Exchange about to go dark. You need it to look live, tonight, without pulling an all-nighter typing rows."
+      ],
+      snippets: [
+        { label: "main.go", code: "gistfixtures.GenerateFixtures(\"exchange-db\", sampleJobs, sampleClients)" }
+      ],
+      tail: "Wired in as a <code>gistsdk.Option</code>, with the sample data itself just tagged Go structs — <code>source</code>, <code>db</code>, <code>json</code>, <code>example</code> tags on a <code>model.Job</code>. Run it once, and by morning the ledger has two dozen jobs and a dozen clients — generated overnight, the way you'd have wanted an actual ops team to do it, if ops teams didn't sleep. Ghost Shift isn't just a database trick these days, either — the same rig can pre-load a locker, a search index, and a message wire for rehearsal, not just rows in a table.",
+      cfg: [ { service: "gist-fixtures",
+        minimal:
+`"gist-fixtures": [
+  {
+    "id": "exchange-db-fixtures",        // unique instance ID for this fixture container
+    "enabled": true,                     // turns this instance on/off
+    "type": "mysql"                      // container dialect to run
+  }
+]`,
+        full:
+`"gist-fixtures": [
+  {
+    "id": "exchange-db-fixtures",         // unique instance ID for this fixture container
+    "enabled": true,                      // turns this instance on/off
+    "delayed-start": 0,                   // seconds to wait before booting
+    "wait-for": [],                       // ids of other services to wait ready first
+    "database": "meridian_exchange_test", // must end in "_test"
+    "host-port": 13306,                   // fixed host port instead of a random one
+    "image": "mysql:8",                   // overrides the dialect's default image
+    "password": "exchange",               // admin/app password created in the container
+    "project-id": "meridian-exchange",    // pubsub type only
+    "type": "mysql",                      // container dialect to run
+    "username": "exchange"                // admin/app username created in the container
+  }
+]` } ]
+    },
+    {
+      key: "http-client", num: 8, name: "Outside Line", hook: "Ask something beyond your firewall",
+      service: "gist-http-client", title: "A Line Out of the City",
+      body: [
+        "A runner's about to cross the East Overpass, but there's word of a patrol sweep on that route tonight. The answer lives outside your walls, on the city watch's own public feed. The Gist can't know intel it's never pulled — but it can go ask."
+      ],
+      snippets: [
+        { label: "config.json", code: "\"gist-http-client\": [\n  {\n    \"id\": \"outside-line\",                                       // unique instance ID for this HTTP client\n    \"base-url\": \"https://citywatch.meridian-precinct.example\",  // base URL for every request\n    \"timeout\": 5                                                 // request timeout, in seconds\n  }\n]" },
+        { label: "handler", code: "resp := outsideLine.Get(ctx, \"/patrol-status/east-overpass\")" }
+      ],
+      tail: "One outbound call, through a client whose base URL, headers, and timeout are all config, not code. You attach the answer to the job's dispatch record: clear, or held for the night. For the first time, the rig knows something it didn't already contain.",
+      cfg: [ { service: "gist-http-client",
+        minimal:
+`"gist-http-client": [
+  {
+    "id": "outside-line",                 // unique instance ID for this HTTP client
+    "enabled": true,                      // turns this instance on/off
+    "base-url": "https://citywatch.meridian-precinct.example"  // base URL for every request
+  }
+]`,
+        full:
+`"gist-http-client": [
+  {
+    "id": "outside-line",                // unique instance ID for this HTTP client
+    "enabled": true,                     // turns this instance on/off
+    "delayed-start": 0,                  // seconds to wait before booting
+    "wait-for": [],                      // ids of other services to wait ready first
+    "base-url": "https://citywatch.meridian-precinct.example",  // base URL for every request
+    "default-headers": { "x-client": "meridian-exchange" },     // headers merged into every request
+    "timeout": 5,                        // request timeout, in seconds
+    "tls": {
+      "enabled": true,                   // use a custom TLS transport
+      "insecure-skip-verify": false      // skip server cert verification (self-signed certs)
+    }
+  }
+]` } ]
+    },
+    {
+      key: "elasticsearch", num: 9, name: "Deep Index", hook: "Find one record in a million",
+      service: "gist-elasticsearch-client", title: "The Archive Too Deep to Grep",
+      body: [
+        "Six months in, the ledger holds tens of thousands of jobs, and “which runner cleared anything through the east docks last spring?” can no longer be answered by scrolling logs. Data that survives a reboot is only useful if you can still find the record you need."
+      ],
+      snippets: [
+        { label: "config.json", code: "\"gist-elasticsearch-client\": [\n  {\n    \"id\": \"job-index\",                     // unique instance ID\n    \"hosts\": [\"http://127.0.0.1:9200\"]    // Elasticsearch node URLs the client connects to\n  }\n]" },
+        { label: "handler", code: "_ = jobIndex.IndexItem(ctx, \"jobs\", job.ID, job)\n\nresult, _ := jobIndex.Search(ctx, \"jobs\", map[string]any{\n  \"match\": map[string]any{\"notes\": \"east docks\"},\n})" }
+      ],
+      tail: "Every job you write to MySQL, you also hand to this process of the Gist to index — client, route, status, notes. The ledger still lives in the database; the findable copy of it lives here.",
+      cfg: [ { service: "gist-elasticsearch-client",
+        minimal:
+`"gist-elasticsearch-client": [
+  {
+    "id": "job-index",                    // unique instance ID
+    "enabled": true,                      // turns this instance on/off
+    "hosts": ["http://127.0.0.1:9200"]    // Elasticsearch node URLs the client connects to
+  }
+]`,
+        full:
+`"gist-elasticsearch-client": [
+  {
+    "id": "job-index",                   // unique instance ID
+    "enabled": true,                     // turns this instance on/off
+    "delayed-start": 0,                  // seconds to wait before booting
+    "wait-for": [],                      // ids of other services to wait ready first
+    "hosts": ["http://127.0.0.1:9200"],  // Elasticsearch node URLs the client connects to
+    "password": "changeme",              // password for basic auth against the cluster
+    "timeout": 5,                        // seconds before a request is cancelled
+    "user": "elastic"                    // username for basic auth against the cluster
+  }
+]` } ]
+    },
+    {
+      key: "gcs", num: 10, name: "Cold Drive", hook: "Hold a file, not a row",
+      service: "gist-google-cloud-storage-client", title: "The Locker Behind the Rig",
+      body: [
+        "Jobs have started arriving with photo evidence of tampered packages and hand-drawn drop-point sketches for disputed deliveries. None of that belongs in a SQL row, and none of it belongs on the public relay either. You need a locker."
+      ],
+      snippets: [
+        { label: "config.json", code: "\"gist-google-cloud-storage-client\": [\n  {\n    \"id\": \"cold-drive\",                                         // unique instance ID\n    \"buckets\": { \"scans\": \"meridian-exchange-job-scans\" },     // bucket ID -> real GCS bucket name\n    \"project-id\": \"meridian-exchange\",                          // billed to, only needed for CreateBucket\n    \"endpoint\": \"\"                                              // set to point at a local emulator\n  }\n]" },
+        { label: "handler", code: "url, key, err := coldDrive.Store(ctx, \"scans\", job.ID+\".png\", scanFile)\nfound, bytes, err := coldDrive.GetObject(ctx, \"scans\", job.ID+\".png\")" }
+      ],
+      tail: "For local development, pointing <code>endpoint</code> at a fake-GCS emulator instead of leaving it empty means you can test the whole locker without a real cloud bill. A job record now carries a pointer into this locker instead of the file itself — the ledger stays light, the locker holds the weight.",
+      cfg: [ { service: "gist-google-cloud-storage-client",
+        minimal:
+`"gist-google-cloud-storage-client": [
+  {
+    "id": "cold-drive",                                     // unique instance ID
+    "enabled": true,                                        // turns this instance on/off
+    "buckets": { "scans": "meridian-exchange-job-scans" }   // bucket ID -> real GCS bucket name
+  }
+]`,
+        full:
+`"gist-google-cloud-storage-client": [
+  {
+    "id": "cold-drive",                  // unique instance ID
+    "enabled": true,                     // turns this instance on/off
+    "delayed-start": 0,                  // seconds to wait before booting
+    "wait-for": [],                      // ids of other services to wait ready first
+    "buckets": { "scans": "meridian-exchange-job-scans" },  // bucket ID -> real GCS bucket name
+    "endpoint": "",                      // point at a local emulator for dev instead of real GCS
+    "project-id": "meridian-exchange",   // only needed for CreateBucket
+    "scope": "https://www.googleapis.com/auth/devstorage.read_write"  // ADC token-source scope
+  }
+]` } ]
+    },
+    {
+      key: "scheduler", num: 11, name: "Graveyard Daemon", hook: "A sweep that runs itself",
+      service: "gist-scheduler", title: "The Cron That Never Sleeps",
+      body: [
+        "Jobs that sit unclaimed for a week are cluttering the ledger, and you can't be expected to grep the table every morning checking dates by hand. You need a sweep that runs itself, on schedule, whether you're logged in or not."
+      ],
+      snippets: [
+        { label: "config.json", code: "\"gist-scheduler\": [\n  {\n    \"id\": \"graveyard-sweep\",   // matched against the schedule function you registered\n    \"schedule\": \"0 3 * * *\"    // standard cron expression\n  }\n]" },
+        { label: "main.go", code: "gistsdk.RegisterScheduleFunc(\"graveyard-sweep\", sg, func(sg servicesGroup) {\n  closeStaleJobs(sg, 7*24*time.Hour)\n})" }
+      ],
+      tail: "Every night at 3 AM, the Gist runs this sweep on its own — no request came in, nobody's watching — and your registered function fires exactly as if one had. The same spawn-and-callback shape gist-api-server uses for a live request, just triggered by a clock instead of a client.",
+      cfg: [ { service: "gist-scheduler",
+        minimal:
+`"gist-scheduler": [
+  {
+    "id": "graveyard-sweep",             // matched against the schedule function you registered
+    "enabled": true,                     // turns this instance on/off
+    "schedule": "0 3 * * *"              // standard cron expression
+  }
+]`,
+        full:
+`"gist-scheduler": [
+  {
+    "id": "graveyard-sweep",             // matched against the schedule function you registered
+    "enabled": true,                     // turns this instance on/off
+    "delayed-start": 0,                  // seconds to wait before booting
+    "wait-for": ["exchange-db"],         // ids of other services to wait ready first
+    "schedule": "0 3 * * *"              // standard cron expression
+  }
+]` } ]
+    },
+    {
+      key: "state-machine", num: 12, name: "The Protocol", hook: "A law the system can't break",
+      service: "gist-state-machine", title: "Chain of Custody",
+      body: [
+        "A dispute lands on your desk: a runner claims his job went straight from proposed to delivered, skipping approval and dispatch, and used the fabricated jump to dodge a verification fee. The ledger needs a law it physically cannot break."
+      ],
+      snippets: [
+        { label: "config/job-transitions.json", code: "{\n  \"proposed\": [\n    {\n      \"trigger\": \"approve\",   // name the caller passes to attempt this transition\n      \"to\": \"approved\"        // state reached when the trigger succeeds\n    }\n  ],\n  \"approved\": [\n    {\n      \"trigger\": \"dispatch\",\n      \"to\": \"dispatched\"\n    }\n  ],\n  \"dispatched\": [\n    {\n      \"trigger\": \"deliver\",\n      \"to\": \"delivered\"\n    }\n  ],\n  \"delivered\": [\n    {\n      \"trigger\": \"close\",\n      \"to\": \"closed\"\n    }\n  ]\n}" },
+        { label: "config.json", code: "\"gist-state-machine\": [\n  {\n    \"id\": \"job-lifecycle\",                                 // unique instance ID\n    \"initial-state\": \"proposed\",                            // default starting state for a new object\n    \"transitions-file\": \"./config/job-transitions.json\"    // path to the transitions JSON file\n  }\n]" },
+        { label: "handler", code: "err := giststatemachine.Transition(ctx, lifecycle, \"close\", job)" }
+      ],
+      tail: "Try to fire “deliver” on a job still sitting in <code>proposed</code>, and the attempt is rejected before your action code ever runs — not because you remembered to check, but because that jump was never written into the graph. The runner's shortcut simply isn't a move the protocol recognizes.",
+      cfg: [ { service: "gist-state-machine",
+        minimal:
+`"gist-state-machine": [
+  {
+    "id": "job-lifecycle",                                 // unique instance ID
+    "enabled": true,                                       // turns this instance on/off
+    "initial-state": "proposed",                           // default starting state for a new object
+    "transitions-file": "./config/job-transitions.json"    // path to the transitions JSON file
+  }
+]`,
+        full:
+`"gist-state-machine": [
+  {
+    "id": "job-lifecycle",               // unique instance ID
+    "enabled": true,                     // turns this instance on/off
+    "delayed-start": 0,                  // seconds to wait before booting
+    "wait-for": [],                      // ids of other services to wait ready first
+    "initial-state": "proposed",         // default starting state for a new object
+    "transitions-file": "./config/job-transitions.json"  // path to the transitions JSON file
+  }
+]` } ]
+    },
+    {
+      key: "redis-pubsub", num: 13, name: "Ghost Frequencies", hook: "Two lines, honestly still dark", reserved: true,
+      service: "gist-redis-client + gist-pub-sub-client", title: "Two Dead Channels",
+      body: [
+        "You'd like two more things: a live board that always shows which runners are currently online without hammering the whole ledger (a cache), and a way to ping every district node the instant a job dispatches (messaging). You go looking for parts to wire up both channels."
+      ],
+      snippets: [
+        { label: "config.json", code: "\"gist-redis-client\": [\n  {\n    \"id\": \"runner-presence\",   // unique instance ID for this Redis connection\n    \"host\": \"127.0.0.1\",       // Redis server hostname/IP\n    \"port\": 6379                // Redis server port\n  }\n],\n\"gist-pub-sub-client\": [\n  {\n    \"id\": \"district-relay\",              // unique instance ID for this Pub/Sub connection\n    \"project-id\": \"meridian-exchange\"    // GCP project ID\n  }\n]" }
+      ],
+      tail: "Both entries light up. Both show healthy in the boot log. And both channels, right now, stop there: the Gist confirms the link is alive — a green LED on each rig — but there's no cache to write into yet, no wire actually carrying a message between nodes. That's not a bug; it's the honest state of these two processes today. A good Operator logs that instead of pretending otherwise.",
+      cfg: [
+        { service: "gist-redis-client",
+          minimal:
+`"gist-redis-client": [
+  {
+    "id": "runner-presence",             // unique instance ID for this Redis connection
+    "enabled": true,                     // turns this instance on/off
+    "host": "127.0.0.1",                 // Redis server hostname/IP
+    "port": 6379                         // Redis server port
+  }
+]`,
+          full:
+`"gist-redis-client": [
+  {
+    "id": "runner-presence",             // unique instance ID for this Redis connection
+    "enabled": true,                     // turns this instance on/off
+    "delayed-start": 0,                  // seconds to wait before booting
+    "wait-for": [],                      // ids of other services to wait ready first
+    "database": 0,                       // logical Redis DB index
+    "host": "127.0.0.1",                 // Redis server hostname/IP
+    "port": 6379,                        // Redis server port
+    "timeout": 5                         // startup connectivity-ping timeout, seconds
+  }
+]` },
+        { service: "gist-pub-sub-client",
+          minimal:
+`"gist-pub-sub-client": [
+  {
+    "id": "district-relay",              // unique instance ID for this Pub/Sub connection
+    "enabled": true,                     // turns this instance on/off
+    "project-id": "meridian-exchange"    // GCP project ID
+  }
+]`,
+          full:
+`"gist-pub-sub-client": [
+  {
+    "id": "district-relay",              // unique instance ID for this Pub/Sub connection
+    "enabled": true,                     // turns this instance on/off
+    "delayed-start": 0,                  // seconds to wait before booting
+    "wait-for": [],                      // ids of other services to wait ready first
+    "project-id": "meridian-exchange",   // used to build the topics-list readiness check URL
+    "timeout": 5                         // readiness-check timeout, seconds
+  }
+]` }
+      ]
+    },
+    {
+      key: "rabbitmq", num: 14, name: "District Wire", hook: "The channel that finally carries traffic",
+      service: "gist-rabbit-mq-client", title: "The Wire Finally Strung",
+      body: [
+        "Two dead channels have sat on the schematic for months now — a green LED on each, nothing behind either one. Then a district fixer drops off exactly what was missing: a real broker, wired straight into every node in Meridian, not just pinged for a heartbeat. The instant a job dispatches, every district needs to know — not on the next poll, the instant it happens."
+      ],
+      snippets: [
+        { label: "config.json", code: "\"gist-rabbit-mq-client\": [\n  {\n    \"id\": \"district-wire\",                                // unique instance ID for this RabbitMQ connection\n    \"url\": \"amqp://exchange:exchange@127.0.0.1:5672/\"    // full AMQP connection URL\n  }\n]" },
+        { label: "handler", code: "_ = districtWire.Publish(ctx, \"job-events\", \"job.dispatched\", dispatchJSON, \"application/json\", nil)" },
+        { label: "main.go", code: "gistsdk.RegisterRabbitMQConsumer(\"district-wire\", \"incoming-pickups\", sg,\n  func(sg servicesGroup, ctx context.Context, msg gistsdk.RabbitMQDelivery) error {\n    return fileJobFromRelay(sg, ctx, msg.Body)\n  },\n)" }
+      ],
+      tail: "This isn't a fix to the two frequencies chapter eleven left dark — gist-redis-client and gist-pub-sub-client are exactly as quiet today as they were then. It's a different rig entirely, dropped into the same slot on the schematic: gist-rabbit-mq-client pushes a message out the instant something happens (the same shape a scheduled sweep already proved works for a clock instead of a queue) and pulls one in from outside without you ever polling for it. Every publish is a signal you chose to send; every consume is one that found you on its own. One of the two dark channels has traffic on it now.",
+      cfg: [ { service: "gist-rabbit-mq-client",
+        minimal:
+`"gist-rabbit-mq-client": [
+  {
+    "id": "district-wire",                                // unique instance ID for this RabbitMQ connection
+    "enabled": true,                                      // turns this instance on/off
+    "url": "amqp://exchange:exchange@127.0.0.1:5672/"     // full AMQP connection URL
+  }
+]`,
+        full:
+`"gist-rabbit-mq-client": [
+  {
+    "id": "district-wire",                // unique instance ID for this RabbitMQ connection
+    "enabled": true,                      // turns this instance on/off
+    "delayed-start": 0,                   // seconds to wait before booting
+    "wait-for": [],                       // ids of other services to wait ready first
+    "timeout": 5,                         // seconds before a connection/operation is aborted
+    "url": "amqp://exchange:exchange@127.0.0.1:5672/"  // full AMQP connection URL
+  }
+]` } ]
+    },
+    {
+      key: "custom", num: 15, name: "Homebrew Daemon", hook: "The trick that's yours alone",
+      service: "gist-custom", title: "The House Script",
+      body: [
+        "Every Exchange runs one script that's entirely its own. Yours is a trust score — part on-time deliveries, part standing with the district fixers, part something the vanished Sysop half-wrote in a comment that only makes sense here. No built-in process of the Gist knows how to compute it, so you teach it one that's yours alone."
+      ],
+      snippets: [
+        { label: "config.json", code: "\"trust-ledger\": [\n  {\n    \"id\": \"runner-trust\",   // unique instance ID within its kind\n    \"decay-rate\": 0.02,      // opaque to gist-server - your own field\n    \"enabled\": true           // turns this instance on/off\n  }\n]" },
+        { label: "main.go", code: "type trustService struct{ cfg TrustConfig }\n\nfunc (t *trustService) PostBuild() error { return nil }\nfunc (t *trustService) Start(ctx context.Context, ready func()) error { ready(); return nil }\nfunc (t *trustService) Stop(ctx context.Context) error { return nil }\n\ngistsdk.RegisterCustomService(\"trust-ledger\",\n  func(cfg TrustConfig) (*trustService, error) { return &trustService{cfg}, nil })" }
+      ],
+      tail: "“trust-ledger” isn't a name the Gist recognizes out of the box — it's not on the reserved list. That's exactly why it works: gist-custom hands your config block through untouched and runs your service through the same PostBuild → Start → Stop lifecycle every built-in process follows, without ever needing to understand what “trust” even means here.",
+      cfg: [ { service: "gist-custom",
+        minimal:
+`"trust-ledger": [
+  {
+    "id": "runner-trust",     // unique instance ID within its kind
+    "enabled": true           // turns this instance on/off
+  }
+]`,
+        full:
+`"trust-ledger": [
+  {
+    "id": "runner-trust",     // unique instance ID within its kind
+    "enabled": true,          // turns this instance on/off
+    "delayed-start": 0,       // seconds to wait before booting
+    "wait-for": [],           // ids of other services to wait ready first
+    "decay-rate": 0.02,       // not read by gist-server - opaque, passed through to your handler
+    "max-score": 100          // not read by gist-server - opaque, passed through to your handler
+  }
+]`,
+        note: "Only <code>id</code>/<code>enabled</code>/<code>delayed-start</code>/<code>wait-for</code> are real gist-custom fields — everything else is your own, handed through untouched." } ]
+    }
+  ];
+
+  var LOGGING = {
+    num: 16, title: "The Black Box", service: "logging",
+    body: "You've been keeping a black box this whole time without quite calling it that — every process, the Gist has been narrating itself into a running log.",
+    snippets: [
+      { label: "handler", code: "logging.Info(\"job approved\", map[string]any{\"job_id\": j.ID, \"client\": j.Client})\nlogging.Error(\"scan store failed\", map[string]any{\"job_id\": j.ID, \"error\": err.Error()})" }
+    ],
+    tail: "Most nights this is background noise. But the night a job's approval silently failed and nobody noticed for two days, the black box saved you: the error carried a trace ID, logged right alongside the failure, so “something broke last Tuesday” became “trace a1b2c3d4…, here's exactly what and when.” A rig this full of moving parts is only governable if it tells on itself when something breaks."
+  };
+
+  // Rank climbs with how many daemons are compiled - not gated or sequential
+  // (any combo is a valid loadout, same as real config.json), just a read
+  // on how much of the rig is currently standing. FULL SYSTEM ACCESS at
+  // max deliberately echoes the epilogue's own title.
+  var RANKS = [
+    { min: 0, max: 0, label: "Ghost" },
+    { min: 1, max: 2, label: "Script Kid" },
+    { min: 3, max: 6, label: "Fixer" },
+    { min: 7, max: 9, label: "Operator" },
+    { min: 10, max: 12, label: "Senior Operator" },
+    { min: 13, max: 14, label: "Root Admin" },
+    { min: 15, max: 15, label: "Full System Access" }
+  ];
+  function rankFor(count){
+    for(var i = 0; i < RANKS.length; i++){
+      if(count >= RANKS[i].min && count <= RANKS[i].max) return RANKS[i].label;
+    }
+    return RANKS[RANKS.length - 1].label;
+  }
+
+  // Each achievement is tied to an actual beat in the story, not a
+  // generic "toggle N things" filler - test(selected, count) reads the
+  // same selection state the seals/entries already use.
+  var ACHIEVEMENTS = [
+    {
+      id: "lone-wolf", name: "Lone Wolf",
+      desc: "Exactly one daemon compiled. Sometimes that's the whole job.",
+      test: function(selected, count){ return count === 1; }
+    },
+    {
+      id: "mve", name: "Minimum Viable Exchange",
+      desc: "Just the uplink desk and the vault — gist-api-server + gist-mysql-client, nothing else.",
+      test: function(selected, count){ return count === 2 && !!selected["api-server"] && !!selected["mysql"]; }
+    },
+    {
+      id: "honest-operator", name: "The Honest Operator",
+      desc: "The two dead channels, lit anyway. You log the gap instead of hiding it.",
+      test: function(selected){ return !!selected["redis-pubsub"] && !selected["rabbitmq"]; }
+    },
+    {
+      id: "signal-upgrade", name: "Signal Upgrade",
+      desc: "The fixer's hardware arrived — the old dark wiring standing right next to the new live one.",
+      test: function(selected){ return !!selected["redis-pubsub"] && !!selected["rabbitmq"]; }
+    },
+    {
+      id: "root-access", name: "Root Access",
+      desc: "Every daemon the Gist can compile into, running at once.",
+      test: function(selected, count){ return count === CHAPTERS.length; }
+    }
+  ];
+
+  var ACHIEVEMENTS_KEY = "guildmasters-ledger:achievements";
+  function loadAchieved(){
+    try{
+      var raw = window.localStorage.getItem(ACHIEVEMENTS_KEY);
+      if(!raw) return {};
+      var arr = JSON.parse(raw);
+      var out = {};
+      arr.forEach(function(id){ out[id] = true; });
+      return out;
+    }catch(e){ return {}; }
+  }
+  function saveAchieved(everAchieved){
+    try{
+      window.localStorage.setItem(ACHIEVEMENTS_KEY, JSON.stringify(Object.keys(everAchieved).filter(function(k){return everAchieved[k];})));
+    }catch(e){ /* private mode etc - just won't persist */ }
+  }
+
+  var STORAGE_KEY = "guildmasters-ledger:selected";
+
+  function loadSelection(){
+    try{
+      var raw = window.localStorage.getItem(STORAGE_KEY);
+      if(!raw) return {};
+      var arr = JSON.parse(raw);
+      var out = {};
+      arr.forEach(function(k){ out[k] = true; });
+      return out;
+    }catch(e){ return {}; }
+  }
+  function saveSelection(selected){
+    try{
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(Object.keys(selected).filter(function(k){return selected[k];})));
+    }catch(e){ /* private mode etc - selection just won't persist */ }
+  }
+
+  var selected = loadSelection();
+  var everAchieved = loadAchieved();
+  var lastUnlocked = {};
+
+  var sealsEl = document.getElementById("seals");
+  var entriesEl = document.getElementById("entries");
+  var epilogueBody = document.getElementById("epilogue-body");
+  var statusEl = document.getElementById("status-line");
+  var emptyStateEl = document.getElementById("empty-state");
+  var rankbarEl = document.getElementById("rankbar");
+  var rankLabelEl = document.getElementById("rank-label");
+  var badgesEl = document.getElementById("badges");
+
+  function escapeHtml(s){
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+
+  function buildSeals(){
+    CHAPTERS.forEach(function(ch){
+      var label = document.createElement("label");
+      label.className = "seal" + (ch.reserved ? " reserved" : "");
+      label.dataset.key = ch.key;
+
+      var input = document.createElement("input");
+      input.type = "checkbox";
+      input.checked = !!selected[ch.key];
+      input.addEventListener("change", function(){
+        selected[ch.key] = input.checked;
+        saveSelection(selected);
+        render();
+      });
+
+      var ring = document.createElement("span");
+      ring.className = "seal-ring";
+      ring.textContent = ch.num;
+
+      var name = document.createElement("span");
+      name.className = "seal-name";
+      name.textContent = ch.name;
+
+      var hook = document.createElement("span");
+      hook.className = "seal-hook";
+      hook.textContent = ch.hook;
+
+      label.appendChild(input);
+      label.appendChild(ring);
+      label.appendChild(name);
+      label.appendChild(hook);
+      if(ch.reserved){
+        var flag = document.createElement("span");
+        flag.className = "seal-flag";
+        flag.textContent = "Dark";
+        label.appendChild(flag);
+      }
+      sealsEl.appendChild(label);
+    });
+  }
+
+  function buildRankbar(){
+    for(var i = 0; i < CHAPTERS.length; i++){
+      var seg = document.createElement("span");
+      seg.className = "rankbar-seg";
+      rankbarEl.appendChild(seg);
+    }
+  }
+
+  function buildBadges(){
+    ACHIEVEMENTS.forEach(function(a){
+      var div = document.createElement("div");
+      div.className = "badge locked";
+      div.id = "badge-" + a.id;
+      div.innerHTML =
+        '<span class="badge-name">' + escapeHtml(a.name) + '</span>' +
+        '<span class="badge-desc">' + escapeHtml(a.desc) + '</span>';
+      badgesEl.appendChild(div);
+    });
+  }
+
+  // Every config example carries trailing "// ..." comments explaining the
+  // field - stripComments() is what the Copy button runs before writing to
+  // the clipboard, so a pasted example is still valid JSON. Comments are
+  // recognized by requiring real whitespace before "//" (never matches the
+  // "//" inside "https://" or "amqp://", which always sits right after a
+  // colon with no space).
+  function stripComments(text){
+    return text.split("\n").map(function(line){
+      return line.replace(/\s+\/\/.*$/, "");
+    }).join("\n");
+  }
+
+  function legacyCopy(text){
+    try{
+      var ta = document.createElement("textarea");
+      ta.value = text;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.focus();
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    }catch(e){ /* clipboard unavailable in this context - nothing more to do */ }
+  }
+  function copyToClipboard(text){
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(text).catch(function(){ legacyCopy(text); });
+    } else {
+      legacyCopy(text);
+    }
+  }
+
+  function snippetLabelHtml(label){
+    return '<span class="snippet-label"><span class="snippet-label-text">' + escapeHtml(label) +
+      '</span><button type="button" class="copy-btn">Copy</button></span>';
+  }
+
+  // Config reference: a collapsed <details> per service, closed by default
+  // so it never competes with the story - Minimal (bare config to boot it)
+  // vs Full (every documented parameter set), sourced from md-docs/*.md.
+  function cfgrefHtml(cfgList){
+    return cfgList.map(function(c){
+      var noteHtml = c.note ? '<p class="cfgref-note">' + c.note + '</p>' : "";
+      return (
+        '<details class="cfgref">' +
+          '<summary>Config reference &middot; <code>' + escapeHtml(c.service) + '</code></summary>' +
+          '<div class="cfgref-body">' +
+            noteHtml +
+            '<div class="cfgref-tabs">' +
+              '<button type="button" class="cfgref-tab is-active" data-mode="minimal">Minimal</button>' +
+              '<button type="button" class="cfgref-tab" data-mode="full">Full</button>' +
+            '</div>' +
+            '<div class="snippet cfgref-pane" data-mode="minimal">' +
+              snippetLabelHtml("config.json · minimal") +
+              '<pre><code>' + escapeHtml(c.minimal) + '</code></pre>' +
+            '</div>' +
+            '<div class="snippet cfgref-pane" data-mode="full" hidden>' +
+              snippetLabelHtml("config.json · full") +
+              '<pre><code>' + escapeHtml(c.full) + '</code></pre>' +
+            '</div>' +
+          '</div>' +
+        '</details>'
+      );
+    }).join("");
+  }
+
+  function chapterEntryHtml(ch){
+    var snippetsHtml = (ch.snippets || []).map(function(s){
+      return '<div class="snippet">' + snippetLabelHtml(s.label) +
+        '<pre><code>' + escapeHtml(s.code) + '</code></pre></div>';
+    }).join("");
+    var bodyHtml = ch.body.map(function(p){ return "<p>" + p + "</p>"; }).join("");
+    var reservedTag = ch.reserved ? '<span class="tag-reserved">Stub &mdash; not wired</span>' : "";
+    var cfgHtml = ch.cfg ? cfgrefHtml(ch.cfg) : "";
+    return (
+      '<span class="entry-num">Chapter ' + ch.num + ' · ' + escapeHtml(ch.service) + '</span>' +
+      '<h2>' + escapeHtml(ch.title) + '</h2>' +
+      reservedTag +
+      bodyHtml +
+      snippetsHtml +
+      '<p>' + ch.tail + '</p>' +
+      cfgHtml
+    );
+  }
+
+  function buildEntryElements(){
+    CHAPTERS.forEach(function(ch){
+      var section = document.createElement("section");
+      section.className = "entry";
+      section.id = "entry-" + ch.key;
+      section.hidden = true;
+      section.innerHTML = chapterEntryHtml(ch);
+      entriesEl.appendChild(section);
+    });
+
+    var loggingSection = document.createElement("section");
+    loggingSection.className = "entry";
+    loggingSection.id = "entry-logging";
+    loggingSection.hidden = true;
+    loggingSection.innerHTML =
+      '<span class="entry-num">Chapter ' + LOGGING.num + ' · ' + escapeHtml(LOGGING.service) + '</span>' +
+      '<h2>' + escapeHtml(LOGGING.title) + '</h2>' +
+      '<p>' + LOGGING.body + '</p>' +
+      LOGGING.snippets.map(function(s){
+        return '<div class="snippet">' + snippetLabelHtml(s.label) +
+          '<pre><code>' + escapeHtml(s.code) + '</code></pre></div>';
+      }).join("") +
+      '<p>' + LOGGING.tail + '</p>';
+    entriesEl.appendChild(loggingSection);
+  }
+
+  function buildEpilogueRows(){
+    var rows = CHAPTERS.map(function(ch){
+      return { num: ch.num, title: ch.title, service: ch.service, key: ch.key, always: false };
+    });
+    rows.push({ num: LOGGING.num, title: LOGGING.title, service: LOGGING.service, key: "logging", always: true });
+
+    rows.forEach(function(r){
+      var tr = document.createElement("tr");
+      tr.id = "epi-" + r.key;
+      tr.innerHTML =
+        "<td>" + r.num + "</td>" +
+        "<td>" + escapeHtml(r.title) + "</td>" +
+        "<td><code>" + escapeHtml(r.service) + "</code></td>" +
+        '<td class="epi-status"></td>';
+      epilogueBody.appendChild(tr);
+    });
+  }
+
+  function anyEntryVisible(){
+    return CHAPTERS.some(function(ch){ return selected[ch.key]; });
+  }
+
+  function render(){
+    var count = 0;
+
+    CHAPTERS.forEach(function(ch){
+      var seal = sealsEl.querySelector('[data-key="' + ch.key + '"]');
+      var isOn = !!selected[ch.key];
+      if(isOn) count++;
+      if(seal){ seal.classList.toggle("is-selected", isOn); }
+
+      var section = document.getElementById("entry-" + ch.key);
+      var wasHidden = section.hidden;
+      section.hidden = !isOn;
+      if(isOn && wasHidden){
+        section.classList.remove("enter");
+        void section.offsetWidth;
+        section.classList.add("enter");
+      }
+
+      var epiRow = document.getElementById("epi-" + ch.key);
+      epiRow.classList.toggle("dim", !isOn);
+      var statusCell = epiRow.querySelector(".epi-status");
+      statusCell.innerHTML = isOn
+        ? '<span class="lit-pill">Online</span>'
+        : '<span class="unlit-pill">Offline</span>';
+    });
+
+    var logSection = document.getElementById("entry-logging");
+    var loggingOn = anyEntryVisible();
+    var logWasHidden = logSection.hidden;
+    logSection.hidden = !loggingOn;
+    if(loggingOn && logWasHidden){
+      logSection.classList.remove("enter");
+      void logSection.offsetWidth;
+      logSection.classList.add("enter");
+    }
+    var logEpi = document.getElementById("epi-logging");
+    logEpi.classList.toggle("dim", !loggingOn);
+    logEpi.querySelector(".epi-status").innerHTML = loggingOn
+      ? '<span class="lit-pill">Online</span>'
+      : '<span class="unlit-pill">Offline</span>';
+
+    emptyStateEl.hidden = count > 0;
+
+    statusEl.innerHTML = count === 0
+      ? "STATUS: <strong>0</strong>/" + CHAPTERS.length + " DAEMONS ONLINE. Rig idle."
+      : "STATUS: <strong>" + count + "</strong>/" + CHAPTERS.length + " DAEMONS ONLINE.";
+
+    var segs = rankbarEl.children;
+    for(var i = 0; i < segs.length; i++){
+      var lit = i < count;
+      segs[i].classList.toggle("lit", lit);
+      segs[i].classList.toggle("maxed", lit && count === CHAPTERS.length);
+    }
+    rankLabelEl.innerHTML = "Rank: <strong>" + rankFor(count) + "</strong> &middot; " + count + "/" + CHAPTERS.length;
+
+    ACHIEVEMENTS.forEach(function(a){
+      var unlockedNow = !!a.test(selected, count);
+      var badge = document.getElementById("badge-" + a.id);
+      badge.classList.toggle("locked", !unlockedNow);
+      badge.classList.toggle("unlocked", unlockedNow);
+      if(unlockedNow && !lastUnlocked[a.id]){
+        badge.classList.remove("pop");
+        void badge.offsetWidth;
+        badge.classList.add("pop");
+      }
+      lastUnlocked[a.id] = unlockedNow;
+      if(unlockedNow && !everAchieved[a.id]){
+        everAchieved[a.id] = true;
+        saveAchieved(everAchieved);
+      }
+    });
+  }
+
+  // Delegated once on the stable #entries container - chapter markup is
+  // rebuilt via innerHTML, so per-button listeners would be lost on render.
+  entriesEl.addEventListener("click", function(e){
+    var target = e.target;
+    if(!target || !target.closest) return;
+
+    var tabBtn = target.closest(".cfgref-tab");
+    if(tabBtn){
+      var details = tabBtn.closest(".cfgref");
+      var mode = tabBtn.getAttribute("data-mode");
+      details.querySelectorAll(".cfgref-tab").forEach(function(t){
+        t.classList.toggle("is-active", t === tabBtn);
+      });
+      details.querySelectorAll(".cfgref-pane").forEach(function(p){
+        p.hidden = p.getAttribute("data-mode") !== mode;
+      });
+      return;
+    }
+
+    var copyBtn = target.closest(".copy-btn");
+    if(copyBtn){
+      var snippet = copyBtn.closest(".snippet");
+      var codeEl = snippet && snippet.querySelector("code");
+      if(!codeEl) return;
+      copyToClipboard(stripComments(codeEl.textContent));
+      copyBtn.textContent = "Copied";
+      copyBtn.classList.add("copied");
+      window.clearTimeout(copyBtn._resetTimer);
+      copyBtn._resetTimer = window.setTimeout(function(){
+        copyBtn.textContent = "Copy";
+        copyBtn.classList.remove("copied");
+      }, 1400);
+    }
+  });
+
+  buildSeals();
+  buildRankbar();
+  buildBadges();
+  buildEntryElements();
+  buildEpilogueRows();
+  render();
+
+  document.getElementById("kindle-all").addEventListener("click", function(){
+    CHAPTERS.forEach(function(ch){ selected[ch.key] = true; });
+    saveSelection(selected);
+    sealsEl.querySelectorAll("input[type=checkbox]").forEach(function(i){ i.checked = true; });
+    render();
+  });
+  document.getElementById("douse-all").addEventListener("click", function(){
+    CHAPTERS.forEach(function(ch){ selected[ch.key] = false; });
+    saveSelection(selected);
+    sealsEl.querySelectorAll("input[type=checkbox]").forEach(function(i){ i.checked = false; });
+    render();
+  });
+})();
+</script>
