@@ -182,14 +182,6 @@
   }
   .theme-toggle:hover{ border-color:var(--border-strong); color:var(--text); }
 
-  .version-badge{
-    display:flex; align-items:center; justify-content:center;
-    width:100%; box-sizing:border-box;
-    background:var(--surface-2); border:1px solid var(--border); color:var(--text-muted);
-    height:2.1rem; padding:0 .6rem; border-radius:6px; font-size:.82rem;
-    font-family:inherit; letter-spacing:.02em;
-  }
-
   .sidebar-actions{ display:flex; gap:.5rem; flex-shrink:0; }
   .btn{
     display:inline-flex; align-items:center; justify-content:center;
@@ -448,10 +440,9 @@
 <div class="layout">
   <nav class="sidebar" aria-label="Service sections">
     <div class="brand">
-      <span class="brand-kicker">gist-server</span>
+      <span class="brand-kicker">gist-server latest</span>
       <h1>Documentation</h1>
     </div>
-    <div class="version-badge" id="doc-version-badge">latest</div>
     <div class="sidebar-actions">
         <button class="btn" id="expand-all" type="button" title="Expand all">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="7 8 12 13 17 8"></polyline><polyline points="7 15 12 20 17 15"></polyline></svg>
