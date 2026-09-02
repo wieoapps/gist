@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/wieoapps/gist"
-	gistproto "github.com/wieoapps/gist/proto"
 	"github.com/wieoapps/gist/internal/rpcconn"
+	"github.com/wieoapps/gist/proto"
 	"github.com/wieoapps/gist/services/gist-http-client/delete"
 	"github.com/wieoapps/gist/services/gist-http-client/get"
 	"github.com/wieoapps/gist/services/gist-http-client/option"
@@ -37,7 +37,7 @@ func init() {
 }
 
 func (s *Service) do(ctx context.Context, r request.Request) Response {
-	resp, err := rpcconn.MustFor(s.server).HTTPClient.Do(ctx, &gistproto.HTTPDoRequest{
+	resp, err := rpcconn.MustFor(s.server).HTTPClient.Do(ctx, &proto.HTTPDoRequest{
 		ServiceId:           s.serviceID,
 		Method:              r.Method,
 		Url:                 r.Url,

@@ -12,8 +12,8 @@ import (
 	"fmt"
 
 	"github.com/wieoapps/gist"
-	gistproto "github.com/wieoapps/gist/proto"
 	"github.com/wieoapps/gist/internal/rpcconn"
+	"github.com/wieoapps/gist/proto"
 )
 
 type Service struct {
@@ -33,7 +33,7 @@ func init() {
 // exchange, where routingKey is treated as a queue name - the standard
 // AMQP "publish straight to a queue by name" shortcut.
 func (s *Service) Publish(ctx context.Context, exchange, routingKey string, body []byte, contentType string, headers map[string]string) error {
-	resp, err := rpcconn.MustFor(s.server).RabbitMQ.Publish(ctx, &gistproto.PublishRequest{
+	resp, err := rpcconn.MustFor(s.server).RabbitMQ.Publish(ctx, &proto.PublishRequest{
 		ServiceId:   s.serviceID,
 		Exchange:    exchange,
 		RoutingKey:  routingKey,
@@ -55,7 +55,7 @@ func (s *Service) Publish(ctx context.Context, exchange, routingKey string, body
 // rabbitmq.proto's own doc comment on why) - a typed AMQP arg (e.g. an
 // integer TTL) is passed as its string form.
 func (s *Service) ExchangeDeclare(ctx context.Context, name, kind string, durable, autoDelete bool, args map[string]string) error {
-	resp, err := rpcconn.MustFor(s.server).RabbitMQ.ExchangeDeclare(ctx, &gistproto.ExchangeDeclareRequest{
+	resp, err := rpcconn.MustFor(s.server).RabbitMQ.ExchangeDeclare(ctx, &proto.ExchangeDeclareRequest{
 		ServiceId:  s.serviceID,
 		Name:       name,
 		Kind:       kind,
@@ -76,7 +76,7 @@ func (s *Service) ExchangeDeclare(ctx context.Context, name, kind string, durabl
 // differs from name when name was empty, letting the broker generate
 // one (RabbitMQ's usual pattern for a private, per-consumer queue).
 func (s *Service) QueueDeclare(ctx context.Context, name string, durable, autoDelete, exclusive bool, args map[string]string) (string, error) {
-	resp, err := rpcconn.MustFor(s.server).RabbitMQ.QueueDeclare(ctx, &gistproto.QueueDeclareRequest{
+	resp, err := rpcconn.MustFor(s.server).RabbitMQ.QueueDeclare(ctx, &proto.QueueDeclareRequest{
 		ServiceId:  s.serviceID,
 		Name:       name,
 		Durable:    durable,
@@ -95,7 +95,7 @@ func (s *Service) QueueDeclare(ctx context.Context, name string, durable, autoDe
 
 // QueueBind binds queue to exchange under routingKey.
 func (s *Service) QueueBind(ctx context.Context, queue, exchange, routingKey string, args map[string]string) error {
-	resp, err := rpcconn.MustFor(s.server).RabbitMQ.QueueBind(ctx, &gistproto.QueueBindRequest{
+	resp, err := rpcconn.MustFor(s.server).RabbitMQ.QueueBind(ctx, &proto.QueueBindRequest{
 		ServiceId:  s.serviceID,
 		Queue:      queue,
 		Exchange:   exchange,

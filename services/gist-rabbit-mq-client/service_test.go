@@ -7,29 +7,29 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/wieoapps/gist"
-	gistproto "github.com/wieoapps/gist/proto"
 	"github.com/wieoapps/gist/internal/rpcconn"
+	"github.com/wieoapps/gist/proto"
 )
 
 // fakeRabbitMQClient records the last request of each kind and returns a
 // scripted response - exercises the real client-side request building
 // with no live broker or gist-server needed.
 type fakeRabbitMQClient struct {
-	lastPublish  *gistproto.PublishRequest
-	publishResp  *gistproto.PublishResponse
+	lastPublish  *proto.PublishRequest
+	publishResp  *proto.PublishResponse
 	publishErr   error
-	lastExchange *gistproto.ExchangeDeclareRequest
-	exchangeResp *gistproto.ExchangeDeclareResponse
+	lastExchange *proto.ExchangeDeclareRequest
+	exchangeResp *proto.ExchangeDeclareResponse
 	exchangeErr  error
-	lastQueue    *gistproto.QueueDeclareRequest
-	queueResp    *gistproto.QueueDeclareResponse
+	lastQueue    *proto.QueueDeclareRequest
+	queueResp    *proto.QueueDeclareResponse
 	queueErr     error
-	lastBind     *gistproto.QueueBindRequest
-	bindResp     *gistproto.QueueBindResponse
+	lastBind     *proto.QueueBindRequest
+	bindResp     *proto.QueueBindResponse
 	bindErr      error
 }
 
-func (f *fakeRabbitMQClient) Publish(_ context.Context, in *gistproto.PublishRequest, _ ...grpc.CallOption) (*gistproto.PublishResponse, error) {
+func (f *fakeRabbitMQClient) Publish(_ context.Context, in *proto.PublishRequest, _ ...grpc.CallOption) (*proto.PublishResponse, error) {
 	f.lastPublish = in
 	if f.publishErr != nil {
 		return nil, f.publishErr
@@ -37,7 +37,7 @@ func (f *fakeRabbitMQClient) Publish(_ context.Context, in *gistproto.PublishReq
 	return f.publishResp, nil
 }
 
-func (f *fakeRabbitMQClient) ExchangeDeclare(_ context.Context, in *gistproto.ExchangeDeclareRequest, _ ...grpc.CallOption) (*gistproto.ExchangeDeclareResponse, error) {
+func (f *fakeRabbitMQClient) ExchangeDeclare(_ context.Context, in *proto.ExchangeDeclareRequest, _ ...grpc.CallOption) (*proto.ExchangeDeclareResponse, error) {
 	f.lastExchange = in
 	if f.exchangeErr != nil {
 		return nil, f.exchangeErr
@@ -45,7 +45,7 @@ func (f *fakeRabbitMQClient) ExchangeDeclare(_ context.Context, in *gistproto.Ex
 	return f.exchangeResp, nil
 }
 
-func (f *fakeRabbitMQClient) QueueDeclare(_ context.Context, in *gistproto.QueueDeclareRequest, _ ...grpc.CallOption) (*gistproto.QueueDeclareResponse, error) {
+func (f *fakeRabbitMQClient) QueueDeclare(_ context.Context, in *proto.QueueDeclareRequest, _ ...grpc.CallOption) (*proto.QueueDeclareResponse, error) {
 	f.lastQueue = in
 	if f.queueErr != nil {
 		return nil, f.queueErr
@@ -53,7 +53,7 @@ func (f *fakeRabbitMQClient) QueueDeclare(_ context.Context, in *gistproto.Queue
 	return f.queueResp, nil
 }
 
-func (f *fakeRabbitMQClient) QueueBind(_ context.Context, in *gistproto.QueueBindRequest, _ ...grpc.CallOption) (*gistproto.QueueBindResponse, error) {
+func (f *fakeRabbitMQClient) QueueBind(_ context.Context, in *proto.QueueBindRequest, _ ...grpc.CallOption) (*proto.QueueBindResponse, error) {
 	f.lastBind = in
 	if f.bindErr != nil {
 		return nil, f.bindErr
@@ -61,7 +61,7 @@ func (f *fakeRabbitMQClient) QueueBind(_ context.Context, in *gistproto.QueueBin
 	return f.bindResp, nil
 }
 
-func (f *fakeRabbitMQClient) StartConsuming(context.Context, *gistproto.StartConsumingRequest, ...grpc.CallOption) (*gistproto.StartConsumingResponse, error) {
+func (f *fakeRabbitMQClient) StartConsuming(context.Context, *proto.StartConsumingRequest, ...grpc.CallOption) (*proto.StartConsumingResponse, error) {
 	panic("not used by this package's own client - see gistsdk.RegisterRabbitMQConsumer")
 }
 
@@ -72,7 +72,7 @@ func newTestService(fake *fakeRabbitMQClient) *Service {
 }
 
 func TestPublish_SendsRequestAndReportsWireError(t *testing.T) {
-	fake := &fakeRabbitMQClient{publishResp: &gistproto.PublishResponse{}}
+	fake := &fakeRabbitMQClient{publishResp: &proto.PublishResponse{}}
 	svc := newTestService(fake)
 
 	err := svc.Publish(context.Background(), "orders-exchange", "orders.created", []byte(`{"id":1}`), "application/json", map[string]string{"x-retry": "0"})
@@ -89,14 +89,14 @@ func TestPublish_SendsRequestAndReportsWireError(t *testing.T) {
 		t.Errorf("body = %q", fake.lastPublish.GetBody())
 	}
 
-	fake.publishResp = &gistproto.PublishResponse{ErrorCode: "internal", ErrorMessage: "no route"}
+	fake.publishResp = &proto.PublishResponse{ErrorCode: "internal", ErrorMessage: "no route"}
 	if err := svc.Publish(context.Background(), "x", "y", nil, "", nil); err == nil {
 		t.Fatal("expected an error when the wire response carries an error_code")
 	}
 }
 
 func TestExchangeDeclare_SendsRequest(t *testing.T) {
-	fake := &fakeRabbitMQClient{exchangeResp: &gistproto.ExchangeDeclareResponse{}}
+	fake := &fakeRabbitMQClient{exchangeResp: &proto.ExchangeDeclareResponse{}}
 	svc := newTestService(fake)
 
 	if err := svc.ExchangeDeclare(context.Background(), "orders-exchange", "topic", true, false, nil); err != nil {
@@ -111,7 +111,7 @@ func TestExchangeDeclare_SendsRequest(t *testing.T) {
 }
 
 func TestQueueDeclare_ReturnsBrokerAssignedName(t *testing.T) {
-	fake := &fakeRabbitMQClient{queueResp: &gistproto.QueueDeclareResponse{Name: "amq.gen-abc123"}}
+	fake := &fakeRabbitMQClient{queueResp: &proto.QueueDeclareResponse{Name: "amq.gen-abc123"}}
 	svc := newTestService(fake)
 
 	name, err := svc.QueueDeclare(context.Background(), "", true, false, true, nil)

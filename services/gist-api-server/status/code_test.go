@@ -36,7 +36,7 @@ func TestCode_Status_IsSelfAccessor(t *testing.T) {
 
 func TestCode_Values_MatchGRPCConventions(t *testing.T) {
 	// These specific integer values are load-bearing (they cross the
-	// wire as int32 in gistproto.ExpectedError.Code) - a future edit
+	// wire as int32 in proto.ExpectedError.Code) - a future edit
 	// reordering the const block would silently break every already-
 	// deployed customer's error codes without this failing.
 	cases := map[Code]int{

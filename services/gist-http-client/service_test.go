@@ -5,16 +5,15 @@ import (
 	"net/http"
 	"testing"
 
-	"google.golang.org/grpc"
-
 	"github.com/wieoapps/gist"
-	gistproto "github.com/wieoapps/gist/proto"
 	"github.com/wieoapps/gist/internal/rpcconn"
+	"github.com/wieoapps/gist/proto"
 	"github.com/wieoapps/gist/services/gist-http-client/delete"
 	"github.com/wieoapps/gist/services/gist-http-client/get"
 	"github.com/wieoapps/gist/services/gist-http-client/patch"
 	"github.com/wieoapps/gist/services/gist-http-client/post"
 	"github.com/wieoapps/gist/services/gist-http-client/put"
+	"google.golang.org/grpc"
 )
 
 // fakeHTTPClient records the last request it received and returns a
@@ -22,12 +21,12 @@ import (
 // end to end (real wire-building/decoding) with no gRPC connection or
 // live gist-server needed at all.
 type fakeHTTPClient struct {
-	lastReq *gistproto.HTTPDoRequest
-	resp    *gistproto.HTTPDoResponse
+	lastReq *proto.HTTPDoRequest
+	resp    *proto.HTTPDoResponse
 	err     error
 }
 
-func (f *fakeHTTPClient) Do(_ context.Context, in *gistproto.HTTPDoRequest, _ ...grpc.CallOption) (*gistproto.HTTPDoResponse, error) {
+func (f *fakeHTTPClient) Do(_ context.Context, in *proto.HTTPDoRequest, _ ...grpc.CallOption) (*proto.HTTPDoResponse, error) {
 	f.lastReq = in
 	if f.err != nil {
 		return nil, f.err
@@ -42,7 +41,7 @@ func newTestService(fake *fakeHTTPClient) *Service {
 }
 
 func TestService_Get_SendsGETMethod(t *testing.T) {
-	fake := &fakeHTTPClient{resp: &gistproto.HTTPDoResponse{StatusCode: 200}}
+	fake := &fakeHTTPClient{resp: &proto.HTTPDoResponse{StatusCode: 200}}
 	svc := newTestService(fake)
 
 	svc.Get(context.Background(), "/echo", get.WithHeader("X-Test", "hi"), get.WithQueryParams("q", "1"))
@@ -65,7 +64,7 @@ func TestService_Get_SendsGETMethod(t *testing.T) {
 }
 
 func TestService_Post_SendsPOSTMethodAndBody(t *testing.T) {
-	fake := &fakeHTTPClient{resp: &gistproto.HTTPDoResponse{StatusCode: 200}}
+	fake := &fakeHTTPClient{resp: &proto.HTTPDoResponse{StatusCode: 200}}
 	svc := newTestService(fake)
 
 	svc.Post(context.Background(), "/echo", post.WithBody([]byte("hello")))
@@ -79,7 +78,7 @@ func TestService_Post_SendsPOSTMethodAndBody(t *testing.T) {
 }
 
 func TestService_Put_SendsPUTMethod(t *testing.T) {
-	fake := &fakeHTTPClient{resp: &gistproto.HTTPDoResponse{StatusCode: 200}}
+	fake := &fakeHTTPClient{resp: &proto.HTTPDoResponse{StatusCode: 200}}
 	svc := newTestService(fake)
 	svc.Put(context.Background(), "/echo", put.WithBody([]byte("x")))
 	if fake.lastReq.GetMethod() != http.MethodPut {
@@ -88,7 +87,7 @@ func TestService_Put_SendsPUTMethod(t *testing.T) {
 }
 
 func TestService_Patch_SendsPATCHMethod(t *testing.T) {
-	fake := &fakeHTTPClient{resp: &gistproto.HTTPDoResponse{StatusCode: 200}}
+	fake := &fakeHTTPClient{resp: &proto.HTTPDoResponse{StatusCode: 200}}
 	svc := newTestService(fake)
 	svc.Patch(context.Background(), "/echo", patch.WithBody([]byte("x")))
 	if fake.lastReq.GetMethod() != http.MethodPatch {
@@ -97,7 +96,7 @@ func TestService_Patch_SendsPATCHMethod(t *testing.T) {
 }
 
 func TestService_Delete_SendsDELETEMethod(t *testing.T) {
-	fake := &fakeHTTPClient{resp: &gistproto.HTTPDoResponse{StatusCode: 200}}
+	fake := &fakeHTTPClient{resp: &proto.HTTPDoResponse{StatusCode: 200}}
 	svc := newTestService(fake)
 	svc.Delete(context.Background(), "/echo", delete.WithHeader("X-Test", "bye"))
 	if fake.lastReq.GetMethod() != http.MethodDelete {
@@ -109,7 +108,7 @@ func TestService_Delete_SendsDELETEMethod(t *testing.T) {
 }
 
 func TestService_WithOmitResponseHeaders_SetsFlag(t *testing.T) {
-	fake := &fakeHTTPClient{resp: &gistproto.HTTPDoResponse{StatusCode: 200}}
+	fake := &fakeHTTPClient{resp: &proto.HTTPDoResponse{StatusCode: 200}}
 	svc := newTestService(fake)
 	svc.Get(context.Background(), "/echo", get.WithOmitResponseHeaders())
 	if !fake.lastReq.GetOmitResponseHeaders() {
@@ -118,9 +117,9 @@ func TestService_WithOmitResponseHeaders_SetsFlag(t *testing.T) {
 }
 
 func TestService_Do_DecodesMultiValueResponseHeaders(t *testing.T) {
-	fake := &fakeHTTPClient{resp: &gistproto.HTTPDoResponse{
+	fake := &fakeHTTPClient{resp: &proto.HTTPDoResponse{
 		StatusCode: 200,
-		ResponseHeaders: map[string]*gistproto.HeaderValues{
+		ResponseHeaders: map[string]*proto.HeaderValues{
 			"Set-Cookie": {Values: []string{"a=1", "b=2"}},
 		},
 	}}
@@ -137,7 +136,7 @@ func TestService_Do_DecodesMultiValueResponseHeaders(t *testing.T) {
 }
 
 func TestService_Do_WireErrorMessageBecomesError(t *testing.T) {
-	fake := &fakeHTTPClient{resp: &gistproto.HTTPDoResponse{StatusCode: 500, ErrorMessage: "boom"}}
+	fake := &fakeHTTPClient{resp: &proto.HTTPDoResponse{StatusCode: 500, ErrorMessage: "boom"}}
 	svc := newTestService(fake)
 	resp := svc.Get(context.Background(), "/echo")
 
@@ -166,7 +165,7 @@ func TestService_Do_TransportErrorBecomesResponseError(t *testing.T) {
 }
 
 func TestService_Do_NoResponseHeaders_HeadersNil(t *testing.T) {
-	fake := &fakeHTTPClient{resp: &gistproto.HTTPDoResponse{StatusCode: 200}}
+	fake := &fakeHTTPClient{resp: &proto.HTTPDoResponse{StatusCode: 200}}
 	svc := newTestService(fake)
 	resp := svc.Get(context.Background(), "/echo")
 	if resp.Headers != nil {

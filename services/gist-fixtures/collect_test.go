@@ -9,8 +9,8 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/wieoapps/gist"
-	gistproto "github.com/wieoapps/gist/proto"
 	"github.com/wieoapps/gist/internal/rpcconn"
+	"github.com/wieoapps/gist/proto"
 )
 
 type fixtureOrder struct {
@@ -197,24 +197,24 @@ func TestFieldValue_Scalar_ReturnsAsIs(t *testing.T) {
 // --- GenerateFixtures: fake BootstrapServiceClient, no live gist-server. ---
 
 type fakeAdminClient struct {
-	req *gistproto.GenerateFixturesRequest
+	req *proto.GenerateFixturesRequest
 	err error
 }
 
-func (f *fakeAdminClient) Handshake(context.Context, *gistproto.HandshakeRequest, ...grpc.CallOption) (*gistproto.HandshakeResponse, error) {
-	return &gistproto.HandshakeResponse{}, nil
+func (f *fakeAdminClient) Handshake(context.Context, *proto.HandshakeRequest, ...grpc.CallOption) (*proto.HandshakeResponse, error) {
+	return &proto.HandshakeResponse{}, nil
 }
 
-func (f *fakeAdminClient) Register(context.Context, *gistproto.RegisterRequest, ...grpc.CallOption) (*gistproto.RegisterResponse, error) {
-	return &gistproto.RegisterResponse{}, nil
+func (f *fakeAdminClient) Register(context.Context, *proto.RegisterRequest, ...grpc.CallOption) (*proto.RegisterResponse, error) {
+	return &proto.RegisterResponse{}, nil
 }
 
-func (f *fakeAdminClient) GenerateFixtures(_ context.Context, in *gistproto.GenerateFixturesRequest, _ ...grpc.CallOption) (*gistproto.GenerateFixturesResponse, error) {
+func (f *fakeAdminClient) GenerateFixtures(_ context.Context, in *proto.GenerateFixturesRequest, _ ...grpc.CallOption) (*proto.GenerateFixturesResponse, error) {
 	f.req = in
 	if f.err != nil {
 		return nil, f.err
 	}
-	return &gistproto.GenerateFixturesResponse{}, nil
+	return &proto.GenerateFixturesResponse{}, nil
 }
 
 func TestGenerateFixtures_SendsEncodedRowsAndKinds(t *testing.T) {

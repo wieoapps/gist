@@ -18,9 +18,9 @@ import (
 	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/credentials/insecure"
 
-	gistproto "github.com/wieoapps/gist/proto"
 	"github.com/wieoapps/gist/internal/rpcconn"
 	"github.com/wieoapps/gist/logging"
+	"github.com/wieoapps/gist/proto"
 )
 
 type Config struct {
@@ -213,7 +213,7 @@ func RegisterRabbitMQConsumer[dep any](serviceID, queue string, d dep, fn func(d
 		}
 		server.mu.Unlock()
 
-		resp, err := rpcconn.MustFor(server).RabbitMQ.StartConsuming(context.Background(), &gistproto.StartConsumingRequest{
+		resp, err := rpcconn.MustFor(server).RabbitMQ.StartConsuming(context.Background(), &proto.StartConsumingRequest{
 			ServiceId: serviceID,
 			Queue:     queue,
 			AutoAck:   o.autoAck,
@@ -433,7 +433,7 @@ func (a *Server) startCallbackServer() error {
 	}
 
 	a.callbackServer = grpc.NewServer(grpc.MaxRecvMsgSize(grpcRecvCeiling))
-	gistproto.RegisterCallbackServiceServer(a.callbackServer, &callbackServer{app: a})
+	proto.RegisterCallbackServiceServer(a.callbackServer, &callbackServer{app: a})
 
 	go func() {
 		_ = a.callbackServer.Serve(lis)
@@ -520,15 +520,15 @@ func (a *Server) dialAdmin() error {
 	}
 	a.adminConn = conn
 	rpcconn.Register(a, &rpcconn.Clients{
-		Admin:              gistproto.NewBootstrapServiceClient(conn),
-		DB:                 gistproto.NewMySQLServiceClient(conn),
-		PG:                 gistproto.NewPostgresServiceClient(conn),
-		Elasticsearch:      gistproto.NewElasticsearchServiceClient(conn),
-		GoogleCloudStorage: gistproto.NewGoogleCloudStorageServiceClient(conn),
-		StateMachine:       gistproto.NewStateMachineServiceClient(conn),
-		HTTPClient:         gistproto.NewHTTPClientServiceClient(conn),
-		Logging:            gistproto.NewLoggingServiceClient(conn),
-		RabbitMQ:           gistproto.NewRabbitMQServiceClient(conn),
+		Admin:              proto.NewBootstrapServiceClient(conn),
+		DB:                 proto.NewMySQLServiceClient(conn),
+		PG:                 proto.NewPostgresServiceClient(conn),
+		Elasticsearch:      proto.NewElasticsearchServiceClient(conn),
+		GoogleCloudStorage: proto.NewGoogleCloudStorageServiceClient(conn),
+		StateMachine:       proto.NewStateMachineServiceClient(conn),
+		HTTPClient:         proto.NewHTTPClientServiceClient(conn),
+		Logging:            proto.NewLoggingServiceClient(conn),
+		RabbitMQ:           proto.NewRabbitMQServiceClient(conn),
 	})
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -561,8 +561,8 @@ func (a *Server) dialAdmin() error {
 // fatal: dialAdmin's own caller (Start) tears the connection back down on
 // any error, exactly as it already does for a failed connect.
 func (a *Server) handshake(ctx context.Context, conn *grpc.ClientConn) error {
-	client := gistproto.NewBootstrapServiceClient(conn)
-	if _, err := client.Handshake(ctx, &gistproto.HandshakeRequest{SdkVersion: sdkVersion()}); err != nil {
+	client := proto.NewBootstrapServiceClient(conn)
+	if _, err := client.Handshake(ctx, &proto.HandshakeRequest{SdkVersion: sdkVersion()}); err != nil {
 		return fmt.Errorf("gistsdk: version handshake with gist-server failed: %w", err)
 	}
 	return nil
@@ -603,17 +603,17 @@ func (a *Server) WaitForInterrupt() {
 }
 
 type callbackServer struct {
-	gistproto.UnimplementedCallbackServiceServer
+	proto.UnimplementedCallbackServiceServer
 	app *Server
 }
 
-func (s *callbackServer) Invoke(ctx context.Context, req *gistproto.InvokeRequest) (*gistproto.InvokeResponse, error) {
+func (s *callbackServer) Invoke(ctx context.Context, req *proto.InvokeRequest) (*proto.InvokeResponse, error) {
 	s.app.mu.Lock()
 	entry, ok := s.app.dispatch[req.GetEndpointId()]
 	s.app.mu.Unlock()
 
 	if !ok {
-		return &gistproto.InvokeResponse{
+		return &proto.InvokeResponse{
 			ErrorCode:    notFoundCode,
 			ErrorMessage: "endpoint not registered: " + req.GetEndpointId(),
 		}, nil
@@ -665,10 +665,10 @@ func (s *callbackServer) Invoke(ctx context.Context, req *gistproto.InvokeReques
 				map[string]any{"endpoint": req.GetEndpointId(), "code": code, "error": err, "trace_id": traceID})
 		}
 
-		return &gistproto.InvokeResponse{ErrorCode: code, ErrorMessage: message, ErrorTraceId: traceID}, nil
+		return &proto.InvokeResponse{ErrorCode: code, ErrorMessage: message, ErrorTraceId: traceID}, nil
 	}
 
-	return &gistproto.InvokeResponse{Output: output}, nil
+	return &proto.InvokeResponse{Output: output}, nil
 }
 
 const notRegisteredCode = "not_registered"
@@ -678,40 +678,40 @@ const notRegisteredCode = "not_registered"
 // the same sequence every built-in service's own main.go wiring
 // follows. The instance is tracked by (kind, id) so StopCustomService
 // can find it again later.
-func (s *callbackServer) StartCustomService(ctx context.Context, req *gistproto.StartCustomServiceRequest) (*gistproto.CustomServiceAck, error) {
+func (s *callbackServer) StartCustomService(ctx context.Context, req *proto.StartCustomServiceRequest) (*proto.CustomServiceAck, error) {
 	s.app.mu.Lock()
 	k, ok := s.app.customServices[req.GetKind()]
 	s.app.mu.Unlock()
 
 	if !ok {
-		return &gistproto.CustomServiceAck{ErrorCode: notRegisteredCode, ErrorMessage: "no service registered for kind " + req.GetKind()}, nil
+		return &proto.CustomServiceAck{ErrorCode: notRegisteredCode, ErrorMessage: "no service registered for kind " + req.GetKind()}, nil
 	}
 
 	svc, err := k.build(req.GetConfigJson())
 	if err != nil {
-		return &gistproto.CustomServiceAck{ErrorCode: "internal", ErrorMessage: err.Error()}, nil
+		return &proto.CustomServiceAck{ErrorCode: "internal", ErrorMessage: err.Error()}, nil
 	}
 	if err := svc.PostBuild(); err != nil {
-		return &gistproto.CustomServiceAck{ErrorCode: "internal", ErrorMessage: err.Error()}, nil
+		return &proto.CustomServiceAck{ErrorCode: "internal", ErrorMessage: err.Error()}, nil
 	}
 	if err := svc.Start(ctx, func() {}); err != nil {
-		return &gistproto.CustomServiceAck{ErrorCode: "internal", ErrorMessage: err.Error()}, nil
+		return &proto.CustomServiceAck{ErrorCode: "internal", ErrorMessage: err.Error()}, nil
 	}
 
 	k.mu.Lock()
 	k.instances[req.GetId()] = svc
 	k.mu.Unlock()
 
-	return &gistproto.CustomServiceAck{}, nil
+	return &proto.CustomServiceAck{}, nil
 }
 
-func (s *callbackServer) StopCustomService(ctx context.Context, req *gistproto.StopCustomServiceRequest) (*gistproto.CustomServiceAck, error) {
+func (s *callbackServer) StopCustomService(ctx context.Context, req *proto.StopCustomServiceRequest) (*proto.CustomServiceAck, error) {
 	s.app.mu.Lock()
 	k, ok := s.app.customServices[req.GetKind()]
 	s.app.mu.Unlock()
 
 	if !ok {
-		return &gistproto.CustomServiceAck{}, nil
+		return &proto.CustomServiceAck{}, nil
 	}
 
 	k.mu.Lock()
@@ -720,24 +720,24 @@ func (s *callbackServer) StopCustomService(ctx context.Context, req *gistproto.S
 	k.mu.Unlock()
 
 	if !ok {
-		return &gistproto.CustomServiceAck{}, nil
+		return &proto.CustomServiceAck{}, nil
 	}
 	if err := svc.Stop(ctx); err != nil {
-		return &gistproto.CustomServiceAck{ErrorCode: "internal", ErrorMessage: err.Error()}, nil
+		return &proto.CustomServiceAck{ErrorCode: "internal", ErrorMessage: err.Error()}, nil
 	}
-	return &gistproto.CustomServiceAck{}, nil
+	return &proto.CustomServiceAck{}, nil
 }
 
-func (s *callbackServer) Tick(ctx context.Context, req *gistproto.TickRequest) (*gistproto.TickAck, error) {
+func (s *callbackServer) Tick(ctx context.Context, req *proto.TickRequest) (*proto.TickAck, error) {
 	s.app.mu.Lock()
 	fn, ok := s.app.schedulers[req.GetId()]
 	s.app.mu.Unlock()
 
 	if !ok {
-		return &gistproto.TickAck{ErrorCode: notRegisteredCode, ErrorMessage: "no schedule func registered for " + req.GetId()}, nil
+		return &proto.TickAck{ErrorCode: notRegisteredCode, ErrorMessage: "no schedule func registered for " + req.GetId()}, nil
 	}
 	fn(ctx)
-	return &gistproto.TickAck{}, nil
+	return &proto.TickAck{}, nil
 }
 
 // Deliver runs the fn RegisterRabbitMQConsumer registered for
@@ -745,18 +745,18 @@ func (s *callbackServer) Tick(ctx context.Context, req *gistproto.TickRequest) (
 // verdict gist-rabbit-mq-client's own Service.handleDelivery applies to the
 // broker - see that method's doc comment for why this is one round
 // trip, not a separate later Ack/Nack RPC.
-func (s *callbackServer) Deliver(ctx context.Context, req *gistproto.DeliverRequest) (*gistproto.DeliverAck, error) {
+func (s *callbackServer) Deliver(ctx context.Context, req *proto.DeliverRequest) (*proto.DeliverAck, error) {
 	s.app.mu.Lock()
 	fn, ok := s.app.rabbitMQConsumers[req.GetServiceId()+"/"+req.GetQueue()]
 	s.app.mu.Unlock()
 
 	if !ok {
-		return &gistproto.DeliverAck{ErrorCode: notRegisteredCode, ErrorMessage: "no consumer registered for " + req.GetServiceId() + "/" + req.GetQueue()}, nil
+		return &proto.DeliverAck{ErrorCode: notRegisteredCode, ErrorMessage: "no consumer registered for " + req.GetServiceId() + "/" + req.GetQueue()}, nil
 	}
 
 	delivery := RabbitMQDelivery{Body: req.GetBody(), ContentType: req.GetContentType(), Headers: req.GetHeaders()}
 	if err := fn(ctx, delivery); err != nil {
-		return &gistproto.DeliverAck{Ack: false, Requeue: true}, nil
+		return &proto.DeliverAck{Ack: false, Requeue: true}, nil
 	}
-	return &gistproto.DeliverAck{Ack: true}, nil
+	return &proto.DeliverAck{Ack: true}, nil
 }

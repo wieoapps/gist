@@ -3,36 +3,36 @@ package gistmysqlclient
 import (
 	"context"
 
-	gistproto "github.com/wieoapps/gist/proto"
+	"github.com/wieoapps/gist/proto"
 	"google.golang.org/grpc"
 )
 
-// fakeDBClient implements gistproto.MySQLServiceClient entirely in memory - no
+// fakeDBClient implements proto.MySQLServiceClient entirely in memory - no
 // gRPC, no gist-server, no database. It records the last request each
 // method received (so tests can assert the client built the right wire
 // message) and returns whatever response/error the test pre-loads,
 // letting Find/Save/Update/Delete/etc.'s real reflection/encoding/
 // decoding logic be exercised end to end with no external dependency.
 type fakeDBClient struct {
-	beginReq  *gistproto.BeginTransactionRequest
-	beginResp *gistproto.BeginTransactionResponse
+	beginReq  *proto.BeginTransactionRequest
+	beginResp *proto.BeginTransactionResponse
 	beginErr  error
 
-	commitReq  *gistproto.TransactionHandle
-	commitResp *gistproto.Ack
+	commitReq  *proto.TransactionHandle
+	commitResp *proto.Ack
 	commitErr  error
 
-	rollbackReq  *gistproto.TransactionHandle
-	rollbackResp *gistproto.Ack
+	rollbackReq  *proto.TransactionHandle
+	rollbackResp *proto.Ack
 	rollbackErr  error
 
-	repoReq  *gistproto.RepoRequest   // most recent Repo request
-	repoReqs []*gistproto.RepoRequest // every Repo request, in call order - for tests asserting across multiple calls in one transaction
-	repoResp *gistproto.RepoResponse
+	repoReq  *proto.RepoRequest   // most recent Repo request
+	repoReqs []*proto.RepoRequest // every Repo request, in call order - for tests asserting across multiple calls in one transaction
+	repoResp *proto.RepoResponse
 	repoErr  error
 }
 
-func (f *fakeDBClient) BeginTransaction(_ context.Context, in *gistproto.BeginTransactionRequest, _ ...grpc.CallOption) (*gistproto.BeginTransactionResponse, error) {
+func (f *fakeDBClient) BeginTransaction(_ context.Context, in *proto.BeginTransactionRequest, _ ...grpc.CallOption) (*proto.BeginTransactionResponse, error) {
 	f.beginReq = in
 	if f.beginErr != nil {
 		return nil, f.beginErr
@@ -40,10 +40,10 @@ func (f *fakeDBClient) BeginTransaction(_ context.Context, in *gistproto.BeginTr
 	if f.beginResp != nil {
 		return f.beginResp, nil
 	}
-	return &gistproto.BeginTransactionResponse{TransactionHandle: "fake-handle"}, nil
+	return &proto.BeginTransactionResponse{TransactionHandle: "fake-handle"}, nil
 }
 
-func (f *fakeDBClient) Commit(_ context.Context, in *gistproto.TransactionHandle, _ ...grpc.CallOption) (*gistproto.Ack, error) {
+func (f *fakeDBClient) Commit(_ context.Context, in *proto.TransactionHandle, _ ...grpc.CallOption) (*proto.Ack, error) {
 	f.commitReq = in
 	if f.commitErr != nil {
 		return nil, f.commitErr
@@ -51,10 +51,10 @@ func (f *fakeDBClient) Commit(_ context.Context, in *gistproto.TransactionHandle
 	if f.commitResp != nil {
 		return f.commitResp, nil
 	}
-	return &gistproto.Ack{}, nil
+	return &proto.Ack{}, nil
 }
 
-func (f *fakeDBClient) Rollback(_ context.Context, in *gistproto.TransactionHandle, _ ...grpc.CallOption) (*gistproto.Ack, error) {
+func (f *fakeDBClient) Rollback(_ context.Context, in *proto.TransactionHandle, _ ...grpc.CallOption) (*proto.Ack, error) {
 	f.rollbackReq = in
 	if f.rollbackErr != nil {
 		return nil, f.rollbackErr
@@ -62,7 +62,7 @@ func (f *fakeDBClient) Rollback(_ context.Context, in *gistproto.TransactionHand
 	if f.rollbackResp != nil {
 		return f.rollbackResp, nil
 	}
-	return &gistproto.Ack{}, nil
+	return &proto.Ack{}, nil
 }
 
 // Repo simulates the real AdminServer.Repo's "fold BeginTransaction into
@@ -75,7 +75,7 @@ func (f *fakeDBClient) Rollback(_ context.Context, in *gistproto.TransactionHand
 // carries End, no handle is assigned at all - mirroring the real server's
 // rule that a transaction closed by the same call that opened it never
 // gets a handle worth remembering.
-func (f *fakeDBClient) Repo(_ context.Context, in *gistproto.RepoRequest, _ ...grpc.CallOption) (*gistproto.RepoResponse, error) {
+func (f *fakeDBClient) Repo(_ context.Context, in *proto.RepoRequest, _ ...grpc.CallOption) (*proto.RepoResponse, error) {
 	f.repoReq = in
 	f.repoReqs = append(f.repoReqs, in)
 	if f.repoErr != nil {
@@ -83,7 +83,7 @@ func (f *fakeDBClient) Repo(_ context.Context, in *gistproto.RepoRequest, _ ...g
 	}
 	resp := f.repoResp
 	if resp == nil {
-		resp = &gistproto.RepoResponse{}
+		resp = &proto.RepoResponse{}
 	}
 	if in.GetBegin() != nil && in.GetEnd() == nil && resp.GetTransactionHandle() == "" {
 		resp.TransactionHandle = "fake-handle"

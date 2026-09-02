@@ -7,8 +7,8 @@ import (
 	"reflect"
 
 	"github.com/wieoapps/gist"
-	gistproto "github.com/wieoapps/gist/proto"
 	"github.com/wieoapps/gist/internal/rpcconn"
+	"github.com/wieoapps/gist/proto"
 )
 
 func GenerateFixtures(id string, rows ...any) gist.Option {
@@ -24,12 +24,12 @@ func GenerateFixtures(id string, rows ...any) gist.Option {
 			return fmt.Errorf("gistfixtures: could not encode fixture rows: %w", err)
 		}
 
-		wireKinds := make(map[string]*gistproto.ColumnKinds, len(kinds))
+		wireKinds := make(map[string]*proto.ColumnKinds, len(kinds))
 		for table, cols := range kinds {
-			wireKinds[table] = &gistproto.ColumnKinds{Kinds: cols}
+			wireKinds[table] = &proto.ColumnKinds{Kinds: cols}
 		}
 
-		if _, err := rpcconn.MustFor(server).Admin.GenerateFixtures(context.Background(), &gistproto.GenerateFixturesRequest{
+		if _, err := rpcconn.MustFor(server).Admin.GenerateFixtures(context.Background(), &proto.GenerateFixturesRequest{
 			ServiceId:   id,
 			RowsJson:    rowsJSON,
 			ColumnKinds: wireKinds,

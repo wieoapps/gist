@@ -8,8 +8,8 @@ import (
 	"strconv"
 
 	"github.com/wieoapps/gist"
-	gistproto "github.com/wieoapps/gist/proto"
 	"github.com/wieoapps/gist/internal/rpcconn"
+	"github.com/wieoapps/gist/proto"
 )
 
 type Handler[servicesGroup any] struct {
@@ -55,15 +55,15 @@ func registerEndpoint[servicesGroup any, in any, out any](
 	fn func(sg servicesGroup, ctx context.Context, in in, output *out) error,
 	mockData *out,
 ) error {
-	es := &gistproto.EndpointSchema{
+	es := &proto.EndpointSchema{
 		Id:             id,
 		Fields:         reflectFields(reflect.TypeOf(*new(in))),
 		OutputFields:   reflectFields(reflect.TypeOf(*new(out))),
-		ExpectedErrors: make([]*gistproto.ExpectedError, len(expectedErrors)),
+		ExpectedErrors: make([]*proto.ExpectedError, len(expectedErrors)),
 	}
 	declaredErrors := make(map[int32]string, len(expectedErrors))
 	for i, e := range expectedErrors {
-		es.ExpectedErrors[i] = &gistproto.ExpectedError{Code: int32(e.Code), Description: e.Message}
+		es.ExpectedErrors[i] = &proto.ExpectedError{Code: int32(e.Code), Description: e.Message}
 		declaredErrors[int32(e.Code)] = e.Message
 	}
 
@@ -75,7 +75,7 @@ func registerEndpoint[servicesGroup any, in any, out any](
 		es.Mock = mockJSON
 	}
 
-	if _, err := rpcconn.MustFor(server).Admin.Register(context.Background(), &gistproto.RegisterRequest{ServiceId: serviceID, Schema: es}); err != nil {
+	if _, err := rpcconn.MustFor(server).Admin.Register(context.Background(), &proto.RegisterRequest{ServiceId: serviceID, Schema: es}); err != nil {
 		return fmt.Errorf("gistapi: could not register endpoint %q on service %q: %w", id, serviceID, err)
 	}
 
@@ -98,7 +98,7 @@ func registerEndpoint[servicesGroup any, in any, out any](
 	return nil
 }
 
-func reflectFields(t reflect.Type) []*gistproto.Field {
+func reflectFields(t reflect.Type) []*proto.Field {
 	for t.Kind() == reflect.Pointer {
 		t = t.Elem()
 	}
@@ -106,7 +106,7 @@ func reflectFields(t reflect.Type) []*gistproto.Field {
 		return nil
 	}
 
-	var fields []*gistproto.Field
+	var fields []*proto.Field
 	for f := range t.Fields() {
 		if !f.IsExported() {
 			continue
@@ -122,7 +122,7 @@ func reflectFields(t reflect.Type) []*gistproto.Field {
 			ft = ft.Elem()
 		}
 
-		wf := &gistproto.Field{
+		wf := &proto.Field{
 			Kind:    kindOf(ft),
 			Slice:   slice,
 			Example: f.Tag.Get("example"),

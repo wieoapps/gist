@@ -1,8 +1,8 @@
-// Package rpcconn holds the raw gistproto-typed gRPC clients gist-sdk's
+// Package rpcconn holds the raw proto-typed gRPC clients gist-sdk's
 // built-in service packages (gist-mysql, gist-http-client, ...) call to
 // reach gist-server. Its import path puts it off-limits to anything
 // outside github.com/wieoapps/gist - a customer's own module can never
-// import it - so gistproto never has to appear in gistsdk.Server's exported
+// import it - so proto never has to appear in gistsdk.Server's exported
 // fields/methods for these sibling packages to still reach it.
 package rpcconn
 
@@ -10,7 +10,7 @@ import (
 	"fmt"
 	"sync"
 
-	gistproto "github.com/wieoapps/gist/proto"
+	"github.com/wieoapps/gist/proto"
 )
 
 // Clients is the bundle of raw service clients dialed once a *gistsdk.Server
@@ -18,15 +18,15 @@ import (
 // package never needs to import gistsdk - that would cycle back, since
 // gistsdk itself is what calls Register.
 type Clients struct {
-	Admin              gistproto.BootstrapServiceClient
-	DB                 gistproto.MySQLServiceClient
-	PG                 gistproto.PostgresServiceClient
-	Elasticsearch      gistproto.ElasticsearchServiceClient
-	GoogleCloudStorage gistproto.GoogleCloudStorageServiceClient
-	StateMachine       gistproto.StateMachineServiceClient
-	HTTPClient         gistproto.HTTPClientServiceClient
-	Logging            gistproto.LoggingServiceClient
-	RabbitMQ           gistproto.RabbitMQServiceClient
+	Admin              proto.BootstrapServiceClient
+	DB                 proto.MySQLServiceClient
+	PG                 proto.PostgresServiceClient
+	Elasticsearch      proto.ElasticsearchServiceClient
+	GoogleCloudStorage proto.GoogleCloudStorageServiceClient
+	StateMachine       proto.StateMachineServiceClient
+	HTTPClient         proto.HTTPClientServiceClient
+	Logging            proto.LoggingServiceClient
+	RabbitMQ           proto.RabbitMQServiceClient
 }
 
 var (

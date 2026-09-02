@@ -6,8 +6,8 @@ import (
 	"fmt"
 
 	"github.com/wieoapps/gist"
-	gistproto "github.com/wieoapps/gist/proto"
 	"github.com/wieoapps/gist/internal/rpcconn"
+	"github.com/wieoapps/gist/proto"
 )
 
 type Service struct {
@@ -36,7 +36,7 @@ func (s *Service) CreateItem(ctx context.Context, index, id string, item any) (c
 		return false, "", fmt.Errorf("gistelasticsearchclient: could not encode item: %w", err)
 	}
 
-	resp, err := rpcconn.MustFor(s.server).Elasticsearch.CreateItem(ctx, &gistproto.CreateItemRequest{
+	resp, err := rpcconn.MustFor(s.server).Elasticsearch.CreateItem(ctx, &proto.CreateItemRequest{
 		ServiceId: s.serviceID,
 		Index:     index,
 		Id:        id,
@@ -62,7 +62,7 @@ func (s *Service) IndexItem(ctx context.Context, index, id string, item any) err
 		return fmt.Errorf("gistelasticsearchclient: could not encode item: %w", err)
 	}
 
-	resp, err := rpcconn.MustFor(s.server).Elasticsearch.IndexItem(ctx, &gistproto.IndexItemRequest{
+	resp, err := rpcconn.MustFor(s.server).Elasticsearch.IndexItem(ctx, &proto.IndexItemRequest{
 		ServiceId: s.serviceID,
 		Index:     index,
 		Id:        id,
@@ -81,7 +81,7 @@ func (s *Service) IndexItem(ctx context.Context, index, id string, item any) err
 // out (a pointer, same convention json.Unmarshal uses). found reports
 // whether the document existed - out is left untouched when it didn't.
 func (s *Service) GetItem(ctx context.Context, index, id string, out any) (found bool, err error) {
-	resp, err := rpcconn.MustFor(s.server).Elasticsearch.GetItem(ctx, &gistproto.GetItemRequest{
+	resp, err := rpcconn.MustFor(s.server).Elasticsearch.GetItem(ctx, &proto.GetItemRequest{
 		ServiceId: s.serviceID,
 		Index:     index,
 		Id:        id,
@@ -110,7 +110,7 @@ func (s *Service) UpdateItem(ctx context.Context, index, id string, doc any) (fo
 		return false, fmt.Errorf("gistelasticsearchclient: could not encode update: %w", err)
 	}
 
-	resp, err := rpcconn.MustFor(s.server).Elasticsearch.UpdateItem(ctx, &gistproto.UpdateItemRequest{
+	resp, err := rpcconn.MustFor(s.server).Elasticsearch.UpdateItem(ctx, &proto.UpdateItemRequest{
 		ServiceId: s.serviceID,
 		Index:     index,
 		Id:        id,
@@ -128,7 +128,7 @@ func (s *Service) UpdateItem(ctx context.Context, index, id string, doc any) (fo
 // DeleteItem deletes the document at id. found reports whether a
 // document existed to delete.
 func (s *Service) DeleteItem(ctx context.Context, index, id string) (found bool, err error) {
-	resp, err := rpcconn.MustFor(s.server).Elasticsearch.DeleteItem(ctx, &gistproto.DeleteItemRequest{
+	resp, err := rpcconn.MustFor(s.server).Elasticsearch.DeleteItem(ctx, &proto.DeleteItemRequest{
 		ServiceId: s.serviceID,
 		Index:     index,
 		Id:        id,
@@ -162,16 +162,16 @@ type BulkResult struct {
 // BulkIndex indexes every item into index in one round trip. hasErrors
 // mirrors Elasticsearch's own top-level "errors" flag.
 func (s *Service) BulkIndex(ctx context.Context, index string, items []BulkItem) (hasErrors bool, results []BulkResult, err error) {
-	wireItems := make([]*gistproto.BulkIndexItem, len(items))
+	wireItems := make([]*proto.BulkIndexItem, len(items))
 	for i, item := range items {
 		itemJSON, encErr := json.Marshal(item.Item)
 		if encErr != nil {
 			return false, nil, fmt.Errorf("gistelasticsearchclient: could not encode bulk item %d: %w", i, encErr)
 		}
-		wireItems[i] = &gistproto.BulkIndexItem{Id: item.ID, ItemJson: itemJSON}
+		wireItems[i] = &proto.BulkIndexItem{Id: item.ID, ItemJson: itemJSON}
 	}
 
-	resp, err := rpcconn.MustFor(s.server).Elasticsearch.BulkIndex(ctx, &gistproto.BulkIndexRequest{
+	resp, err := rpcconn.MustFor(s.server).Elasticsearch.BulkIndex(ctx, &proto.BulkIndexRequest{
 		ServiceId: s.serviceID,
 		Index:     index,
 		Items:     wireItems,
@@ -214,7 +214,7 @@ func (s *Service) Search(ctx context.Context, index string, query any) (*SearchR
 		return nil, fmt.Errorf("gistelasticsearchclient: could not encode query: %w", err)
 	}
 
-	resp, err := rpcconn.MustFor(s.server).Elasticsearch.Search(ctx, &gistproto.SearchRequest{
+	resp, err := rpcconn.MustFor(s.server).Elasticsearch.Search(ctx, &proto.SearchRequest{
 		ServiceId: s.serviceID,
 		Index:     index,
 		QueryJson: queryJSON,

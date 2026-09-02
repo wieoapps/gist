@@ -20,8 +20,8 @@ import (
 	"fmt"
 	"os"
 
-	gistproto "github.com/wieoapps/gist/proto"
 	"github.com/wieoapps/gist/internal/rpcconn"
+	"github.com/wieoapps/gist/proto"
 )
 
 // Logger is gist-sdk's client-side logging interface - see
@@ -92,7 +92,7 @@ func send(owner any, level, msg string, fields map[string]any) {
 	if owner != nil {
 		if clients := rpcconn.For(owner); clients != nil && clients.Logging != nil {
 			if fieldsJSON, err := json.Marshal(fields); err == nil {
-				if _, err := clients.Logging.Log(context.Background(), &gistproto.LogRequest{
+				if _, err := clients.Logging.Log(context.Background(), &proto.LogRequest{
 					Level: level, Msg: msg, FieldsJson: fieldsJSON,
 				}); err == nil {
 					return

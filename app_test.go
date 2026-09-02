@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	gistproto "github.com/wieoapps/gist/proto"
+	"github.com/wieoapps/gist/proto"
 )
 
 // TestReadBubbleUpErrors_TrueWhenSet proves config.json's top-level
@@ -60,7 +60,7 @@ func TestInvoke_UndeclaredMessageError_UsesDeclaredDefaultNotRawError(t *testing
 	}, map[int32]string{internalCode: "internal server error"})
 
 	cs := &callbackServer{app: s}
-	resp, err := cs.Invoke(context.Background(), &gistproto.InvokeRequest{EndpointId: "ep"})
+	resp, err := cs.Invoke(context.Background(), &proto.InvokeRequest{EndpointId: "ep"})
 	if err != nil {
 		t.Fatalf("Invoke returned a transport error: %v", err)
 	}
@@ -111,7 +111,7 @@ func TestInvoke_UndeclaredMessageError_AttachesTraceIDAndLogsIt(t *testing.T) {
 	}, map[int32]string{internalCode: "internal server error"})
 
 	cs := &callbackServer{app: s}
-	resp, err := cs.Invoke(context.Background(), &gistproto.InvokeRequest{EndpointId: "ep"})
+	resp, err := cs.Invoke(context.Background(), &proto.InvokeRequest{EndpointId: "ep"})
 	if err != nil {
 		t.Fatalf("Invoke returned a transport error: %v", err)
 	}
@@ -147,7 +147,7 @@ func TestInvoke_UndeclaredMessageError_NoLogger_NoTraceID(t *testing.T) {
 	}, map[int32]string{internalCode: "internal server error"})
 
 	cs := &callbackServer{app: s}
-	resp, err := cs.Invoke(context.Background(), &gistproto.InvokeRequest{EndpointId: "ep"})
+	resp, err := cs.Invoke(context.Background(), &proto.InvokeRequest{EndpointId: "ep"})
 	if err != nil {
 		t.Fatalf("Invoke returned a transport error: %v", err)
 	}
@@ -169,7 +169,7 @@ func TestInvoke_CodeErrorMessage_NoTraceID(t *testing.T) {
 	}, map[int32]string{internalCode: "internal server error"})
 
 	cs := &callbackServer{app: s}
-	resp, err := cs.Invoke(context.Background(), &gistproto.InvokeRequest{EndpointId: "ep"})
+	resp, err := cs.Invoke(context.Background(), &proto.InvokeRequest{EndpointId: "ep"})
 	if err != nil {
 		t.Fatalf("Invoke returned a transport error: %v", err)
 	}
@@ -189,7 +189,7 @@ func TestInvoke_BubbleUpErrors_NoTraceID(t *testing.T) {
 	}, map[int32]string{internalCode: "internal server error"})
 
 	cs := &callbackServer{app: s}
-	resp, err := cs.Invoke(context.Background(), &gistproto.InvokeRequest{EndpointId: "ep"})
+	resp, err := cs.Invoke(context.Background(), &proto.InvokeRequest{EndpointId: "ep"})
 	if err != nil {
 		t.Fatalf("Invoke returned a transport error: %v", err)
 	}
@@ -210,7 +210,7 @@ func TestInvoke_BubbleUpErrors_ForwardsRawErrorText(t *testing.T) {
 	}, map[int32]string{internalCode: "internal server error"})
 
 	cs := &callbackServer{app: s}
-	resp, err := cs.Invoke(context.Background(), &gistproto.InvokeRequest{EndpointId: "ep"})
+	resp, err := cs.Invoke(context.Background(), &proto.InvokeRequest{EndpointId: "ep"})
 	if err != nil {
 		t.Fatalf("Invoke returned a transport error: %v", err)
 	}
@@ -249,7 +249,7 @@ func TestInvoke_CodeErrorMessage_IsForwarded(t *testing.T) {
 	}, map[int32]string{internalCode: "internal server error"})
 
 	cs := &callbackServer{app: s}
-	resp, err := cs.Invoke(context.Background(), &gistproto.InvokeRequest{EndpointId: "ep"})
+	resp, err := cs.Invoke(context.Background(), &proto.InvokeRequest{EndpointId: "ep"})
 	if err != nil {
 		t.Fatalf("Invoke returned a transport error: %v", err)
 	}
@@ -275,5 +275,5 @@ func TestInvoke_UndeclaredCode_Panics(t *testing.T) {
 			t.Fatal("expected Invoke to panic on an undeclared error code")
 		}
 	}()
-	_, _ = cs.Invoke(context.Background(), &gistproto.InvokeRequest{EndpointId: "ep"})
+	_, _ = cs.Invoke(context.Background(), &proto.InvokeRequest{EndpointId: "ep"})
 }

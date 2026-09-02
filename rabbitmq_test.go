@@ -7,36 +7,36 @@ import (
 
 	"google.golang.org/grpc"
 
-	gistproto "github.com/wieoapps/gist/proto"
 	"github.com/wieoapps/gist/internal/rpcconn"
+	"github.com/wieoapps/gist/proto"
 )
 
-// fakeRabbitMQClient implements gistproto.RabbitMQServiceClient - only
+// fakeRabbitMQClient implements proto.RabbitMQServiceClient - only
 // StartConsuming is exercised by these tests (RegisterRabbitMQConsumer's
 // own RPC call), the rest exist to satisfy the interface.
 type fakeRabbitMQClient struct {
-	lastStartConsuming *gistproto.StartConsumingRequest
-	startConsumingResp *gistproto.StartConsumingResponse
+	lastStartConsuming *proto.StartConsumingRequest
+	startConsumingResp *proto.StartConsumingResponse
 	startConsumingErr  error
 }
 
-func (f *fakeRabbitMQClient) Publish(context.Context, *gistproto.PublishRequest, ...grpc.CallOption) (*gistproto.PublishResponse, error) {
+func (f *fakeRabbitMQClient) Publish(context.Context, *proto.PublishRequest, ...grpc.CallOption) (*proto.PublishResponse, error) {
 	panic("not used by these tests")
 }
 
-func (f *fakeRabbitMQClient) ExchangeDeclare(context.Context, *gistproto.ExchangeDeclareRequest, ...grpc.CallOption) (*gistproto.ExchangeDeclareResponse, error) {
+func (f *fakeRabbitMQClient) ExchangeDeclare(context.Context, *proto.ExchangeDeclareRequest, ...grpc.CallOption) (*proto.ExchangeDeclareResponse, error) {
 	panic("not used by these tests")
 }
 
-func (f *fakeRabbitMQClient) QueueDeclare(context.Context, *gistproto.QueueDeclareRequest, ...grpc.CallOption) (*gistproto.QueueDeclareResponse, error) {
+func (f *fakeRabbitMQClient) QueueDeclare(context.Context, *proto.QueueDeclareRequest, ...grpc.CallOption) (*proto.QueueDeclareResponse, error) {
 	panic("not used by these tests")
 }
 
-func (f *fakeRabbitMQClient) QueueBind(context.Context, *gistproto.QueueBindRequest, ...grpc.CallOption) (*gistproto.QueueBindResponse, error) {
+func (f *fakeRabbitMQClient) QueueBind(context.Context, *proto.QueueBindRequest, ...grpc.CallOption) (*proto.QueueBindResponse, error) {
 	panic("not used by these tests")
 }
 
-func (f *fakeRabbitMQClient) StartConsuming(_ context.Context, in *gistproto.StartConsumingRequest, _ ...grpc.CallOption) (*gistproto.StartConsumingResponse, error) {
+func (f *fakeRabbitMQClient) StartConsuming(_ context.Context, in *proto.StartConsumingRequest, _ ...grpc.CallOption) (*proto.StartConsumingResponse, error) {
 	f.lastStartConsuming = in
 	if f.startConsumingErr != nil {
 		return nil, f.startConsumingErr
@@ -44,7 +44,7 @@ func (f *fakeRabbitMQClient) StartConsuming(_ context.Context, in *gistproto.Sta
 	if f.startConsumingResp != nil {
 		return f.startConsumingResp, nil
 	}
-	return &gistproto.StartConsumingResponse{}, nil
+	return &proto.StartConsumingResponse{}, nil
 }
 
 func TestRegisterRabbitMQConsumer_CallsStartConsuming_ManualAckByDefault(t *testing.T) {
@@ -98,7 +98,7 @@ func TestRegisterRabbitMQConsumer_TransportError_PropagatesFromOption(t *testing
 }
 
 func TestRegisterRabbitMQConsumer_WireError_PropagatesFromOption(t *testing.T) {
-	fake := &fakeRabbitMQClient{startConsumingResp: &gistproto.StartConsumingResponse{ErrorCode: "internal", ErrorMessage: "no such queue"}}
+	fake := &fakeRabbitMQClient{startConsumingResp: &proto.StartConsumingResponse{ErrorCode: "internal", ErrorMessage: "no such queue"}}
 	s := &Server{}
 	rpcconn.Register(s, &rpcconn.Clients{RabbitMQ: fake})
 	defer rpcconn.Unregister(s)
@@ -122,7 +122,7 @@ func TestDeliver_RunsRegisteredConsumer_AcksOnSuccess(t *testing.T) {
 	}
 
 	cs := &callbackServer{app: s}
-	resp, err := cs.Deliver(context.Background(), &gistproto.DeliverRequest{
+	resp, err := cs.Deliver(context.Background(), &proto.DeliverRequest{
 		ServiceId:   "rmq1",
 		Queue:       "orders",
 		Body:        []byte(`{"id":1}`),
@@ -159,7 +159,7 @@ func TestDeliver_HandlerError_NacksWithRequeue(t *testing.T) {
 	}
 
 	cs := &callbackServer{app: s}
-	resp, err := cs.Deliver(context.Background(), &gistproto.DeliverRequest{ServiceId: "rmq1", Queue: "orders"})
+	resp, err := cs.Deliver(context.Background(), &proto.DeliverRequest{ServiceId: "rmq1", Queue: "orders"})
 	if err != nil {
 		t.Fatalf("Deliver returned a transport error: %v", err)
 	}
@@ -174,7 +174,7 @@ func TestDeliver_HandlerError_NacksWithRequeue(t *testing.T) {
 func TestDeliver_UnregisteredPair_ReturnsNotRegistered(t *testing.T) {
 	s := &Server{}
 	cs := &callbackServer{app: s}
-	resp, err := cs.Deliver(context.Background(), &gistproto.DeliverRequest{ServiceId: "rmq1", Queue: "unknown-queue"})
+	resp, err := cs.Deliver(context.Background(), &proto.DeliverRequest{ServiceId: "rmq1", Queue: "unknown-queue"})
 	if err != nil {
 		t.Fatalf("Deliver returned a transport error: %v", err)
 	}

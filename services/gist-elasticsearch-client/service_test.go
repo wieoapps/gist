@@ -8,38 +8,38 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/wieoapps/gist"
-	gistproto "github.com/wieoapps/gist/proto"
 	"github.com/wieoapps/gist/internal/rpcconn"
+	"github.com/wieoapps/gist/proto"
 )
 
 // fakeESClient records the last request of each kind and returns a
 // scripted response - exercises the real client-side JSON encoding/
 // decoding with no live Elasticsearch cluster or gist-server needed.
 type fakeESClient struct {
-	lastCreate *gistproto.CreateItemRequest
-	createResp *gistproto.CreateItemResponse
+	lastCreate *proto.CreateItemRequest
+	createResp *proto.CreateItemResponse
 	createErr  error
-	lastIndex  *gistproto.IndexItemRequest
-	indexResp  *gistproto.IndexItemResponse
+	lastIndex  *proto.IndexItemRequest
+	indexResp  *proto.IndexItemResponse
 	indexErr   error
-	lastGet    *gistproto.GetItemRequest
-	getResp    *gistproto.GetItemResponse
+	lastGet    *proto.GetItemRequest
+	getResp    *proto.GetItemResponse
 	getErr     error
-	lastUpdate *gistproto.UpdateItemRequest
-	updateResp *gistproto.UpdateItemResponse
+	lastUpdate *proto.UpdateItemRequest
+	updateResp *proto.UpdateItemResponse
 	updateErr  error
-	lastDelete *gistproto.DeleteItemRequest
-	deleteResp *gistproto.DeleteItemResponse
+	lastDelete *proto.DeleteItemRequest
+	deleteResp *proto.DeleteItemResponse
 	deleteErr  error
-	lastBulk   *gistproto.BulkIndexRequest
-	bulkResp   *gistproto.BulkIndexResponse
+	lastBulk   *proto.BulkIndexRequest
+	bulkResp   *proto.BulkIndexResponse
 	bulkErr    error
-	lastSearch *gistproto.SearchRequest
-	searchResp *gistproto.SearchResponse
+	lastSearch *proto.SearchRequest
+	searchResp *proto.SearchResponse
 	searchErr  error
 }
 
-func (f *fakeESClient) CreateItem(_ context.Context, in *gistproto.CreateItemRequest, _ ...grpc.CallOption) (*gistproto.CreateItemResponse, error) {
+func (f *fakeESClient) CreateItem(_ context.Context, in *proto.CreateItemRequest, _ ...grpc.CallOption) (*proto.CreateItemResponse, error) {
 	f.lastCreate = in
 	if f.createErr != nil {
 		return nil, f.createErr
@@ -47,7 +47,7 @@ func (f *fakeESClient) CreateItem(_ context.Context, in *gistproto.CreateItemReq
 	return f.createResp, nil
 }
 
-func (f *fakeESClient) IndexItem(_ context.Context, in *gistproto.IndexItemRequest, _ ...grpc.CallOption) (*gistproto.IndexItemResponse, error) {
+func (f *fakeESClient) IndexItem(_ context.Context, in *proto.IndexItemRequest, _ ...grpc.CallOption) (*proto.IndexItemResponse, error) {
 	f.lastIndex = in
 	if f.indexErr != nil {
 		return nil, f.indexErr
@@ -55,7 +55,7 @@ func (f *fakeESClient) IndexItem(_ context.Context, in *gistproto.IndexItemReque
 	return f.indexResp, nil
 }
 
-func (f *fakeESClient) GetItem(_ context.Context, in *gistproto.GetItemRequest, _ ...grpc.CallOption) (*gistproto.GetItemResponse, error) {
+func (f *fakeESClient) GetItem(_ context.Context, in *proto.GetItemRequest, _ ...grpc.CallOption) (*proto.GetItemResponse, error) {
 	f.lastGet = in
 	if f.getErr != nil {
 		return nil, f.getErr
@@ -63,7 +63,7 @@ func (f *fakeESClient) GetItem(_ context.Context, in *gistproto.GetItemRequest, 
 	return f.getResp, nil
 }
 
-func (f *fakeESClient) UpdateItem(_ context.Context, in *gistproto.UpdateItemRequest, _ ...grpc.CallOption) (*gistproto.UpdateItemResponse, error) {
+func (f *fakeESClient) UpdateItem(_ context.Context, in *proto.UpdateItemRequest, _ ...grpc.CallOption) (*proto.UpdateItemResponse, error) {
 	f.lastUpdate = in
 	if f.updateErr != nil {
 		return nil, f.updateErr
@@ -71,7 +71,7 @@ func (f *fakeESClient) UpdateItem(_ context.Context, in *gistproto.UpdateItemReq
 	return f.updateResp, nil
 }
 
-func (f *fakeESClient) DeleteItem(_ context.Context, in *gistproto.DeleteItemRequest, _ ...grpc.CallOption) (*gistproto.DeleteItemResponse, error) {
+func (f *fakeESClient) DeleteItem(_ context.Context, in *proto.DeleteItemRequest, _ ...grpc.CallOption) (*proto.DeleteItemResponse, error) {
 	f.lastDelete = in
 	if f.deleteErr != nil {
 		return nil, f.deleteErr
@@ -79,7 +79,7 @@ func (f *fakeESClient) DeleteItem(_ context.Context, in *gistproto.DeleteItemReq
 	return f.deleteResp, nil
 }
 
-func (f *fakeESClient) BulkIndex(_ context.Context, in *gistproto.BulkIndexRequest, _ ...grpc.CallOption) (*gistproto.BulkIndexResponse, error) {
+func (f *fakeESClient) BulkIndex(_ context.Context, in *proto.BulkIndexRequest, _ ...grpc.CallOption) (*proto.BulkIndexResponse, error) {
 	f.lastBulk = in
 	if f.bulkErr != nil {
 		return nil, f.bulkErr
@@ -87,7 +87,7 @@ func (f *fakeESClient) BulkIndex(_ context.Context, in *gistproto.BulkIndexReque
 	return f.bulkResp, nil
 }
 
-func (f *fakeESClient) Search(_ context.Context, in *gistproto.SearchRequest, _ ...grpc.CallOption) (*gistproto.SearchResponse, error) {
+func (f *fakeESClient) Search(_ context.Context, in *proto.SearchRequest, _ ...grpc.CallOption) (*proto.SearchResponse, error) {
 	f.lastSearch = in
 	if f.searchErr != nil {
 		return nil, f.searchErr
@@ -107,7 +107,7 @@ func newTestService(fake *fakeESClient) *Service {
 }
 
 func TestCreateItem_EncodesItemAndSendsRequest(t *testing.T) {
-	fake := &fakeESClient{createResp: &gistproto.CreateItemResponse{Created: true, Id: "generated-1"}}
+	fake := &fakeESClient{createResp: &proto.CreateItemResponse{Created: true, Id: "generated-1"}}
 	svc := newTestService(fake)
 
 	created, id, err := svc.CreateItem(context.Background(), "my-index", "", sampleItem{Name: "widget", Age: 3})
@@ -141,7 +141,7 @@ func TestCreateItem_EncodesItemAndSendsRequest(t *testing.T) {
 }
 
 func TestCreateItem_ExplicitIDIsSent(t *testing.T) {
-	fake := &fakeESClient{createResp: &gistproto.CreateItemResponse{Created: true, Id: "w-1"}}
+	fake := &fakeESClient{createResp: &proto.CreateItemResponse{Created: true, Id: "w-1"}}
 	svc := newTestService(fake)
 
 	created, id, err := svc.CreateItem(context.Background(), "my-index", "w-1", sampleItem{Name: "widget"})
@@ -157,7 +157,7 @@ func TestCreateItem_ExplicitIDIsSent(t *testing.T) {
 }
 
 func TestCreateItem_ConflictReturnsFalseNoError(t *testing.T) {
-	fake := &fakeESClient{createResp: &gistproto.CreateItemResponse{Created: false}}
+	fake := &fakeESClient{createResp: &proto.CreateItemResponse{Created: false}}
 	svc := newTestService(fake)
 
 	created, id, err := svc.CreateItem(context.Background(), "my-index", "w-1", sampleItem{Name: "widget"})
@@ -170,7 +170,7 @@ func TestCreateItem_ConflictReturnsFalseNoError(t *testing.T) {
 }
 
 func TestCreateItem_WireErrorBecomesError(t *testing.T) {
-	fake := &fakeESClient{createResp: &gistproto.CreateItemResponse{ErrorCode: "internal", ErrorMessage: "cluster unavailable"}}
+	fake := &fakeESClient{createResp: &proto.CreateItemResponse{ErrorCode: "internal", ErrorMessage: "cluster unavailable"}}
 	svc := newTestService(fake)
 
 	_, _, err := svc.CreateItem(context.Background(), "my-index", "", sampleItem{Name: "x"})
@@ -190,7 +190,7 @@ func TestCreateItem_TransportErrorPropagates(t *testing.T) {
 }
 
 func TestCreateItem_UnmarshalableItemReturnsError(t *testing.T) {
-	fake := &fakeESClient{createResp: &gistproto.CreateItemResponse{}}
+	fake := &fakeESClient{createResp: &proto.CreateItemResponse{}}
 	svc := newTestService(fake)
 
 	// A function value cannot be JSON-marshaled - this should fail before
@@ -205,7 +205,7 @@ func TestCreateItem_UnmarshalableItemReturnsError(t *testing.T) {
 }
 
 func TestIndexItem_EncodesItemAndSendsRequestWithID(t *testing.T) {
-	fake := &fakeESClient{indexResp: &gistproto.IndexItemResponse{}}
+	fake := &fakeESClient{indexResp: &proto.IndexItemResponse{}}
 	svc := newTestService(fake)
 
 	err := svc.IndexItem(context.Background(), "my-index", "w-1", sampleItem{Name: "widget", Age: 3})
@@ -233,7 +233,7 @@ func TestIndexItem_EncodesItemAndSendsRequestWithID(t *testing.T) {
 }
 
 func TestIndexItem_WireErrorBecomesError(t *testing.T) {
-	fake := &fakeESClient{indexResp: &gistproto.IndexItemResponse{ErrorCode: "internal", ErrorMessage: "cluster unavailable"}}
+	fake := &fakeESClient{indexResp: &proto.IndexItemResponse{ErrorCode: "internal", ErrorMessage: "cluster unavailable"}}
 	svc := newTestService(fake)
 
 	err := svc.IndexItem(context.Background(), "my-index", "w-1", sampleItem{Name: "x"})
@@ -253,7 +253,7 @@ func TestIndexItem_TransportErrorPropagates(t *testing.T) {
 }
 
 func TestIndexItem_UnmarshalableItemReturnsError(t *testing.T) {
-	fake := &fakeESClient{indexResp: &gistproto.IndexItemResponse{}}
+	fake := &fakeESClient{indexResp: &proto.IndexItemResponse{}}
 	svc := newTestService(fake)
 
 	// A function value cannot be JSON-marshaled - this should fail before
@@ -268,7 +268,7 @@ func TestIndexItem_UnmarshalableItemReturnsError(t *testing.T) {
 }
 
 func TestGetItem_FoundDecodesIntoOut(t *testing.T) {
-	fake := &fakeESClient{getResp: &gistproto.GetItemResponse{Found: true, ItemJson: []byte(`{"name":"widget","age":3}`)}}
+	fake := &fakeESClient{getResp: &proto.GetItemResponse{Found: true, ItemJson: []byte(`{"name":"widget","age":3}`)}}
 	svc := newTestService(fake)
 
 	var out sampleItem
@@ -288,7 +288,7 @@ func TestGetItem_FoundDecodesIntoOut(t *testing.T) {
 }
 
 func TestGetItem_NotFoundLeavesOutUntouched(t *testing.T) {
-	fake := &fakeESClient{getResp: &gistproto.GetItemResponse{Found: false}}
+	fake := &fakeESClient{getResp: &proto.GetItemResponse{Found: false}}
 	svc := newTestService(fake)
 
 	out := sampleItem{Name: "unchanged"}
@@ -305,7 +305,7 @@ func TestGetItem_NotFoundLeavesOutUntouched(t *testing.T) {
 }
 
 func TestGetItem_WireErrorBecomesError(t *testing.T) {
-	fake := &fakeESClient{getResp: &gistproto.GetItemResponse{ErrorCode: "internal", ErrorMessage: "boom"}}
+	fake := &fakeESClient{getResp: &proto.GetItemResponse{ErrorCode: "internal", ErrorMessage: "boom"}}
 	svc := newTestService(fake)
 
 	var out sampleItem
@@ -315,7 +315,7 @@ func TestGetItem_WireErrorBecomesError(t *testing.T) {
 }
 
 func TestUpdateItem_EncodesDocAndSendsRequest(t *testing.T) {
-	fake := &fakeESClient{updateResp: &gistproto.UpdateItemResponse{Found: true}}
+	fake := &fakeESClient{updateResp: &proto.UpdateItemResponse{Found: true}}
 	svc := newTestService(fake)
 
 	found, err := svc.UpdateItem(context.Background(), "my-index", "w-1", map[string]any{"price": 12.5})
@@ -335,7 +335,7 @@ func TestUpdateItem_EncodesDocAndSendsRequest(t *testing.T) {
 }
 
 func TestUpdateItem_NotFound(t *testing.T) {
-	fake := &fakeESClient{updateResp: &gistproto.UpdateItemResponse{Found: false}}
+	fake := &fakeESClient{updateResp: &proto.UpdateItemResponse{Found: false}}
 	svc := newTestService(fake)
 
 	found, err := svc.UpdateItem(context.Background(), "my-index", "missing", map[string]any{})
@@ -348,7 +348,7 @@ func TestUpdateItem_NotFound(t *testing.T) {
 }
 
 func TestDeleteItem_SendsRequestAndReportsFound(t *testing.T) {
-	fake := &fakeESClient{deleteResp: &gistproto.DeleteItemResponse{Found: true}}
+	fake := &fakeESClient{deleteResp: &proto.DeleteItemResponse{Found: true}}
 	svc := newTestService(fake)
 
 	found, err := svc.DeleteItem(context.Background(), "my-index", "w-1")
@@ -364,7 +364,7 @@ func TestDeleteItem_SendsRequestAndReportsFound(t *testing.T) {
 }
 
 func TestDeleteItem_WireErrorBecomesError(t *testing.T) {
-	fake := &fakeESClient{deleteResp: &gistproto.DeleteItemResponse{ErrorCode: "internal", ErrorMessage: "boom"}}
+	fake := &fakeESClient{deleteResp: &proto.DeleteItemResponse{ErrorCode: "internal", ErrorMessage: "boom"}}
 	svc := newTestService(fake)
 
 	if _, err := svc.DeleteItem(context.Background(), "my-index", "w-1"); err == nil {
@@ -373,9 +373,9 @@ func TestDeleteItem_WireErrorBecomesError(t *testing.T) {
 }
 
 func TestBulkIndex_EncodesItemsAndDecodesResults(t *testing.T) {
-	fake := &fakeESClient{bulkResp: &gistproto.BulkIndexResponse{
+	fake := &fakeESClient{bulkResp: &proto.BulkIndexResponse{
 		HasErrors: true,
-		Results: []*gistproto.BulkIndexResult{
+		Results: []*proto.BulkIndexResult{
 			{Id: "w-1", Status: 201},
 			{Id: "w-2", Status: 400, Error: "mapper_parsing_exception"},
 		},
@@ -418,7 +418,7 @@ func TestBulkIndex_EncodesItemsAndDecodesResults(t *testing.T) {
 }
 
 func TestBulkIndex_UnmarshalableItemReturnsErrorBeforeCallingRPC(t *testing.T) {
-	fake := &fakeESClient{bulkResp: &gistproto.BulkIndexResponse{}}
+	fake := &fakeESClient{bulkResp: &proto.BulkIndexResponse{}}
 	svc := newTestService(fake)
 
 	_, _, err := svc.BulkIndex(context.Background(), "my-index", []BulkItem{{Item: func() {}}})
@@ -431,7 +431,7 @@ func TestBulkIndex_UnmarshalableItemReturnsErrorBeforeCallingRPC(t *testing.T) {
 }
 
 func TestBulkIndex_WireErrorBecomesError(t *testing.T) {
-	fake := &fakeESClient{bulkResp: &gistproto.BulkIndexResponse{ErrorCode: "internal", ErrorMessage: "boom"}}
+	fake := &fakeESClient{bulkResp: &proto.BulkIndexResponse{ErrorCode: "internal", ErrorMessage: "boom"}}
 	svc := newTestService(fake)
 
 	_, _, err := svc.BulkIndex(context.Background(), "my-index", []BulkItem{{Item: sampleItem{}}})
@@ -450,7 +450,7 @@ func TestSearch_EncodesQueryAndDecodesHits(t *testing.T) {
 			]
 		}
 	}`)
-	fake := &fakeESClient{searchResp: &gistproto.SearchResponse{ResponseJson: responseJSON}}
+	fake := &fakeESClient{searchResp: &proto.SearchResponse{ResponseJson: responseJSON}}
 	svc := newTestService(fake)
 
 	query := map[string]any{"query": map[string]any{"match": map[string]any{"name": "sprocket"}}}
@@ -485,7 +485,7 @@ func TestSearch_EncodesQueryAndDecodesHits(t *testing.T) {
 }
 
 func TestSearch_WireErrorBecomesError(t *testing.T) {
-	fake := &fakeESClient{searchResp: &gistproto.SearchResponse{ErrorCode: "internal", ErrorMessage: "boom"}}
+	fake := &fakeESClient{searchResp: &proto.SearchResponse{ErrorCode: "internal", ErrorMessage: "boom"}}
 	svc := newTestService(fake)
 
 	if _, err := svc.Search(context.Background(), "my-index", map[string]any{}); err == nil {

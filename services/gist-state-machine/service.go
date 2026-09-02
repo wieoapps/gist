@@ -50,8 +50,8 @@ import (
 	"fmt"
 
 	"github.com/wieoapps/gist"
-	gistproto "github.com/wieoapps/gist/proto"
 	"github.com/wieoapps/gist/internal/rpcconn"
+	"github.com/wieoapps/gist/proto"
 )
 
 type Statabler interface {
@@ -186,7 +186,7 @@ func init() {
 // is permitted from currentState against the configured graph, and if
 // so apply it.
 func (s *Service) attemptTransition(ctx context.Context, trigger, currentState string) (newState string, err error) {
-	resp, err := rpcconn.MustFor(s.server).StateMachine.Transition(ctx, &gistproto.TransitionRequest{
+	resp, err := rpcconn.MustFor(s.server).StateMachine.Transition(ctx, &proto.TransitionRequest{
 		ServiceId:    s.serviceID,
 		Trigger:      trigger,
 		CurrentState: currentState,

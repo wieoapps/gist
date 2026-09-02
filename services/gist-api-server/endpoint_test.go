@@ -10,8 +10,8 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/wieoapps/gist"
-	gistproto "github.com/wieoapps/gist/proto"
 	"github.com/wieoapps/gist/internal/rpcconn"
+	"github.com/wieoapps/gist/proto"
 )
 
 // --- reflectFields / kindOf: internal-package tests, exercising the
@@ -30,7 +30,7 @@ type sampleInput struct {
 func TestReflectFields_TagsAndConstraints(t *testing.T) {
 	fields := reflectFields(reflect.TypeFor[sampleInput]())
 
-	byName := map[string]*gistproto.Field{}
+	byName := map[string]*proto.Field{}
 	for _, f := range fields {
 		byName[f.GetName()] = f
 	}
@@ -148,26 +148,26 @@ func TestKindOf(t *testing.T) {
 
 type fakeAdminClient struct {
 	mu          sync.Mutex
-	registered  []*gistproto.RegisterRequest
+	registered  []*proto.RegisterRequest
 	registerErr error
 }
 
-func (f *fakeAdminClient) Handshake(context.Context, *gistproto.HandshakeRequest, ...grpc.CallOption) (*gistproto.HandshakeResponse, error) {
-	return &gistproto.HandshakeResponse{}, nil
+func (f *fakeAdminClient) Handshake(context.Context, *proto.HandshakeRequest, ...grpc.CallOption) (*proto.HandshakeResponse, error) {
+	return &proto.HandshakeResponse{}, nil
 }
 
-func (f *fakeAdminClient) Register(_ context.Context, in *gistproto.RegisterRequest, _ ...grpc.CallOption) (*gistproto.RegisterResponse, error) {
+func (f *fakeAdminClient) Register(_ context.Context, in *proto.RegisterRequest, _ ...grpc.CallOption) (*proto.RegisterResponse, error) {
 	f.mu.Lock()
 	f.registered = append(f.registered, in)
 	f.mu.Unlock()
 	if f.registerErr != nil {
 		return nil, f.registerErr
 	}
-	return &gistproto.RegisterResponse{}, nil
+	return &proto.RegisterResponse{}, nil
 }
 
-func (f *fakeAdminClient) GenerateFixtures(context.Context, *gistproto.GenerateFixturesRequest, ...grpc.CallOption) (*gistproto.GenerateFixturesResponse, error) {
-	return &gistproto.GenerateFixturesResponse{}, nil
+func (f *fakeAdminClient) GenerateFixtures(context.Context, *proto.GenerateFixturesRequest, ...grpc.CallOption) (*proto.GenerateFixturesResponse, error) {
+	return &proto.GenerateFixturesResponse{}, nil
 }
 
 type testServicesGroup struct{}
@@ -190,7 +190,7 @@ type testOut struct {
 // process and binds a real Unix socket - not appropriate to do from a
 // unit test. A bare &gistsdk.Server{} with its fake client registered via
 // rpcconn.Register (the way every test in this package injects a fake
-// gRPC client without modifying production code, now that gistproto no
+// gRPC client without modifying production code, now that proto no
 // longer appears in Server's own exported fields) leaves those maps nil
 // regardless. Attach's success path always calls both
 // Admin.Register AND RegisterDispatch (registerEndpoint in endpoint.go

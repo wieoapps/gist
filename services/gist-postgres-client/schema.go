@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"strings"
 
-	gistproto "github.com/wieoapps/gist/proto"
+	"github.com/wieoapps/gist/proto"
 )
 
 const (
@@ -14,16 +14,16 @@ const (
 	tagJoin   = "join"
 )
 
-func buildModelSchema(t reflect.Type) *gistproto.ModelSchema {
+func buildModelSchema(t reflect.Type) *proto.ModelSchema {
 	for t.Kind() == reflect.Pointer {
 		t = t.Elem()
 	}
-	schema := &gistproto.ModelSchema{}
+	schema := &proto.ModelSchema{}
 	parseFields(t, schema)
 	return schema
 }
 
-func parseFields(t reflect.Type, schema *gistproto.ModelSchema) {
+func parseFields(t reflect.Type, schema *proto.ModelSchema) {
 	for sf := range t.Fields() {
 
 		if source, ok := sf.Tag.Lookup(tagSource); ok {
@@ -66,7 +66,7 @@ func parseFields(t reflect.Type, schema *gistproto.ModelSchema) {
 		if !ok {
 			continue
 		}
-		schema.Fields = append(schema.Fields, &gistproto.ModelField{
+		schema.Fields = append(schema.Fields, &proto.ModelField{
 			Name:     col,
 			JsonName: jsonName(sf),
 			// Identical to gist-mysql's schema.go: telling the server this
@@ -78,11 +78,11 @@ func parseFields(t reflect.Type, schema *gistproto.ModelSchema) {
 	}
 }
 
-func structuralField(sf reflect.StructField, nestedType reflect.Type, joinTag string, isSlice bool) *gistproto.ModelField {
-	nested := &gistproto.ModelSchema{}
+func structuralField(sf reflect.StructField, nestedType reflect.Type, joinTag string, isSlice bool) *proto.ModelField {
+	nested := &proto.ModelSchema{}
 	parseFields(nestedType, nested)
 
-	return &gistproto.ModelField{
+	return &proto.ModelField{
 		Name:     sf.Tag.Get(tagColumn),
 		JsonName: jsonName(sf),
 		JoinTag:  joinTag,

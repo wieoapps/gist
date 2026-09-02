@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	"github.com/wieoapps/gist"
-	gistproto "github.com/wieoapps/gist/proto"
 	"github.com/wieoapps/gist/internal/rpcconn"
+	"github.com/wieoapps/gist/proto"
 )
 
 type widgetModel struct {
@@ -166,7 +166,7 @@ func TestTransaction_Commit_ServerErrorCode_SurfacesAsError(t *testing.T) {
 	if _, err := Find[widgetModel](tr); err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
-	fake.commitResp = &gistproto.Ack{ErrorCode: "internal", ErrorMessage: "boom"}
+	fake.commitResp = &proto.Ack{ErrorCode: "internal", ErrorMessage: "boom"}
 
 	if err := tr.Commit(); err == nil {
 		t.Fatal("expected an error when the server returns a non-empty error_code")
@@ -193,14 +193,14 @@ func TestFind_SendsCorrectOpSchemaAndConditions(t *testing.T) {
 	tr := newFakeTransaction(t, fake)
 
 	rowJSON, _ := json.Marshal(map[string]any{"id": 1, "name": "widget"})
-	fake.repoResp = &gistproto.RepoResponse{RowsJson: [][]byte{rowJSON}}
+	fake.repoResp = &proto.RepoResponse{RowsJson: [][]byte{rowJSON}}
 
 	results, err := Find[widgetModel](tr, WithConditions(NewCondition("id", Equal, 1)), WithLimit(10))
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
 
-	if fake.repoReq.GetOp() != gistproto.RepoOp_FIND {
+	if fake.repoReq.GetOp() != proto.RepoOp_FIND {
 		t.Fatalf("expected RepoOp_FIND, got %v", fake.repoReq.GetOp())
 	}
 	if fake.repoReq.GetBegin() == nil {
@@ -222,7 +222,7 @@ func TestFind_SendsCorrectOpSchemaAndConditions(t *testing.T) {
 }
 
 func TestFind_ServerError_PropagatesWithContext(t *testing.T) {
-	fake := &fakeDBClient{repoResp: &gistproto.RepoResponse{ErrorCode: "internal", ErrorMessage: "db exploded"}}
+	fake := &fakeDBClient{repoResp: &proto.RepoResponse{ErrorCode: "internal", ErrorMessage: "db exploded"}}
 	tr := newFakeTransaction(t, fake)
 	if _, err := Find[widgetModel](tr); err == nil {
 		t.Fatal("expected an error when the server response carries an error_code")
@@ -238,7 +238,7 @@ func TestFind_TransportError_Propagates(t *testing.T) {
 }
 
 func TestFindOne_NoRows_ReturnsNilNotError(t *testing.T) {
-	fake := &fakeDBClient{repoResp: &gistproto.RepoResponse{}}
+	fake := &fakeDBClient{repoResp: &proto.RepoResponse{}}
 	tr := newFakeTransaction(t, fake)
 	result, err := FindOne[widgetModel](tr)
 	if err != nil {
@@ -247,14 +247,14 @@ func TestFindOne_NoRows_ReturnsNilNotError(t *testing.T) {
 	if result != nil {
 		t.Fatalf("expected nil for no matching rows, got %+v", result)
 	}
-	if fake.repoReq.GetOp() != gistproto.RepoOp_FIND_ONE {
+	if fake.repoReq.GetOp() != proto.RepoOp_FIND_ONE {
 		t.Fatalf("expected RepoOp_FIND_ONE, got %v", fake.repoReq.GetOp())
 	}
 }
 
 func TestFindOne_MultipleRows_IsFailedPrecondition(t *testing.T) {
 	row, _ := json.Marshal(map[string]any{"id": 1})
-	fake := &fakeDBClient{repoResp: &gistproto.RepoResponse{ErrorCode: "failed_precondition", ErrorMessage: "multiple rows", RowsJson: [][]byte{row, row}}}
+	fake := &fakeDBClient{repoResp: &proto.RepoResponse{ErrorCode: "failed_precondition", ErrorMessage: "multiple rows", RowsJson: [][]byte{row, row}}}
 	tr := newFakeTransaction(t, fake)
 	if _, err := FindOne[widgetModel](tr); err == nil {
 		t.Fatal("expected an error when the server reports multiple matching rows")
@@ -262,7 +262,7 @@ func TestFindOne_MultipleRows_IsFailedPrecondition(t *testing.T) {
 }
 
 func TestCount_ReturnsScriptedCount(t *testing.T) {
-	fake := &fakeDBClient{repoResp: &gistproto.RepoResponse{Count: 42}}
+	fake := &fakeDBClient{repoResp: &proto.RepoResponse{Count: 42}}
 	tr := newFakeTransaction(t, fake)
 	n, err := Count[widgetModel](tr)
 	if err != nil {
@@ -271,13 +271,13 @@ func TestCount_ReturnsScriptedCount(t *testing.T) {
 	if n != 42 {
 		t.Fatalf("expected 42, got %d", n)
 	}
-	if fake.repoReq.GetOp() != gistproto.RepoOp_COUNT {
+	if fake.repoReq.GetOp() != proto.RepoOp_COUNT {
 		t.Fatalf("expected RepoOp_COUNT, got %v", fake.repoReq.GetOp())
 	}
 }
 
 func TestExists_ReturnsScriptedBool(t *testing.T) {
-	fake := &fakeDBClient{repoResp: &gistproto.RepoResponse{Exists: true}}
+	fake := &fakeDBClient{repoResp: &proto.RepoResponse{Exists: true}}
 	tr := newFakeTransaction(t, fake)
 	exists, err := Exists[widgetModel](tr)
 	if err != nil {
@@ -286,13 +286,13 @@ func TestExists_ReturnsScriptedBool(t *testing.T) {
 	if !exists {
 		t.Fatal("expected true")
 	}
-	if fake.repoReq.GetOp() != gistproto.RepoOp_EXISTS {
+	if fake.repoReq.GetOp() != proto.RepoOp_EXISTS {
 		t.Fatalf("expected RepoOp_EXISTS, got %v", fake.repoReq.GetOp())
 	}
 }
 
 func TestSave_EncodesEveryRowAndSumsAffected(t *testing.T) {
-	fake := &fakeDBClient{repoResp: &gistproto.RepoResponse{Affected: 2}}
+	fake := &fakeDBClient{repoResp: &proto.RepoResponse{Affected: 2}}
 	tr := newFakeTransaction(t, fake)
 
 	n, err := Save(tr, widgetModel{ID: 1, Name: "a"}, widgetModel{ID: 2, Name: "b"})
@@ -302,7 +302,7 @@ func TestSave_EncodesEveryRowAndSumsAffected(t *testing.T) {
 	if n != 2 {
 		t.Fatalf("expected affected=2, got %d", n)
 	}
-	if fake.repoReq.GetOp() != gistproto.RepoOp_SAVE {
+	if fake.repoReq.GetOp() != proto.RepoOp_SAVE {
 		t.Fatalf("expected RepoOp_SAVE, got %v", fake.repoReq.GetOp())
 	}
 	if len(fake.repoReq.GetRows()) != 2 {
@@ -329,7 +329,7 @@ func TestSave_NoModels_ReturnsZeroWithoutCallingServer(t *testing.T) {
 
 func TestSaveWithReturning_DecodesReturnedRows(t *testing.T) {
 	rowJSON, _ := json.Marshal(map[string]any{"id": 9, "name": "created"})
-	fake := &fakeDBClient{repoResp: &gistproto.RepoResponse{RowsJson: [][]byte{rowJSON}, Affected: 1}}
+	fake := &fakeDBClient{repoResp: &proto.RepoResponse{RowsJson: [][]byte{rowJSON}, Affected: 1}}
 	tr := newFakeTransaction(t, fake)
 
 	// The insert payload's type (a bare struct with no "id", no source
@@ -349,7 +349,7 @@ func TestSaveWithReturning_DecodesReturnedRows(t *testing.T) {
 	if len(results) != 1 || results[0].ID != 9 || results[0].Name != "created" {
 		t.Fatalf("expected the returned row decoded as widgetModel, got %+v", results)
 	}
-	if fake.repoReq.GetOp() != gistproto.RepoOp_SAVE_WITH_RETURNING {
+	if fake.repoReq.GetOp() != proto.RepoOp_SAVE_WITH_RETURNING {
 		t.Fatalf("expected RepoOp_SAVE_WITH_RETURNING, got %v", fake.repoReq.GetOp())
 	}
 	// Schema must be reflected from the RETURN type (widgetModel, with
@@ -361,7 +361,7 @@ func TestSaveWithReturning_DecodesReturnedRows(t *testing.T) {
 }
 
 func TestUpdate_SendsPartialRowAndConditions(t *testing.T) {
-	fake := &fakeDBClient{repoResp: &gistproto.RepoResponse{Affected: 3}}
+	fake := &fakeDBClient{repoResp: &proto.RepoResponse{Affected: 3}}
 	tr := newFakeTransaction(t, fake)
 
 	type nameUpdate struct {
@@ -374,7 +374,7 @@ func TestUpdate_SendsPartialRowAndConditions(t *testing.T) {
 	if n != 3 {
 		t.Fatalf("expected affected=3, got %d", n)
 	}
-	if fake.repoReq.GetOp() != gistproto.RepoOp_UPDATE {
+	if fake.repoReq.GetOp() != proto.RepoOp_UPDATE {
 		t.Fatalf("expected RepoOp_UPDATE, got %v", fake.repoReq.GetOp())
 	}
 	if len(fake.repoReq.GetRows()) != 1 {
@@ -390,7 +390,7 @@ func TestUpdate_NilPointerFieldOmittedFromPayload(t *testing.T) {
 	// session: a nil pointer field must be OMITTED from the SET clause
 	// payload entirely (not sent as an explicit null), while a
 	// non-pointer zero value is always included - see row.go.
-	fake := &fakeDBClient{repoResp: &gistproto.RepoResponse{Affected: 1}}
+	fake := &fakeDBClient{repoResp: &proto.RepoResponse{Affected: 1}}
 	tr := newFakeTransaction(t, fake)
 
 	type partialUpdate struct {
@@ -414,7 +414,7 @@ func TestUpdate_NilPointerFieldOmittedFromPayload(t *testing.T) {
 
 func TestUpdateWithReturning_SchemaFromReturnTypeNotPayload(t *testing.T) {
 	rowJSON, _ := json.Marshal(map[string]any{"id": 1, "name": "renamed"})
-	fake := &fakeDBClient{repoResp: &gistproto.RepoResponse{RowsJson: [][]byte{rowJSON}, Affected: 1}}
+	fake := &fakeDBClient{repoResp: &proto.RepoResponse{RowsJson: [][]byte{rowJSON}, Affected: 1}}
 	tr := newFakeTransaction(t, fake)
 
 	type nameUpdate struct {
@@ -427,13 +427,13 @@ func TestUpdateWithReturning_SchemaFromReturnTypeNotPayload(t *testing.T) {
 	if affected != 1 || len(results) != 1 || results[0].Name != "renamed" {
 		t.Fatalf("got results=%+v affected=%d", results, affected)
 	}
-	if fake.repoReq.GetOp() != gistproto.RepoOp_UPDATE_WITH_RETURNING {
+	if fake.repoReq.GetOp() != proto.RepoOp_UPDATE_WITH_RETURNING {
 		t.Fatalf("expected RepoOp_UPDATE_WITH_RETURNING, got %v", fake.repoReq.GetOp())
 	}
 }
 
 func TestDelete_SendsConditionsAndLimit(t *testing.T) {
-	fake := &fakeDBClient{repoResp: &gistproto.RepoResponse{Affected: 1}}
+	fake := &fakeDBClient{repoResp: &proto.RepoResponse{Affected: 1}}
 	tr := newFakeTransaction(t, fake)
 
 	n, err := Delete[widgetModel](tr, WithConditions(NewCondition("id", Equal, 1)), WithLimit(1))
@@ -443,7 +443,7 @@ func TestDelete_SendsConditionsAndLimit(t *testing.T) {
 	if n != 1 {
 		t.Fatalf("expected affected=1, got %d", n)
 	}
-	if fake.repoReq.GetOp() != gistproto.RepoOp_DELETE {
+	if fake.repoReq.GetOp() != proto.RepoOp_DELETE {
 		t.Fatalf("expected RepoOp_DELETE, got %v", fake.repoReq.GetOp())
 	}
 	if fake.repoReq.GetOptions().GetLimit() != 1 {
@@ -453,7 +453,7 @@ func TestDelete_SendsConditionsAndLimit(t *testing.T) {
 
 func TestDeleteWithReturning_DecodesRowsBeforeDeletionConceptually(t *testing.T) {
 	rowJSON, _ := json.Marshal(map[string]any{"id": 5, "name": "gone-soon"})
-	fake := &fakeDBClient{repoResp: &gistproto.RepoResponse{RowsJson: [][]byte{rowJSON}, Affected: 1}}
+	fake := &fakeDBClient{repoResp: &proto.RepoResponse{RowsJson: [][]byte{rowJSON}, Affected: 1}}
 	tr := newFakeTransaction(t, fake)
 
 	results, affected, err := DeleteWithReturning[widgetModel](tr, WithConditions(NewCondition("id", Equal, 5)))
@@ -463,7 +463,7 @@ func TestDeleteWithReturning_DecodesRowsBeforeDeletionConceptually(t *testing.T)
 	if affected != 1 || len(results) != 1 || results[0].Name != "gone-soon" {
 		t.Fatalf("got results=%+v affected=%d", results, affected)
 	}
-	if fake.repoReq.GetOp() != gistproto.RepoOp_DELETE_WITH_RETURNING {
+	if fake.repoReq.GetOp() != proto.RepoOp_DELETE_WITH_RETURNING {
 		t.Fatalf("expected RepoOp_DELETE_WITH_RETURNING, got %v", fake.repoReq.GetOp())
 	}
 }

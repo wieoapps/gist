@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"github.com/wieoapps/gist"
-	gistproto "github.com/wieoapps/gist/proto"
 	"github.com/wieoapps/gist/internal/rpcconn"
+	"github.com/wieoapps/gist/proto"
 )
 
 type Service struct {
@@ -53,8 +53,8 @@ func (s *Service) begin(_ context.Context, readOnly bool, name string) (*Transac
 // RPC - the basis for this package's *AutoClose functions in repo.go/
 // write.go. Unlike begin, this Transaction is never returned to the caller,
 // so there's no way to reuse or double-close it once its one op has run.
-func (s *Service) oneShot(readOnly bool, action gistproto.EndAction) *Transaction {
-	return &Transaction{server: s.server, serviceID: s.serviceID, readOnly: readOnly, end: &gistproto.EndTransaction{Action: action}}
+func (s *Service) oneShot(readOnly bool, action proto.EndAction) *Transaction {
+	return &Transaction{server: s.server, serviceID: s.serviceID, readOnly: readOnly, end: &proto.EndTransaction{Action: action}}
 }
 
 // InTransaction, InReadTransaction, InNamedTransaction and
@@ -117,14 +117,14 @@ const (
 	CommitIfOK EndAction = "commit_if_ok"
 )
 
-func (a EndAction) toWire() gistproto.EndAction {
+func (a EndAction) toWire() proto.EndAction {
 	switch a {
 	case Commit:
-		return gistproto.EndAction_END_ACTION_COMMIT
+		return proto.EndAction_END_ACTION_COMMIT
 	case CommitIfOK:
-		return gistproto.EndAction_END_ACTION_COMMIT_IF_OK
+		return proto.EndAction_END_ACTION_COMMIT_IF_OK
 	default:
-		return gistproto.EndAction_END_ACTION_ROLLBACK
+		return proto.EndAction_END_ACTION_ROLLBACK
 	}
 }
 
@@ -134,8 +134,8 @@ type Transaction struct {
 	readOnly  bool
 	name      string
 	handle    string
-	end       *gistproto.EndTransaction // set by Service.oneShot, or by CloseAfter
-	endErr    error                     // set by captureHandle if end's action failed server-side
+	end       *proto.EndTransaction // set by Service.oneShot, or by CloseAfter
+	endErr    error                 // set by captureHandle if end's action failed server-side
 }
 
 // CloseAfter marks t to fold a Commit/Rollback into its very next Repo call
@@ -147,7 +147,7 @@ type Transaction struct {
 // close into one call - the same mechanism this package's *AutoClose
 // functions use internally via Service.oneShot.
 func (t *Transaction) CloseAfter(action EndAction) {
-	t.end = &gistproto.EndTransaction{Action: action.toWire()}
+	t.end = &proto.EndTransaction{Action: action.toWire()}
 }
 
 // repoRequest builds a RepoRequest carrying either t's already-open handle,
@@ -160,13 +160,13 @@ func (t *Transaction) CloseAfter(action EndAction) {
 // closes the transaction server-side either way (success or failure -
 // endTx on the server runs unconditionally whenever a request carries
 // end), so there's nothing left this Transaction should ever send again.
-func (t *Transaction) repoRequest() *gistproto.RepoRequest {
-	var req *gistproto.RepoRequest
+func (t *Transaction) repoRequest() *proto.RepoRequest {
+	var req *proto.RepoRequest
 	if t.handle != "" {
-		req = &gistproto.RepoRequest{TransactionHandle: t.handle}
+		req = &proto.RepoRequest{TransactionHandle: t.handle}
 	} else {
-		req = &gistproto.RepoRequest{
-			Begin: &gistproto.BeginTransactionRequest{ServiceId: t.serviceID, ReadOnly: t.readOnly, Name: t.name},
+		req = &proto.RepoRequest{
+			Begin: &proto.BeginTransactionRequest{ServiceId: t.serviceID, ReadOnly: t.readOnly, Name: t.name},
 		}
 	}
 	if t.end != nil {
@@ -185,7 +185,7 @@ func (t *Transaction) repoRequest() *gistproto.RepoRequest {
 // after checking the RPC's transport error and before checking resp's own
 // ErrorCode - even a failed op can have opened a transaction that's now
 // genuinely live server-side and still needs an explicit Commit/Rollback.
-func (t *Transaction) captureHandle(resp *gistproto.RepoResponse) {
+func (t *Transaction) captureHandle(resp *proto.RepoResponse) {
 	if t.handle == "" {
 		t.handle = resp.GetTransactionHandle()
 	}
@@ -196,7 +196,7 @@ func (t *Transaction) captureHandle(resp *gistproto.RepoResponse) {
 
 // pg is how every function in this package reaches the raw PostgresServiceClient -
 // gistsdk.Server never exposes it directly (see rpcconn's package doc).
-func (t *Transaction) pg() gistproto.PostgresServiceClient {
+func (t *Transaction) pg() proto.PostgresServiceClient {
 	return rpcconn.MustFor(t.server).PG
 }
 
@@ -204,7 +204,7 @@ func (t *Transaction) Commit() error {
 	if t.handle == "" {
 		return nil
 	}
-	ack, err := t.pg().Commit(context.Background(), &gistproto.TransactionHandle{TransactionHandle: t.handle})
+	ack, err := t.pg().Commit(context.Background(), &proto.TransactionHandle{TransactionHandle: t.handle})
 	if err != nil {
 		return fmt.Errorf("gistpostgres: commit: %w", err)
 	}
@@ -218,7 +218,7 @@ func (t *Transaction) Rollback() error {
 	if t.handle == "" {
 		return nil
 	}
-	ack, err := t.pg().Rollback(context.Background(), &gistproto.TransactionHandle{TransactionHandle: t.handle})
+	ack, err := t.pg().Rollback(context.Background(), &proto.TransactionHandle{TransactionHandle: t.handle})
 	if err != nil {
 		return fmt.Errorf("gistpostgres: rollback: %w", err)
 	}

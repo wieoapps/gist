@@ -8,17 +8,17 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/wieoapps/gist"
-	gistproto "github.com/wieoapps/gist/proto"
 	"github.com/wieoapps/gist/internal/rpcconn"
+	"github.com/wieoapps/gist/proto"
 )
 
 type fakeStateMachineClient struct {
-	req  *gistproto.TransitionRequest
-	resp *gistproto.TransitionResponse
+	req  *proto.TransitionRequest
+	resp *proto.TransitionResponse
 	err  error
 }
 
-func (f *fakeStateMachineClient) Transition(_ context.Context, in *gistproto.TransitionRequest, _ ...grpc.CallOption) (*gistproto.TransitionResponse, error) {
+func (f *fakeStateMachineClient) Transition(_ context.Context, in *proto.TransitionRequest, _ ...grpc.CallOption) (*proto.TransitionResponse, error) {
 	f.req = in
 	if f.err != nil {
 		return nil, f.err
@@ -26,7 +26,7 @@ func (f *fakeStateMachineClient) Transition(_ context.Context, in *gistproto.Tra
 	if f.resp != nil {
 		return f.resp, nil
 	}
-	return &gistproto.TransitionResponse{NewState: "done"}, nil
+	return &proto.TransitionResponse{NewState: "done"}, nil
 }
 
 type testStatable struct {
@@ -118,7 +118,7 @@ func TestTransition_TransportError_Propagates_OnActionNeverRuns(t *testing.T) {
 }
 
 func TestTransition_ServerErrorCode_SurfacesAsError_StateUnchanged(t *testing.T) {
-	fake := &fakeStateMachineClient{resp: &gistproto.TransitionResponse{ErrorCode: "invalid_transition", ErrorMessage: "cannot approve from pending"}}
+	fake := &fakeStateMachineClient{resp: &proto.TransitionResponse{ErrorCode: "invalid_transition", ErrorMessage: "cannot approve from pending"}}
 	approve := RegisterTriggerFunc("approve", noopAction)
 	svc := newTestService(t, fake, approve)
 

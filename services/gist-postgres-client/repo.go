@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"reflect"
 
-	gistproto "github.com/wieoapps/gist/proto"
+	"github.com/wieoapps/gist/proto"
 )
 
 func Find[model any](tr *Transaction, opts ...Option) ([]model, error) {
@@ -14,9 +14,9 @@ func Find[model any](tr *Transaction, opts ...Option) ([]model, error) {
 	schema := buildModelSchema(reflect.TypeOf(*new(model)))
 
 	req := tr.repoRequest()
-	req.Op = gistproto.RepoOp_FIND
+	req.Op = proto.RepoOp_FIND
 	req.Schema = schema
-	req.Options = &gistproto.QueryOptions{
+	req.Options = &proto.QueryOptions{
 		Conditions:         toWireConditions(r.conditions),
 		Sorts:              toWireSorts(r.sorts),
 		Limit:              r.limit,
@@ -48,9 +48,9 @@ func FindOne[model any](tr *Transaction, opts ...Option) (*model, error) {
 	schema := buildModelSchema(reflect.TypeOf(*new(model)))
 
 	req := tr.repoRequest()
-	req.Op = gistproto.RepoOp_FIND_ONE
+	req.Op = proto.RepoOp_FIND_ONE
 	req.Schema = schema
-	req.Options = &gistproto.QueryOptions{
+	req.Options = &proto.QueryOptions{
 		Conditions:         toWireConditions(r.conditions),
 		Sorts:              toWireSorts(r.sorts),
 		Lock:               r.lock,
@@ -81,9 +81,9 @@ func Count[model any](tr *Transaction, opts ...Option) (int64, error) {
 	schema := buildModelSchema(reflect.TypeOf(*new(model)))
 
 	req := tr.repoRequest()
-	req.Op = gistproto.RepoOp_COUNT
+	req.Op = proto.RepoOp_COUNT
 	req.Schema = schema
-	req.Options = &gistproto.QueryOptions{Conditions: toWireConditions(r.conditions)}
+	req.Options = &proto.QueryOptions{Conditions: toWireConditions(r.conditions)}
 
 	resp, err := tr.pg().Repo(context.Background(), req)
 	if err != nil {
@@ -101,9 +101,9 @@ func Exists[model any](tr *Transaction, opts ...Option) (bool, error) {
 	schema := buildModelSchema(reflect.TypeOf(*new(model)))
 
 	req := tr.repoRequest()
-	req.Op = gistproto.RepoOp_EXISTS
+	req.Op = proto.RepoOp_EXISTS
 	req.Schema = schema
-	req.Options = &gistproto.QueryOptions{Conditions: toWireConditions(r.conditions)}
+	req.Options = &proto.QueryOptions{Conditions: toWireConditions(r.conditions)}
 
 	resp, err := tr.pg().Repo(context.Background(), req)
 	if err != nil {
@@ -126,7 +126,7 @@ func Exists[model any](tr *Transaction, opts ...Option) (bool, error) {
 // has no reason to keep a transaction open across several.
 
 func FindAutoClose[model any](s *Service, opts ...Option) ([]model, error) {
-	tr := s.oneShot(true, gistproto.EndAction_END_ACTION_ROLLBACK)
+	tr := s.oneShot(true, proto.EndAction_END_ACTION_ROLLBACK)
 	models, err := Find[model](tr, opts...)
 	if err == nil && tr.endErr != nil {
 		return nil, fmt.Errorf("gistpostgres: find: %w", tr.endErr)
@@ -135,7 +135,7 @@ func FindAutoClose[model any](s *Service, opts ...Option) ([]model, error) {
 }
 
 func FindOneAutoClose[model any](s *Service, opts ...Option) (*model, error) {
-	tr := s.oneShot(true, gistproto.EndAction_END_ACTION_ROLLBACK)
+	tr := s.oneShot(true, proto.EndAction_END_ACTION_ROLLBACK)
 	m, err := FindOne[model](tr, opts...)
 	if err == nil && tr.endErr != nil {
 		return nil, fmt.Errorf("gistpostgres: find one: %w", tr.endErr)
@@ -144,7 +144,7 @@ func FindOneAutoClose[model any](s *Service, opts ...Option) (*model, error) {
 }
 
 func CountAutoClose[model any](s *Service, opts ...Option) (int64, error) {
-	tr := s.oneShot(true, gistproto.EndAction_END_ACTION_ROLLBACK)
+	tr := s.oneShot(true, proto.EndAction_END_ACTION_ROLLBACK)
 	count, err := Count[model](tr, opts...)
 	if err == nil && tr.endErr != nil {
 		return 0, fmt.Errorf("gistpostgres: count: %w", tr.endErr)
@@ -153,7 +153,7 @@ func CountAutoClose[model any](s *Service, opts ...Option) (int64, error) {
 }
 
 func ExistsAutoClose[model any](s *Service, opts ...Option) (bool, error) {
-	tr := s.oneShot(true, gistproto.EndAction_END_ACTION_ROLLBACK)
+	tr := s.oneShot(true, proto.EndAction_END_ACTION_ROLLBACK)
 	exists, err := Exists[model](tr, opts...)
 	if err == nil && tr.endErr != nil {
 		return false, fmt.Errorf("gistpostgres: exists: %w", tr.endErr)

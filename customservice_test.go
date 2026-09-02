@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	gistproto "github.com/wieoapps/gist/proto"
+	"github.com/wieoapps/gist/proto"
 )
 
 type fakeCustomServiceConfig struct {
@@ -54,7 +54,7 @@ func TestStartCustomService_BuildsPostBuildsAndStarts_InOrder(t *testing.T) {
 	}
 
 	cs := &callbackServer{app: s}
-	resp, err := cs.StartCustomService(context.Background(), &gistproto.StartCustomServiceRequest{
+	resp, err := cs.StartCustomService(context.Background(), &proto.StartCustomServiceRequest{
 		Kind:       "demo-counter",
 		Id:         "primary",
 		ConfigJson: []byte(`{"interval-seconds": 5}`),
@@ -84,7 +84,7 @@ func TestStartCustomService_BuildsPostBuildsAndStarts_InOrder(t *testing.T) {
 func TestStartCustomService_UnregisteredKind_ReturnsNotRegistered(t *testing.T) {
 	s := &Server{}
 	cs := &callbackServer{app: s}
-	resp, err := cs.StartCustomService(context.Background(), &gistproto.StartCustomServiceRequest{Kind: "unknown", Id: "x"})
+	resp, err := cs.StartCustomService(context.Background(), &proto.StartCustomServiceRequest{Kind: "unknown", Id: "x"})
 	if err != nil {
 		t.Fatalf("StartCustomService returned a transport error: %v", err)
 	}
@@ -103,7 +103,7 @@ func TestStartCustomService_MalformedConfig_ReturnsInternalError(t *testing.T) {
 	}
 
 	cs := &callbackServer{app: s}
-	resp, err := cs.StartCustomService(context.Background(), &gistproto.StartCustomServiceRequest{
+	resp, err := cs.StartCustomService(context.Background(), &proto.StartCustomServiceRequest{
 		Kind: "demo-counter", Id: "primary", ConfigJson: []byte(`not json`),
 	})
 	if err != nil {
@@ -125,7 +125,7 @@ func TestStartCustomService_StartError_ReturnsInternalError_NotTracked(t *testin
 	}
 
 	cs := &callbackServer{app: s}
-	resp, err := cs.StartCustomService(context.Background(), &gistproto.StartCustomServiceRequest{Kind: "demo-counter", Id: "primary"})
+	resp, err := cs.StartCustomService(context.Background(), &proto.StartCustomServiceRequest{Kind: "demo-counter", Id: "primary"})
 	if err != nil {
 		t.Fatalf("StartCustomService returned a transport error: %v", err)
 	}
@@ -134,7 +134,7 @@ func TestStartCustomService_StartError_ReturnsInternalError_NotTracked(t *testin
 	}
 
 	// A failed Start must not be trackable by Stop - nothing to stop.
-	stopResp, err := cs.StopCustomService(context.Background(), &gistproto.StopCustomServiceRequest{Kind: "demo-counter", Id: "primary"})
+	stopResp, err := cs.StopCustomService(context.Background(), &proto.StopCustomServiceRequest{Kind: "demo-counter", Id: "primary"})
 	if err != nil {
 		t.Fatalf("StopCustomService returned a transport error: %v", err)
 	}
@@ -156,7 +156,7 @@ func TestStopCustomService_StopsTheRightInstance_ByID(t *testing.T) {
 
 	cs := &callbackServer{app: s}
 	for _, id := range []string{"a", "b"} {
-		resp, err := cs.StartCustomService(context.Background(), &gistproto.StartCustomServiceRequest{Kind: "demo-counter", Id: id})
+		resp, err := cs.StartCustomService(context.Background(), &proto.StartCustomServiceRequest{Kind: "demo-counter", Id: id})
 		if err != nil || resp.GetErrorCode() != "" {
 			t.Fatalf("StartCustomService(%q) failed: err=%v resp=%v", id, err, resp)
 		}
@@ -168,7 +168,7 @@ func TestStopCustomService_StopsTheRightInstance_ByID(t *testing.T) {
 	instances["b"] = k.instances["b"].(*fakeCustomService)
 	k.mu.Unlock()
 
-	stopResp, err := cs.StopCustomService(context.Background(), &gistproto.StopCustomServiceRequest{Kind: "demo-counter", Id: "a"})
+	stopResp, err := cs.StopCustomService(context.Background(), &proto.StopCustomServiceRequest{Kind: "demo-counter", Id: "a"})
 	if err != nil || stopResp.GetErrorCode() != "" {
 		t.Fatalf("StopCustomService(a) failed: err=%v resp=%v", err, stopResp)
 	}
@@ -200,12 +200,12 @@ func TestStopCustomService_UnknownIDOrKind_IsASilentNoOp(t *testing.T) {
 	}
 	cs := &callbackServer{app: s}
 
-	resp, err := cs.StopCustomService(context.Background(), &gistproto.StopCustomServiceRequest{Kind: "demo-counter", Id: "never-started"})
+	resp, err := cs.StopCustomService(context.Background(), &proto.StopCustomServiceRequest{Kind: "demo-counter", Id: "never-started"})
 	if err != nil || resp.GetErrorCode() != "" {
 		t.Fatalf("expected a silent no-op for an unknown id, got err=%v resp=%v", err, resp)
 	}
 
-	resp, err = cs.StopCustomService(context.Background(), &gistproto.StopCustomServiceRequest{Kind: "unknown-kind", Id: "x"})
+	resp, err = cs.StopCustomService(context.Background(), &proto.StopCustomServiceRequest{Kind: "unknown-kind", Id: "x"})
 	if err != nil || resp.GetErrorCode() != "" {
 		t.Fatalf("expected a silent no-op for an unknown kind, got err=%v resp=%v", err, resp)
 	}

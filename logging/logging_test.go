@@ -7,8 +7,8 @@ import (
 
 	"google.golang.org/grpc"
 
-	gistproto "github.com/wieoapps/gist/proto"
 	"github.com/wieoapps/gist/internal/rpcconn"
+	"github.com/wieoapps/gist/proto"
 )
 
 // fakeLoggingClient records the last Log RPC it received, so tests can
@@ -16,19 +16,19 @@ import (
 // package-level ones and a Logger built via NewLogger) actually send -
 // without a real gist-server to talk to.
 type fakeLoggingClient struct {
-	req *gistproto.LogRequest
+	req *proto.LogRequest
 	err error
 }
 
-func (f *fakeLoggingClient) Log(_ context.Context, req *gistproto.LogRequest, _ ...grpc.CallOption) (*gistproto.LogAck, error) {
+func (f *fakeLoggingClient) Log(_ context.Context, req *proto.LogRequest, _ ...grpc.CallOption) (*proto.LogAck, error) {
 	f.req = req
 	if f.err != nil {
 		return nil, f.err
 	}
-	return &gistproto.LogAck{}, nil
+	return &proto.LogAck{}, nil
 }
 
-func decodedFields(t *testing.T, req *gistproto.LogRequest) map[string]any {
+func decodedFields(t *testing.T, req *proto.LogRequest) map[string]any {
 	t.Helper()
 	if len(req.GetFieldsJson()) == 0 {
 		return nil

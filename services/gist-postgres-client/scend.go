@@ -1,21 +1,21 @@
 package gistpostgresclient
 
-import gistproto "github.com/wieoapps/gist/proto"
+import "github.com/wieoapps/gist/proto"
 
 type Scend interface {
-	toWire() *gistproto.Sort
+	toWire() *proto.Sort
 }
 
 type Asc []string
 
-func (a Asc) toWire() *gistproto.Sort { return &gistproto.Sort{Columns: a} }
+func (a Asc) toWire() *proto.Sort { return &proto.Sort{Columns: a} }
 
 type Desc []string
 
-func (d Desc) toWire() *gistproto.Sort { return &gistproto.Sort{Columns: d, Descending: true} }
+func (d Desc) toWire() *proto.Sort { return &proto.Sort{Columns: d, Descending: true} }
 
-func toWireSorts(scends []Scend) []*gistproto.Sort {
-	out := make([]*gistproto.Sort, len(scends))
+func toWireSorts(scends []Scend) []*proto.Sort {
+	out := make([]*proto.Sort, len(scends))
 	for i, s := range scends {
 		out[i] = s.toWire()
 	}

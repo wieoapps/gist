@@ -3,7 +3,7 @@ package gistpostgresclient
 import (
 	"encoding/json"
 
-	gistproto "github.com/wieoapps/gist/proto"
+	"github.com/wieoapps/gist/proto"
 )
 
 type Operator string
@@ -32,7 +32,7 @@ const (
 )
 
 type Conditioner interface {
-	toWire() *gistproto.Condition
+	toWire() *proto.Condition
 }
 
 type condition struct {
@@ -41,9 +41,9 @@ type condition struct {
 	value    any
 }
 
-func (c condition) toWire() *gistproto.Condition {
+func (c condition) toWire() *proto.Condition {
 	valueJSON, _ := json.Marshal(c.value)
-	return &gistproto.Condition{Leaf: &gistproto.ConditionLeaf{Field: c.field, Operator: string(c.operator), ValueJson: valueJSON}}
+	return &proto.Condition{Leaf: &proto.ConditionLeaf{Field: c.field, Operator: string(c.operator), ValueJson: valueJSON}}
 }
 
 func NewCondition(field string, operator Operator, value any) Conditioner {
@@ -63,35 +63,35 @@ type conditionGroup struct {
 	or    bool
 }
 
-func (g conditionGroup) toWire() *gistproto.Condition {
-	children := make([]*gistproto.Condition, len(g.conds))
+func (g conditionGroup) toWire() *proto.Condition {
+	children := make([]*proto.Condition, len(g.conds))
 	for i, c := range g.conds {
 		children[i] = c.toWire()
 	}
 	if g.or {
-		return &gistproto.Condition{OrGroup: &gistproto.ConditionGroup{Conditions: children}}
+		return &proto.Condition{OrGroup: &proto.ConditionGroup{Conditions: children}}
 	}
-	return &gistproto.Condition{AndGroup: &gistproto.ConditionGroup{Conditions: children}}
+	return &proto.Condition{AndGroup: &proto.ConditionGroup{Conditions: children}}
 }
 
 func AndConditions(cs ...Conditioner) Conditioner { return conditionGroup{conds: cs} }
 func OrConditions(cs ...Conditioner) Conditioner  { return conditionGroup{conds: cs, or: true} }
 
-func toWireConditions(cs []Conditioner) []*gistproto.Condition {
-	out := make([]*gistproto.Condition, len(cs))
+func toWireConditions(cs []Conditioner) []*proto.Condition {
+	out := make([]*proto.Condition, len(cs))
 	for i, c := range cs {
 		out[i] = c.toWire()
 	}
 	return out
 }
 
-func toWireRelationConditions(m map[string][]Conditioner) map[string]*gistproto.ConditionGroup {
+func toWireRelationConditions(m map[string][]Conditioner) map[string]*proto.ConditionGroup {
 	if len(m) == 0 {
 		return nil
 	}
-	out := make(map[string]*gistproto.ConditionGroup, len(m))
+	out := make(map[string]*proto.ConditionGroup, len(m))
 	for relation, cs := range m {
-		out[relation] = &gistproto.ConditionGroup{Conditions: toWireConditions(cs)}
+		out[relation] = &proto.ConditionGroup{Conditions: toWireConditions(cs)}
 	}
 	return out
 }

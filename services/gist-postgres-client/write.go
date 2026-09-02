@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"reflect"
 
-	gistproto "github.com/wieoapps/gist/proto"
+	"github.com/wieoapps/gist/proto"
 )
 
 func Save(tr *Transaction, models ...any) (int64, error) {
@@ -14,17 +14,17 @@ func Save(tr *Transaction, models ...any) (int64, error) {
 		return 0, nil
 	}
 	schema := buildModelSchema(reflect.TypeOf(models[0]))
-	rows := make([]*gistproto.ModelRow, len(models))
+	rows := make([]*proto.ModelRow, len(models))
 	for i, m := range models {
 		rowJSON, err := json.Marshal(buildModelRow(reflect.ValueOf(m)))
 		if err != nil {
 			return 0, fmt.Errorf("gistpostgres: save: could not encode row %d: %w", i, err)
 		}
-		rows[i] = &gistproto.ModelRow{RowJson: rowJSON}
+		rows[i] = &proto.ModelRow{RowJson: rowJSON}
 	}
 
 	req := tr.repoRequest()
-	req.Op = gistproto.RepoOp_SAVE
+	req.Op = proto.RepoOp_SAVE
 	req.Schema = schema
 	req.Rows = rows
 
@@ -44,17 +44,17 @@ func SaveWithReturning[model any](tr *Transaction, models ...any) ([]model, int6
 		return nil, 0, nil
 	}
 	schema := buildModelSchema(reflect.TypeFor[model]())
-	rows := make([]*gistproto.ModelRow, len(models))
+	rows := make([]*proto.ModelRow, len(models))
 	for i, m := range models {
 		rowJSON, err := json.Marshal(buildModelRow(reflect.ValueOf(m)))
 		if err != nil {
 			return nil, 0, fmt.Errorf("gistpostgres: save with returning: could not encode row %d: %w", i, err)
 		}
-		rows[i] = &gistproto.ModelRow{RowJson: rowJSON}
+		rows[i] = &proto.ModelRow{RowJson: rowJSON}
 	}
 
 	req := tr.repoRequest()
-	req.Op = gistproto.RepoOp_SAVE_WITH_RETURNING
+	req.Op = proto.RepoOp_SAVE_WITH_RETURNING
 	req.Schema = schema
 	req.Rows = rows
 
@@ -79,10 +79,10 @@ func Update(tr *Transaction, newValues any, opts ...Option) (int64, error) {
 	}
 
 	req := tr.repoRequest()
-	req.Op = gistproto.RepoOp_UPDATE
+	req.Op = proto.RepoOp_UPDATE
 	req.Schema = schema
-	req.Rows = []*gistproto.ModelRow{{RowJson: rowJSON}}
-	req.Options = &gistproto.QueryOptions{Conditions: toWireConditions(r.conditions)}
+	req.Rows = []*proto.ModelRow{{RowJson: rowJSON}}
+	req.Options = &proto.QueryOptions{Conditions: toWireConditions(r.conditions)}
 
 	resp, err := tr.pg().Repo(context.Background(), req)
 	if err != nil {
@@ -104,10 +104,10 @@ func UpdateWithReturning[model any](tr *Transaction, newValues any, opts ...Opti
 	}
 
 	req := tr.repoRequest()
-	req.Op = gistproto.RepoOp_UPDATE_WITH_RETURNING
+	req.Op = proto.RepoOp_UPDATE_WITH_RETURNING
 	req.Schema = schema
-	req.Rows = []*gistproto.ModelRow{{RowJson: rowJSON}}
-	req.Options = &gistproto.QueryOptions{Conditions: toWireConditions(r.conditions)}
+	req.Rows = []*proto.ModelRow{{RowJson: rowJSON}}
+	req.Options = &proto.QueryOptions{Conditions: toWireConditions(r.conditions)}
 
 	resp, err := tr.pg().Repo(context.Background(), req)
 	if err != nil {
@@ -126,9 +126,9 @@ func Delete[model any](tr *Transaction, opts ...Option) (int64, error) {
 	schema := buildModelSchema(reflect.TypeFor[model]())
 
 	req := tr.repoRequest()
-	req.Op = gistproto.RepoOp_DELETE
+	req.Op = proto.RepoOp_DELETE
 	req.Schema = schema
-	req.Options = &gistproto.QueryOptions{Conditions: toWireConditions(r.conditions), Limit: r.limit}
+	req.Options = &proto.QueryOptions{Conditions: toWireConditions(r.conditions), Limit: r.limit}
 
 	resp, err := tr.pg().Repo(context.Background(), req)
 	if err != nil {
@@ -146,9 +146,9 @@ func DeleteWithReturning[model any](tr *Transaction, opts ...Option) ([]model, i
 	schema := buildModelSchema(reflect.TypeFor[model]())
 
 	req := tr.repoRequest()
-	req.Op = gistproto.RepoOp_DELETE_WITH_RETURNING
+	req.Op = proto.RepoOp_DELETE_WITH_RETURNING
 	req.Schema = schema
-	req.Options = &gistproto.QueryOptions{Conditions: toWireConditions(r.conditions), Limit: r.limit}
+	req.Options = &proto.QueryOptions{Conditions: toWireConditions(r.conditions), Limit: r.limit}
 
 	resp, err := tr.pg().Repo(context.Background(), req)
 	if err != nil {
@@ -174,7 +174,7 @@ func DeleteWithReturning[model any](tr *Transaction, opts ...Option) ([]model, i
 // transaction open across several.
 
 func SaveAutoClose(s *Service, models ...any) (int64, error) {
-	tr := s.oneShot(false, gistproto.EndAction_END_ACTION_COMMIT_IF_OK)
+	tr := s.oneShot(false, proto.EndAction_END_ACTION_COMMIT_IF_OK)
 	affected, err := Save(tr, models...)
 	if err == nil && tr.endErr != nil {
 		return 0, fmt.Errorf("gistpostgres: save: %w", tr.endErr)
@@ -183,7 +183,7 @@ func SaveAutoClose(s *Service, models ...any) (int64, error) {
 }
 
 func SaveWithReturningAutoClose[model any](s *Service, models ...any) ([]model, int64, error) {
-	tr := s.oneShot(false, gistproto.EndAction_END_ACTION_COMMIT_IF_OK)
+	tr := s.oneShot(false, proto.EndAction_END_ACTION_COMMIT_IF_OK)
 	results, affected, err := SaveWithReturning[model](tr, models...)
 	if err == nil && tr.endErr != nil {
 		return nil, 0, fmt.Errorf("gistpostgres: save with returning: %w", tr.endErr)
@@ -192,7 +192,7 @@ func SaveWithReturningAutoClose[model any](s *Service, models ...any) ([]model, 
 }
 
 func UpdateAutoClose(s *Service, newValues any, opts ...Option) (int64, error) {
-	tr := s.oneShot(false, gistproto.EndAction_END_ACTION_COMMIT_IF_OK)
+	tr := s.oneShot(false, proto.EndAction_END_ACTION_COMMIT_IF_OK)
 	affected, err := Update(tr, newValues, opts...)
 	if err == nil && tr.endErr != nil {
 		return 0, fmt.Errorf("gistpostgres: update: %w", tr.endErr)
@@ -201,7 +201,7 @@ func UpdateAutoClose(s *Service, newValues any, opts ...Option) (int64, error) {
 }
 
 func UpdateWithReturningAutoClose[model any](s *Service, newValues any, opts ...Option) ([]model, int64, error) {
-	tr := s.oneShot(false, gistproto.EndAction_END_ACTION_COMMIT_IF_OK)
+	tr := s.oneShot(false, proto.EndAction_END_ACTION_COMMIT_IF_OK)
 	models, affected, err := UpdateWithReturning[model](tr, newValues, opts...)
 	if err == nil && tr.endErr != nil {
 		return nil, 0, fmt.Errorf("gistpostgres: update with returning: %w", tr.endErr)
@@ -210,7 +210,7 @@ func UpdateWithReturningAutoClose[model any](s *Service, newValues any, opts ...
 }
 
 func DeleteAutoClose[model any](s *Service, opts ...Option) (int64, error) {
-	tr := s.oneShot(false, gistproto.EndAction_END_ACTION_COMMIT_IF_OK)
+	tr := s.oneShot(false, proto.EndAction_END_ACTION_COMMIT_IF_OK)
 	affected, err := Delete[model](tr, opts...)
 	if err == nil && tr.endErr != nil {
 		return 0, fmt.Errorf("gistpostgres: delete: %w", tr.endErr)
@@ -219,7 +219,7 @@ func DeleteAutoClose[model any](s *Service, opts ...Option) (int64, error) {
 }
 
 func DeleteWithReturningAutoClose[model any](s *Service, opts ...Option) ([]model, int64, error) {
-	tr := s.oneShot(false, gistproto.EndAction_END_ACTION_COMMIT_IF_OK)
+	tr := s.oneShot(false, proto.EndAction_END_ACTION_COMMIT_IF_OK)
 	models, affected, err := DeleteWithReturning[model](tr, opts...)
 	if err == nil && tr.endErr != nil {
 		return nil, 0, fmt.Errorf("gistpostgres: delete with returning: %w", tr.endErr)

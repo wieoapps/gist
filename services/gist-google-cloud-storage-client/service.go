@@ -8,8 +8,8 @@ import (
 	"mime/multipart"
 
 	"github.com/wieoapps/gist"
-	gistproto "github.com/wieoapps/gist/proto"
 	"github.com/wieoapps/gist/internal/rpcconn"
+	"github.com/wieoapps/gist/proto"
 )
 
 type Service struct {
@@ -26,7 +26,7 @@ func init() {
 }
 
 func (s *Service) Exists(ctx context.Context, bucketID, fileName string) (bool, error) {
-	resp, err := rpcconn.MustFor(s.server).GoogleCloudStorage.Exists(ctx, &gistproto.GoogleCloudStorageExistsRequest{
+	resp, err := rpcconn.MustFor(s.server).GoogleCloudStorage.Exists(ctx, &proto.GoogleCloudStorageExistsRequest{
 		ServiceId: s.serviceID,
 		BucketId:  bucketID,
 		FileName:  fileName,
@@ -58,7 +58,7 @@ func (s *Service) Store(ctx context.Context, bucketID, path string, fileHeader *
 		return nil, nil, fmt.Errorf("error reading file: %v", err)
 	}
 
-	resp, err := rpcconn.MustFor(s.server).GoogleCloudStorage.Store(ctx, &gistproto.GoogleCloudStorageStoreRequest{
+	resp, err := rpcconn.MustFor(s.server).GoogleCloudStorage.Store(ctx, &proto.GoogleCloudStorageStoreRequest{
 		ServiceId:   s.serviceID,
 		BucketId:    bucketID,
 		Path:        path,
@@ -80,7 +80,7 @@ func (s *Service) Store(ctx context.Context, bucketID, path string, fileHeader *
 // the underlying REST call and its 409-is-not-an-error convention;
 // created reports whether this call was the one that created it.
 func (s *Service) CreateBucket(ctx context.Context, bucketID, location string) (created bool, err error) {
-	resp, err := rpcconn.MustFor(s.server).GoogleCloudStorage.CreateBucket(ctx, &gistproto.GoogleCloudStorageCreateBucketRequest{
+	resp, err := rpcconn.MustFor(s.server).GoogleCloudStorage.CreateBucket(ctx, &proto.GoogleCloudStorageCreateBucketRequest{
 		ServiceId: s.serviceID,
 		BucketId:  bucketID,
 		Location:  location,
@@ -98,7 +98,7 @@ func (s *Service) CreateBucket(ctx context.Context, bucketID, location string) (
 // pointer, same convention json.Unmarshal uses). found reports whether
 // the bucket existed - out is left untouched when it didn't.
 func (s *Service) GetBucket(ctx context.Context, bucketID string, out any) (found bool, err error) {
-	resp, err := rpcconn.MustFor(s.server).GoogleCloudStorage.GetBucket(ctx, &gistproto.GoogleCloudStorageGetBucketRequest{
+	resp, err := rpcconn.MustFor(s.server).GoogleCloudStorage.GetBucket(ctx, &proto.GoogleCloudStorageGetBucketRequest{
 		ServiceId: s.serviceID,
 		BucketId:  bucketID,
 	})
@@ -126,7 +126,7 @@ func (s *Service) UpdateBucket(ctx context.Context, bucketID string, attrs any) 
 		return false, fmt.Errorf("gist-google-cloud-storage-client: could not encode bucket attrs: %w", err)
 	}
 
-	resp, err := rpcconn.MustFor(s.server).GoogleCloudStorage.UpdateBucket(ctx, &gistproto.GoogleCloudStorageUpdateBucketRequest{
+	resp, err := rpcconn.MustFor(s.server).GoogleCloudStorage.UpdateBucket(ctx, &proto.GoogleCloudStorageUpdateBucketRequest{
 		ServiceId: s.serviceID,
 		BucketId:  bucketID,
 		AttrsJson: attrsJSON,
@@ -144,7 +144,7 @@ func (s *Service) UpdateBucket(ctx context.Context, bucketID string, attrs any) 
 // empty first (see gist-server's DeleteBucket). found reports whether
 // the bucket existed to delete.
 func (s *Service) DeleteBucket(ctx context.Context, bucketID string) (found bool, err error) {
-	resp, err := rpcconn.MustFor(s.server).GoogleCloudStorage.DeleteBucket(ctx, &gistproto.GoogleCloudStorageDeleteBucketRequest{
+	resp, err := rpcconn.MustFor(s.server).GoogleCloudStorage.DeleteBucket(ctx, &proto.GoogleCloudStorageDeleteBucketRequest{
 		ServiceId: s.serviceID,
 		BucketId:  bucketID,
 	})
@@ -160,7 +160,7 @@ func (s *Service) DeleteBucket(ctx context.Context, bucketID string) (found bool
 // GetObject downloads fileName's raw content from bucketID. found
 // reports whether the object existed.
 func (s *Service) GetObject(ctx context.Context, bucketID, fileName string) (found bool, content []byte, err error) {
-	resp, err := rpcconn.MustFor(s.server).GoogleCloudStorage.GetObject(ctx, &gistproto.GoogleCloudStorageGetObjectRequest{
+	resp, err := rpcconn.MustFor(s.server).GoogleCloudStorage.GetObject(ctx, &proto.GoogleCloudStorageGetObjectRequest{
 		ServiceId: s.serviceID,
 		BucketId:  bucketID,
 		FileName:  fileName,
@@ -181,7 +181,7 @@ func (s *Service) GetObject(ctx context.Context, bucketID, fileName string) (fou
 // metadata. found reports whether the object existed to update; updated
 // is its full custom metadata after the merge.
 func (s *Service) UpdateObjectMetadata(ctx context.Context, bucketID, fileName string, metadata map[string]string) (found bool, updated map[string]string, err error) {
-	resp, err := rpcconn.MustFor(s.server).GoogleCloudStorage.UpdateObjectMetadata(ctx, &gistproto.GoogleCloudStorageUpdateObjectMetadataRequest{
+	resp, err := rpcconn.MustFor(s.server).GoogleCloudStorage.UpdateObjectMetadata(ctx, &proto.GoogleCloudStorageUpdateObjectMetadataRequest{
 		ServiceId: s.serviceID,
 		BucketId:  bucketID,
 		FileName:  fileName,
@@ -202,7 +202,7 @@ func (s *Service) UpdateObjectMetadata(ctx context.Context, bucketID, fileName s
 // DeleteObject deletes fileName from bucketID. found reports whether the
 // object existed to delete.
 func (s *Service) DeleteObject(ctx context.Context, bucketID, fileName string) (found bool, err error) {
-	resp, err := rpcconn.MustFor(s.server).GoogleCloudStorage.DeleteObject(ctx, &gistproto.GoogleCloudStorageDeleteObjectRequest{
+	resp, err := rpcconn.MustFor(s.server).GoogleCloudStorage.DeleteObject(ctx, &proto.GoogleCloudStorageDeleteObjectRequest{
 		ServiceId: s.serviceID,
 		BucketId:  bucketID,
 		FileName:  fileName,

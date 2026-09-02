@@ -6,8 +6,8 @@ import (
 	"testing"
 
 	"github.com/wieoapps/gist"
-	gistproto "github.com/wieoapps/gist/proto"
 	"github.com/wieoapps/gist/internal/rpcconn"
+	"github.com/wieoapps/gist/proto"
 )
 
 func TestInTransaction_CommitsOnSuccess(t *testing.T) {
@@ -117,7 +117,7 @@ func TestCloseAfter_FirstOp_FoldsBeginAndEndIntoOneCall(t *testing.T) {
 	if fake.repoReq.GetBegin() == nil {
 		t.Fatal("expected the first op to still carry Begin")
 	}
-	if fake.repoReq.GetEnd().GetAction() != gistproto.EndAction_END_ACTION_ROLLBACK {
+	if fake.repoReq.GetEnd().GetAction() != proto.EndAction_END_ACTION_ROLLBACK {
 		t.Fatalf("expected the same call to carry End(ROLLBACK), got %v", fake.repoReq.GetEnd())
 	}
 	if tr.handle != "" {

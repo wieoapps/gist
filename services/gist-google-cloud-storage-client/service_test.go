@@ -10,51 +10,51 @@ import (
 	"google.golang.org/grpc"
 
 	"github.com/wieoapps/gist"
-	gistproto "github.com/wieoapps/gist/proto"
 	"github.com/wieoapps/gist/internal/rpcconn"
+	"github.com/wieoapps/gist/proto"
 )
 
 // fakeGoogleCloudStorageClient records the last request it received (Exists or Store)
 // and returns a scripted response.
 type fakeGoogleCloudStorageClient struct {
-	lastExistsReq *gistproto.GoogleCloudStorageExistsRequest
-	existsResp    *gistproto.GoogleCloudStorageExistsResponse
+	lastExistsReq *proto.GoogleCloudStorageExistsRequest
+	existsResp    *proto.GoogleCloudStorageExistsResponse
 	existsErr     error
 
-	lastStoreReq *gistproto.GoogleCloudStorageStoreRequest
-	storeResp    *gistproto.GoogleCloudStorageStoreResponse
+	lastStoreReq *proto.GoogleCloudStorageStoreRequest
+	storeResp    *proto.GoogleCloudStorageStoreResponse
 	storeErr     error
 
-	lastCreateBucketReq *gistproto.GoogleCloudStorageCreateBucketRequest
-	createBucketResp    *gistproto.GoogleCloudStorageCreateBucketResponse
+	lastCreateBucketReq *proto.GoogleCloudStorageCreateBucketRequest
+	createBucketResp    *proto.GoogleCloudStorageCreateBucketResponse
 	createBucketErr     error
 
-	lastGetBucketReq *gistproto.GoogleCloudStorageGetBucketRequest
-	getBucketResp    *gistproto.GoogleCloudStorageGetBucketResponse
+	lastGetBucketReq *proto.GoogleCloudStorageGetBucketRequest
+	getBucketResp    *proto.GoogleCloudStorageGetBucketResponse
 	getBucketErr     error
 
-	lastUpdateBucketReq *gistproto.GoogleCloudStorageUpdateBucketRequest
-	updateBucketResp    *gistproto.GoogleCloudStorageUpdateBucketResponse
+	lastUpdateBucketReq *proto.GoogleCloudStorageUpdateBucketRequest
+	updateBucketResp    *proto.GoogleCloudStorageUpdateBucketResponse
 	updateBucketErr     error
 
-	lastDeleteBucketReq *gistproto.GoogleCloudStorageDeleteBucketRequest
-	deleteBucketResp    *gistproto.GoogleCloudStorageDeleteBucketResponse
+	lastDeleteBucketReq *proto.GoogleCloudStorageDeleteBucketRequest
+	deleteBucketResp    *proto.GoogleCloudStorageDeleteBucketResponse
 	deleteBucketErr     error
 
-	lastGetObjectReq *gistproto.GoogleCloudStorageGetObjectRequest
-	getObjectResp    *gistproto.GoogleCloudStorageGetObjectResponse
+	lastGetObjectReq *proto.GoogleCloudStorageGetObjectRequest
+	getObjectResp    *proto.GoogleCloudStorageGetObjectResponse
 	getObjectErr     error
 
-	lastUpdateObjectMetadataReq *gistproto.GoogleCloudStorageUpdateObjectMetadataRequest
-	updateObjectMetadataResp    *gistproto.GoogleCloudStorageUpdateObjectMetadataResponse
+	lastUpdateObjectMetadataReq *proto.GoogleCloudStorageUpdateObjectMetadataRequest
+	updateObjectMetadataResp    *proto.GoogleCloudStorageUpdateObjectMetadataResponse
 	updateObjectMetadataErr     error
 
-	lastDeleteObjectReq *gistproto.GoogleCloudStorageDeleteObjectRequest
-	deleteObjectResp    *gistproto.GoogleCloudStorageDeleteObjectResponse
+	lastDeleteObjectReq *proto.GoogleCloudStorageDeleteObjectRequest
+	deleteObjectResp    *proto.GoogleCloudStorageDeleteObjectResponse
 	deleteObjectErr     error
 }
 
-func (f *fakeGoogleCloudStorageClient) Exists(_ context.Context, in *gistproto.GoogleCloudStorageExistsRequest, _ ...grpc.CallOption) (*gistproto.GoogleCloudStorageExistsResponse, error) {
+func (f *fakeGoogleCloudStorageClient) Exists(_ context.Context, in *proto.GoogleCloudStorageExistsRequest, _ ...grpc.CallOption) (*proto.GoogleCloudStorageExistsResponse, error) {
 	f.lastExistsReq = in
 	if f.existsErr != nil {
 		return nil, f.existsErr
@@ -62,7 +62,7 @@ func (f *fakeGoogleCloudStorageClient) Exists(_ context.Context, in *gistproto.G
 	return f.existsResp, nil
 }
 
-func (f *fakeGoogleCloudStorageClient) Store(_ context.Context, in *gistproto.GoogleCloudStorageStoreRequest, _ ...grpc.CallOption) (*gistproto.GoogleCloudStorageStoreResponse, error) {
+func (f *fakeGoogleCloudStorageClient) Store(_ context.Context, in *proto.GoogleCloudStorageStoreRequest, _ ...grpc.CallOption) (*proto.GoogleCloudStorageStoreResponse, error) {
 	f.lastStoreReq = in
 	if f.storeErr != nil {
 		return nil, f.storeErr
@@ -70,7 +70,7 @@ func (f *fakeGoogleCloudStorageClient) Store(_ context.Context, in *gistproto.Go
 	return f.storeResp, nil
 }
 
-func (f *fakeGoogleCloudStorageClient) CreateBucket(_ context.Context, in *gistproto.GoogleCloudStorageCreateBucketRequest, _ ...grpc.CallOption) (*gistproto.GoogleCloudStorageCreateBucketResponse, error) {
+func (f *fakeGoogleCloudStorageClient) CreateBucket(_ context.Context, in *proto.GoogleCloudStorageCreateBucketRequest, _ ...grpc.CallOption) (*proto.GoogleCloudStorageCreateBucketResponse, error) {
 	f.lastCreateBucketReq = in
 	if f.createBucketErr != nil {
 		return nil, f.createBucketErr
@@ -78,7 +78,7 @@ func (f *fakeGoogleCloudStorageClient) CreateBucket(_ context.Context, in *gistp
 	return f.createBucketResp, nil
 }
 
-func (f *fakeGoogleCloudStorageClient) GetBucket(_ context.Context, in *gistproto.GoogleCloudStorageGetBucketRequest, _ ...grpc.CallOption) (*gistproto.GoogleCloudStorageGetBucketResponse, error) {
+func (f *fakeGoogleCloudStorageClient) GetBucket(_ context.Context, in *proto.GoogleCloudStorageGetBucketRequest, _ ...grpc.CallOption) (*proto.GoogleCloudStorageGetBucketResponse, error) {
 	f.lastGetBucketReq = in
 	if f.getBucketErr != nil {
 		return nil, f.getBucketErr
@@ -86,7 +86,7 @@ func (f *fakeGoogleCloudStorageClient) GetBucket(_ context.Context, in *gistprot
 	return f.getBucketResp, nil
 }
 
-func (f *fakeGoogleCloudStorageClient) UpdateBucket(_ context.Context, in *gistproto.GoogleCloudStorageUpdateBucketRequest, _ ...grpc.CallOption) (*gistproto.GoogleCloudStorageUpdateBucketResponse, error) {
+func (f *fakeGoogleCloudStorageClient) UpdateBucket(_ context.Context, in *proto.GoogleCloudStorageUpdateBucketRequest, _ ...grpc.CallOption) (*proto.GoogleCloudStorageUpdateBucketResponse, error) {
 	f.lastUpdateBucketReq = in
 	if f.updateBucketErr != nil {
 		return nil, f.updateBucketErr
@@ -94,7 +94,7 @@ func (f *fakeGoogleCloudStorageClient) UpdateBucket(_ context.Context, in *gistp
 	return f.updateBucketResp, nil
 }
 
-func (f *fakeGoogleCloudStorageClient) DeleteBucket(_ context.Context, in *gistproto.GoogleCloudStorageDeleteBucketRequest, _ ...grpc.CallOption) (*gistproto.GoogleCloudStorageDeleteBucketResponse, error) {
+func (f *fakeGoogleCloudStorageClient) DeleteBucket(_ context.Context, in *proto.GoogleCloudStorageDeleteBucketRequest, _ ...grpc.CallOption) (*proto.GoogleCloudStorageDeleteBucketResponse, error) {
 	f.lastDeleteBucketReq = in
 	if f.deleteBucketErr != nil {
 		return nil, f.deleteBucketErr
@@ -102,7 +102,7 @@ func (f *fakeGoogleCloudStorageClient) DeleteBucket(_ context.Context, in *gistp
 	return f.deleteBucketResp, nil
 }
 
-func (f *fakeGoogleCloudStorageClient) GetObject(_ context.Context, in *gistproto.GoogleCloudStorageGetObjectRequest, _ ...grpc.CallOption) (*gistproto.GoogleCloudStorageGetObjectResponse, error) {
+func (f *fakeGoogleCloudStorageClient) GetObject(_ context.Context, in *proto.GoogleCloudStorageGetObjectRequest, _ ...grpc.CallOption) (*proto.GoogleCloudStorageGetObjectResponse, error) {
 	f.lastGetObjectReq = in
 	if f.getObjectErr != nil {
 		return nil, f.getObjectErr
@@ -110,7 +110,7 @@ func (f *fakeGoogleCloudStorageClient) GetObject(_ context.Context, in *gistprot
 	return f.getObjectResp, nil
 }
 
-func (f *fakeGoogleCloudStorageClient) UpdateObjectMetadata(_ context.Context, in *gistproto.GoogleCloudStorageUpdateObjectMetadataRequest, _ ...grpc.CallOption) (*gistproto.GoogleCloudStorageUpdateObjectMetadataResponse, error) {
+func (f *fakeGoogleCloudStorageClient) UpdateObjectMetadata(_ context.Context, in *proto.GoogleCloudStorageUpdateObjectMetadataRequest, _ ...grpc.CallOption) (*proto.GoogleCloudStorageUpdateObjectMetadataResponse, error) {
 	f.lastUpdateObjectMetadataReq = in
 	if f.updateObjectMetadataErr != nil {
 		return nil, f.updateObjectMetadataErr
@@ -118,7 +118,7 @@ func (f *fakeGoogleCloudStorageClient) UpdateObjectMetadata(_ context.Context, i
 	return f.updateObjectMetadataResp, nil
 }
 
-func (f *fakeGoogleCloudStorageClient) DeleteObject(_ context.Context, in *gistproto.GoogleCloudStorageDeleteObjectRequest, _ ...grpc.CallOption) (*gistproto.GoogleCloudStorageDeleteObjectResponse, error) {
+func (f *fakeGoogleCloudStorageClient) DeleteObject(_ context.Context, in *proto.GoogleCloudStorageDeleteObjectRequest, _ ...grpc.CallOption) (*proto.GoogleCloudStorageDeleteObjectResponse, error) {
 	f.lastDeleteObjectReq = in
 	if f.deleteObjectErr != nil {
 		return nil, f.deleteObjectErr
@@ -159,7 +159,7 @@ func buildFileHeader(t *testing.T, fieldName, fileName string, content []byte) *
 }
 
 func TestExists_SendsRequestAndDecodesResult(t *testing.T) {
-	fake := &fakeGoogleCloudStorageClient{existsResp: &gistproto.GoogleCloudStorageExistsResponse{Exists: true}}
+	fake := &fakeGoogleCloudStorageClient{existsResp: &proto.GoogleCloudStorageExistsResponse{Exists: true}}
 	server := &gist.Server{}
 	rpcconn.Register(server, &rpcconn.Clients{GoogleCloudStorage: fake})
 	svc := NewService(server, "gcs1")
@@ -177,7 +177,7 @@ func TestExists_SendsRequestAndDecodesResult(t *testing.T) {
 }
 
 func TestExists_WireErrorBecomesError(t *testing.T) {
-	fake := &fakeGoogleCloudStorageClient{existsResp: &gistproto.GoogleCloudStorageExistsResponse{ErrorCode: "internal", ErrorMessage: "bucket not found"}}
+	fake := &fakeGoogleCloudStorageClient{existsResp: &proto.GoogleCloudStorageExistsResponse{ErrorCode: "internal", ErrorMessage: "bucket not found"}}
 	server := &gist.Server{}
 	rpcconn.Register(server, &rpcconn.Clients{GoogleCloudStorage: fake})
 	svc := NewService(server, "gcs1")
@@ -203,7 +203,7 @@ func TestExists_TransportErrorPropagates(t *testing.T) {
 func TestStore_SendsFileBytesAndFilename(t *testing.T) {
 	fh := buildFileHeader(t, "file", "photo.png", []byte("fake-image-bytes"))
 
-	fake := &fakeGoogleCloudStorageClient{storeResp: &gistproto.GoogleCloudStorageStoreResponse{Path: "uploads/", FileName: "photo.png"}}
+	fake := &fakeGoogleCloudStorageClient{storeResp: &proto.GoogleCloudStorageStoreResponse{Path: "uploads/", FileName: "photo.png"}}
 	server := &gist.Server{}
 	rpcconn.Register(server, &rpcconn.Clients{GoogleCloudStorage: fake})
 	svc := NewService(server, "gcs1")
@@ -265,7 +265,7 @@ func TestStore_EmptyFileReturnsError(t *testing.T) {
 
 func TestStore_WireErrorBecomesError(t *testing.T) {
 	fh := buildFileHeader(t, "file", "photo.png", []byte("data"))
-	fake := &fakeGoogleCloudStorageClient{storeResp: &gistproto.GoogleCloudStorageStoreResponse{ErrorCode: "internal", ErrorMessage: "write failed"}}
+	fake := &fakeGoogleCloudStorageClient{storeResp: &proto.GoogleCloudStorageStoreResponse{ErrorCode: "internal", ErrorMessage: "write failed"}}
 	server := &gist.Server{}
 	rpcconn.Register(server, &rpcconn.Clients{GoogleCloudStorage: fake})
 	svc := NewService(server, "gcs1")
@@ -290,7 +290,7 @@ func TestStore_TransportErrorPropagates(t *testing.T) {
 }
 
 func TestCreateBucket_SendsRequestAndDecodesResult(t *testing.T) {
-	fake := &fakeGoogleCloudStorageClient{createBucketResp: &gistproto.GoogleCloudStorageCreateBucketResponse{Created: true}}
+	fake := &fakeGoogleCloudStorageClient{createBucketResp: &proto.GoogleCloudStorageCreateBucketResponse{Created: true}}
 	server := &gist.Server{}
 	rpcconn.Register(server, &rpcconn.Clients{GoogleCloudStorage: fake})
 	svc := NewService(server, "gcs1")
@@ -308,7 +308,7 @@ func TestCreateBucket_SendsRequestAndDecodesResult(t *testing.T) {
 }
 
 func TestCreateBucket_WireErrorBecomesError(t *testing.T) {
-	fake := &fakeGoogleCloudStorageClient{createBucketResp: &gistproto.GoogleCloudStorageCreateBucketResponse{ErrorCode: "internal", ErrorMessage: "boom"}}
+	fake := &fakeGoogleCloudStorageClient{createBucketResp: &proto.GoogleCloudStorageCreateBucketResponse{ErrorCode: "internal", ErrorMessage: "boom"}}
 	server := &gist.Server{}
 	rpcconn.Register(server, &rpcconn.Clients{GoogleCloudStorage: fake})
 	svc := NewService(server, "gcs1")
@@ -324,7 +324,7 @@ type bucketAttrs struct {
 }
 
 func TestGetBucket_FoundDecodesIntoOut(t *testing.T) {
-	fake := &fakeGoogleCloudStorageClient{getBucketResp: &gistproto.GoogleCloudStorageGetBucketResponse{Found: true, AttrsJson: []byte(`{"name":"real-bucket","location":"US"}`)}}
+	fake := &fakeGoogleCloudStorageClient{getBucketResp: &proto.GoogleCloudStorageGetBucketResponse{Found: true, AttrsJson: []byte(`{"name":"real-bucket","location":"US"}`)}}
 	server := &gist.Server{}
 	rpcconn.Register(server, &rpcconn.Clients{GoogleCloudStorage: fake})
 	svc := NewService(server, "gcs1")
@@ -343,7 +343,7 @@ func TestGetBucket_FoundDecodesIntoOut(t *testing.T) {
 }
 
 func TestGetBucket_NotFoundLeavesOutUntouched(t *testing.T) {
-	fake := &fakeGoogleCloudStorageClient{getBucketResp: &gistproto.GoogleCloudStorageGetBucketResponse{Found: false}}
+	fake := &fakeGoogleCloudStorageClient{getBucketResp: &proto.GoogleCloudStorageGetBucketResponse{Found: false}}
 	server := &gist.Server{}
 	rpcconn.Register(server, &rpcconn.Clients{GoogleCloudStorage: fake})
 	svc := NewService(server, "gcs1")
@@ -362,7 +362,7 @@ func TestGetBucket_NotFoundLeavesOutUntouched(t *testing.T) {
 }
 
 func TestUpdateBucket_EncodesAttrsAndSendsRequest(t *testing.T) {
-	fake := &fakeGoogleCloudStorageClient{updateBucketResp: &gistproto.GoogleCloudStorageUpdateBucketResponse{Found: true}}
+	fake := &fakeGoogleCloudStorageClient{updateBucketResp: &proto.GoogleCloudStorageUpdateBucketResponse{Found: true}}
 	server := &gist.Server{}
 	rpcconn.Register(server, &rpcconn.Clients{GoogleCloudStorage: fake})
 	svc := NewService(server, "gcs1")
@@ -384,7 +384,7 @@ func TestUpdateBucket_EncodesAttrsAndSendsRequest(t *testing.T) {
 }
 
 func TestUpdateBucket_NotFound(t *testing.T) {
-	fake := &fakeGoogleCloudStorageClient{updateBucketResp: &gistproto.GoogleCloudStorageUpdateBucketResponse{Found: false}}
+	fake := &fakeGoogleCloudStorageClient{updateBucketResp: &proto.GoogleCloudStorageUpdateBucketResponse{Found: false}}
 	server := &gist.Server{}
 	rpcconn.Register(server, &rpcconn.Clients{GoogleCloudStorage: fake})
 	svc := NewService(server, "gcs1")
@@ -399,7 +399,7 @@ func TestUpdateBucket_NotFound(t *testing.T) {
 }
 
 func TestDeleteBucket_SendsRequestAndReportsFound(t *testing.T) {
-	fake := &fakeGoogleCloudStorageClient{deleteBucketResp: &gistproto.GoogleCloudStorageDeleteBucketResponse{Found: true}}
+	fake := &fakeGoogleCloudStorageClient{deleteBucketResp: &proto.GoogleCloudStorageDeleteBucketResponse{Found: true}}
 	server := &gist.Server{}
 	rpcconn.Register(server, &rpcconn.Clients{GoogleCloudStorage: fake})
 	svc := NewService(server, "gcs1")
@@ -417,7 +417,7 @@ func TestDeleteBucket_SendsRequestAndReportsFound(t *testing.T) {
 }
 
 func TestDeleteBucket_WireErrorBecomesError(t *testing.T) {
-	fake := &fakeGoogleCloudStorageClient{deleteBucketResp: &gistproto.GoogleCloudStorageDeleteBucketResponse{ErrorCode: "internal", ErrorMessage: "not empty"}}
+	fake := &fakeGoogleCloudStorageClient{deleteBucketResp: &proto.GoogleCloudStorageDeleteBucketResponse{ErrorCode: "internal", ErrorMessage: "not empty"}}
 	server := &gist.Server{}
 	rpcconn.Register(server, &rpcconn.Clients{GoogleCloudStorage: fake})
 	svc := NewService(server, "gcs1")
@@ -428,7 +428,7 @@ func TestDeleteBucket_WireErrorBecomesError(t *testing.T) {
 }
 
 func TestGetObject_FoundReturnsContent(t *testing.T) {
-	fake := &fakeGoogleCloudStorageClient{getObjectResp: &gistproto.GoogleCloudStorageGetObjectResponse{Found: true, Content: []byte("hello world")}}
+	fake := &fakeGoogleCloudStorageClient{getObjectResp: &proto.GoogleCloudStorageGetObjectResponse{Found: true, Content: []byte("hello world")}}
 	server := &gist.Server{}
 	rpcconn.Register(server, &rpcconn.Clients{GoogleCloudStorage: fake})
 	svc := NewService(server, "gcs1")
@@ -449,7 +449,7 @@ func TestGetObject_FoundReturnsContent(t *testing.T) {
 }
 
 func TestGetObject_NotFoundReturnsNilContent(t *testing.T) {
-	fake := &fakeGoogleCloudStorageClient{getObjectResp: &gistproto.GoogleCloudStorageGetObjectResponse{Found: false}}
+	fake := &fakeGoogleCloudStorageClient{getObjectResp: &proto.GoogleCloudStorageGetObjectResponse{Found: false}}
 	server := &gist.Server{}
 	rpcconn.Register(server, &rpcconn.Clients{GoogleCloudStorage: fake})
 	svc := NewService(server, "gcs1")
@@ -464,7 +464,7 @@ func TestGetObject_NotFoundReturnsNilContent(t *testing.T) {
 }
 
 func TestUpdateObjectMetadata_SendsRequestAndReturnsMetadata(t *testing.T) {
-	fake := &fakeGoogleCloudStorageClient{updateObjectMetadataResp: &gistproto.GoogleCloudStorageUpdateObjectMetadataResponse{Found: true, Metadata: map[string]string{"custom-key": "custom-value"}}}
+	fake := &fakeGoogleCloudStorageClient{updateObjectMetadataResp: &proto.GoogleCloudStorageUpdateObjectMetadataResponse{Found: true, Metadata: map[string]string{"custom-key": "custom-value"}}}
 	server := &gist.Server{}
 	rpcconn.Register(server, &rpcconn.Clients{GoogleCloudStorage: fake})
 	svc := NewService(server, "gcs1")
@@ -485,7 +485,7 @@ func TestUpdateObjectMetadata_SendsRequestAndReturnsMetadata(t *testing.T) {
 }
 
 func TestUpdateObjectMetadata_NotFound(t *testing.T) {
-	fake := &fakeGoogleCloudStorageClient{updateObjectMetadataResp: &gistproto.GoogleCloudStorageUpdateObjectMetadataResponse{Found: false}}
+	fake := &fakeGoogleCloudStorageClient{updateObjectMetadataResp: &proto.GoogleCloudStorageUpdateObjectMetadataResponse{Found: false}}
 	server := &gist.Server{}
 	rpcconn.Register(server, &rpcconn.Clients{GoogleCloudStorage: fake})
 	svc := NewService(server, "gcs1")
@@ -500,7 +500,7 @@ func TestUpdateObjectMetadata_NotFound(t *testing.T) {
 }
 
 func TestDeleteObject_SendsRequestAndReportsFound(t *testing.T) {
-	fake := &fakeGoogleCloudStorageClient{deleteObjectResp: &gistproto.GoogleCloudStorageDeleteObjectResponse{Found: true}}
+	fake := &fakeGoogleCloudStorageClient{deleteObjectResp: &proto.GoogleCloudStorageDeleteObjectResponse{Found: true}}
 	server := &gist.Server{}
 	rpcconn.Register(server, &rpcconn.Clients{GoogleCloudStorage: fake})
 	svc := NewService(server, "gcs1")
@@ -518,7 +518,7 @@ func TestDeleteObject_SendsRequestAndReportsFound(t *testing.T) {
 }
 
 func TestDeleteObject_WireErrorBecomesError(t *testing.T) {
-	fake := &fakeGoogleCloudStorageClient{deleteObjectResp: &gistproto.GoogleCloudStorageDeleteObjectResponse{ErrorCode: "internal", ErrorMessage: "boom"}}
+	fake := &fakeGoogleCloudStorageClient{deleteObjectResp: &proto.GoogleCloudStorageDeleteObjectResponse{ErrorCode: "internal", ErrorMessage: "boom"}}
 	server := &gist.Server{}
 	rpcconn.Register(server, &rpcconn.Clients{GoogleCloudStorage: fake})
 	svc := NewService(server, "gcs1")
