@@ -417,6 +417,7 @@ gistapiserver.Attach("orders-api", CreateOrder)</pre>
         </div>
       </div>
     </div>
+    <p class="selfdocs-note">Infrastructure owns delivery; application owns processing — return an error from the handler and gist-server nacks and requeues the message for you, no retry logic to write.</p>
   </section>
 
   <section class="perf wrap">
@@ -473,6 +474,7 @@ gistapiserver.Attach("orders-api", CreateOrder)</pre>
       <li><span class="mark">—</span> Idiomatic Go in, idiomatic Go out — no protobuf, no gRPC to write</li>
       <li><span class="mark">—</span> Offline license. No phone-home</li>
       <li><span class="mark">—</span> Extend it with your own services</li>
+      <li><span class="mark">—</span> Swap what's behind a service — the application API doesn't change</li>
       <li><span class="mark">—</span> Config and docs generated from code</li>
       <li><span class="mark">—</span> Signed, notarized, cross-platform releases</li>
       <li><span class="mark">—</span> Full-strength trial. An hour, then it slows</li>
