@@ -2845,6 +2845,7 @@ func AttachEndpointHandlers() gist.Option {
                 <!-- GENERATED:gist-state-machine:INTRO:BEGIN -->
           <p>A stateless transition validator: given a current state and a trigger name, it checks a transitions graph loaded from <code>transitions-file</code> and either allows or rejects the move. It holds no state of its own — persisting the object is entirely your responsibility, handled in the trigger's own callback.</p>
           <p><code>Graph</code> returns that same configured transition graph as DOT (render it with any Graphviz front-end, e.g. <code>dot -Tpng</code>) — the structure itself, not any particular object's current state. <code>GraphSVG</code> returns a self-contained, hand-rendered SVG diagram of the same graph, no external Graphviz/layout engine needed to view it. Either way, a trigger with no attached handler (see <code>Attach</code>) is marked <code>🚧</code>, the same convention this doc's own endpoint tables use for one with no registered handler.</p>
+          <p>A transition can also set <code>to-service</code> instead of pointing at one of its own states, naming a state in a different configured <code>gist-state-machine</code> instance — documenting where the flow continues once this machine hands off, without <code>Transition</code> ever treating it as something this machine can locally fire.</p>
                 <!-- GENERATED:gist-state-machine:INTRO:END -->
                 <!-- GENERATED:gist-state-machine:BEGIN -->
           <div class="cfgref">
@@ -2914,6 +2915,8 @@ func AttachEndpointHandlers() gist.Option {
                   <tr><td><code>trigger</code></td><td>string</td><td>Name the caller passes to attempt this transition.</td></tr>
                   <tr><td><code>to</code></td><td>string</td><td>State reached when this trigger succeeds from <code>from</code>.</td></tr>
                   <tr><td><code>is-substate</code></td><td>bool</td><td>Marks <code>to</code> as a substate of <code>from</code> rather than an independent top-level state.</td></tr>
+                  <tr><td><code>to-service</code></td><td>string, optional</td><td>Marks <code>to</code> as a state of a <em>different</em>, separately configured <code>gist-state-machine</code> instance (that instance's own <code>id</code>) instead of this machine's own state space - documenting where the flow continues once this machine hands off. Purely descriptive: <code>Transition</code> never treats it as locally reachable. Startup fails if it names an unconfigured instance, its own instance, or a state that instance doesn't have.</td></tr>
+                  <tr><td><code>description</code></td><td>string, optional</td><td>A short human-readable note about the trigger, for diagrams that render one.</td></tr>
                   </tbody>
                 </table>
                 </div>
