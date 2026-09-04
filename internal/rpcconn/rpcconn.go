@@ -27,6 +27,8 @@ type Clients struct {
 	HTTPClient         proto.HTTPClientServiceClient
 	Logging            proto.LoggingServiceClient
 	RabbitMQ           proto.RabbitMQServiceClient
+	Redis              proto.RedisServiceClient
+	PubSub             proto.PubSubServiceClient
 }
 
 var (

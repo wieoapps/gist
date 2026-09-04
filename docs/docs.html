@@ -540,10 +540,10 @@
           <tr><td>12</td><td><a href="#s12">gist-state-machine</a></td><td><span class="badge badge-api">API</span></td></tr>
                 <!-- GENERATED:gist-state-machine:SURFACE:END -->
                 <!-- GENERATED:gist-redis-client:SURFACE:BEGIN -->
-          <tr><td>13</td><td><a href="#s13">gist-redis-client</a></td><td><span class="badge badge-none">No API</span></td></tr>
+          <tr><td>13</td><td><a href="#s13">gist-redis-client</a></td><td><span class="badge badge-api">API</span></td></tr>
                 <!-- GENERATED:gist-redis-client:SURFACE:END -->
                 <!-- GENERATED:gist-pub-sub-client:SURFACE:BEGIN -->
-          <tr><td>14</td><td><a href="#s14">gist-pub-sub-client</a></td><td><span class="badge badge-none">No API</span></td></tr>
+          <tr><td>14</td><td><a href="#s14">gist-pub-sub-client</a></td><td><span class="badge badge-api">API</span></td></tr>
                 <!-- GENERATED:gist-pub-sub-client:SURFACE:END -->
                 <!-- GENERATED:gist-rabbit-mq-client:SURFACE:BEGIN -->
           <tr><td>15</td><td><a href="#s15">gist-rabbit-mq-client</a></td><td><span class="badge badge-api">API</span></td></tr>
@@ -2929,7 +2929,7 @@ func AttachEndpointHandlers() gist.Option {
         <summary><span class="toc-num">13</span><h2>gist-redis-client</h2></summary>
         <div class="section-body">
                 <!-- GENERATED:gist-redis-client:INTRO:BEGIN -->
-          <p>No client-side API — no injectable <code>Service</code> type, no package under <code>gist/services/</code> at all, confirmed by grepping the whole SDK tree. Strictly gist-server-internal: it opens a connection and pings it at startup, then nothing your own code can call — there is currently no cache-set/get exposed. Configuring it gets you a green line in the boot log and nothing more.</p>
+          <p>A real, if deliberately scalar-key-only, cache API — <code>Get</code>/<code>Set</code>/<code>Del</code>/<code>Exists</code>/<code>Incr</code>/<code>IncrBy</code>/<code>Expire</code>, exposed through an injectable <code>Service</code> type (<code>gist/services/gist-redis-client</code>). Hashes, lists, sets, sorted sets, and Redis's own pub/sub aren't covered yet - see the SDK's own SERVICE_REFERENCE.md for the exact Go signatures.</p>
                 <!-- GENERATED:gist-redis-client:INTRO:END -->
                 <!-- GENERATED:gist-redis-client:BEGIN -->
           <div class="cfgref">
@@ -3006,7 +3006,7 @@ func AttachEndpointHandlers() gist.Option {
         <summary><span class="toc-num">14</span><h2>gist-pub-sub-client</h2></summary>
         <div class="section-body">
                 <!-- GENERATED:gist-pub-sub-client:INTRO:BEGIN -->
-          <p>Also no client-side API — same story as <code>gist-redis-client</code>: a connectivity/readiness check against a GCP Pub/Sub endpoint, nothing your own code can call, no publish/subscribe exposed today. If <code>orderflow</code> needs a real message bus, that's <code>gist-rabbit-mq-client</code> (next section), not this one — <code>gist-pub-sub-client</code> only ever proves reachability.</p>
+          <p>A real <code>Publish</code>/<code>Pull</code>/<code>Ack</code> API, layered on the same plain REST/JSON calls the startup connectivity check already made (avoiding the official Pub/Sub client's own dependency weight). <code>Pull</code> is a single synchronous poll, not a long-lived streaming subscription - a caller polls on its own schedule and acks whatever it actually processed. Need a real message bus with server-pushed delivery instead of polling? That's <code>gist-rabbit-mq-client</code> (next section).</p>
                 <!-- GENERATED:gist-pub-sub-client:INTRO:END -->
                 <!-- GENERATED:gist-pub-sub-client:BEGIN -->
           <div class="cfgref">

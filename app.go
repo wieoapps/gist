@@ -529,6 +529,8 @@ func (a *Server) dialAdmin() error {
 		HTTPClient:         proto.NewHTTPClientServiceClient(conn),
 		Logging:            proto.NewLoggingServiceClient(conn),
 		RabbitMQ:           proto.NewRabbitMQServiceClient(conn),
+		Redis:              proto.NewRedisServiceClient(conn),
+		PubSub:             proto.NewPubSubServiceClient(conn),
 	})
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
