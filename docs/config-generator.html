@@ -27,18 +27,8 @@
     --code-border:#33301f;
     --shadow:0 1px 2px rgba(30,25,15,.04), 0 8px 24px rgba(30,25,15,.05);
   }
-  @media (prefers-color-scheme: dark){
-    :root:not([data-theme="light"]){
-      --bg:#17150f; --surface:#1e1c16; --surface-2:#262218;
-      --border:#37321f; --border-strong:#4a4327;
-      --text:#eee9db; --text-muted:#a29a83;
-      --accent:#39c9ab; --accent-strong:#6ee0c8; --accent-ink:#0b1512;
-      --accent-soft:rgba(57,201,171,.14); --accent-soft-strong:rgba(57,201,171,.24);
-      --danger:#e08669; --danger-soft:rgba(224,134,105,.14);
-      --code-bg:#15130f; --code-bg-head:#1c1912; --code-text:#ded7c4; --code-border:#2c2818;
-      --shadow:0 1px 2px rgba(0,0,0,.2), 0 8px 28px rgba(0,0,0,.32);
-    }
-  }
+  /* Defaults to light regardless of system preference - only an
+     explicit toggle click (data-theme="dark") switches it. */
   :root[data-theme="dark"]{
     --bg:#17150f; --surface:#1e1c16; --surface-2:#262218;
     --border:#37321f; --border-strong:#4a4327;
@@ -316,6 +306,17 @@
   .upload-notice.success{ background:var(--accent-soft); color:var(--accent-strong); }
 </style>
 
+<script>
+(function(){
+  "use strict";
+  try {
+    if(localStorage.getItem("service-reference:theme") === "dark"){
+      document.documentElement.setAttribute("data-theme", "dark");
+    }
+  } catch(e){}
+})();
+</script>
+
 <a class="skip-link" href="#main">Skip to content</a>
 
 <div class="layout">
@@ -324,10 +325,10 @@
       <span class="brand-kicker">gist-server</span>
       <h1>Config generator</h1>
     </div>
-    <a class="back-link" href="index.html">&larr; Back to documentation</a>
-    <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false" title="Match system theme">
-      <svg id="theme-toggle-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" stroke="none"></path></svg>
-      <span id="theme-toggle-label" class="sr-only">Match system theme</span>
+    <a class="back-link" href="docs.html">&larr; Back to documentation</a>
+    <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false" title="Light theme">
+      <svg id="theme-toggle-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
+      <span id="theme-toggle-label" class="sr-only">Light theme</span>
     </button>
     <div id="service-picker" class="service-picker"></div>
   </nav>
@@ -339,7 +340,7 @@
       <p>Check off the services your project needs on the left, fill in real values on the
         right, and copy or download a working <code>config.json</code>. Every field shows
         what it does and its expected type inline - nothing here requires the reference docs
-        open in another tab, though <a href="index.html">the full docs</a> go deeper on how
+        open in another tab, though <a href="docs.html">the full docs</a> go deeper on how
         each service actually behaves.</p>
     </div>
 
@@ -507,23 +508,19 @@
   var toggleIcon = document.getElementById("theme-toggle-icon");
   var THEME_ICONS = {
     light: '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>',
-    dark: '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>',
-    system: '<circle cx="12" cy="12" r="9"></circle><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" stroke="none"></path>'
+    dark: '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>'
   };
   function applyTheme(mode){
-    if (mode === "light"){ root.setAttribute("data-theme", "light"); }
-    else if (mode === "dark"){ root.setAttribute("data-theme", "dark"); }
+    if (mode === "dark"){ root.setAttribute("data-theme", "dark"); }
     else { root.removeAttribute("data-theme"); }
-    toggleIcon.innerHTML = THEME_ICONS[mode] || THEME_ICONS.system;
-    toggleBtn.setAttribute("aria-pressed", mode !== "system" ? "true" : "false");
-    toggleLabel.textContent = mode === "system" ? "Match system theme" : (mode === "light" ? "Light theme" : "Dark theme");
+    toggleIcon.innerHTML = THEME_ICONS[mode];
+    toggleBtn.setAttribute("aria-pressed", mode === "dark" ? "true" : "false");
+    toggleLabel.textContent = mode === "dark" ? "Dark theme" : "Light theme";
   }
-  var storedTheme = "system";
-  try { storedTheme = localStorage.getItem(THEME_KEY) || "system"; } catch (e) {}
+  var storedTheme = root.getAttribute("data-theme") === "dark" ? "dark" : "light";
   applyTheme(storedTheme);
   toggleBtn.addEventListener("click", function(){
-    var order = ["system", "light", "dark"];
-    var next = order[(order.indexOf(storedTheme) + 1) % order.length];
+    var next = storedTheme === "dark" ? "light" : "dark";
     storedTheme = next;
     applyTheme(next);
     try { localStorage.setItem(THEME_KEY, next); } catch (e) {}
