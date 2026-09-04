@@ -219,6 +219,11 @@
   .tier-price span{ font-size:.85rem; font-weight:500; color:var(--ink-soft); }
   .tier-desc{ margin-top:.7rem; font-size:.96rem; line-height:1.55; color:var(--ink-soft); }
   .tier-desc strong{ color:var(--ink); font-weight:600; }
+  .tier-price-table{ margin-top:.9rem; font-size:.92rem; }
+  .tier-price-table li{ display:flex; justify-content:space-between; gap:1rem; padding:.4rem 0; border-top:1px solid var(--rule); }
+  .tier-price-table li:first-child{ border-top:none; }
+  .tier-price-table span:first-child{ color:var(--ink-soft); }
+  .tier-price-table span:last-child{ font-weight:600; }
   .tier a.link{ display:inline-block; margin-top:1.1rem; }
   .pricing-footnote{ margin-top:2.2rem; font-size:.86rem; color:var(--ink-soft); }
 
@@ -468,19 +473,24 @@ gistapiserver.Attach("orders-api", CreateOrder)</pre>
     <p class="pricing-sub">Same binary either way — the license file is what changes.</p>
     <div class="tiers">
       <div class="tier">
-        <p class="tier-name">Full</p>
+        <p class="tier-name">License</p>
         <p class="tier-price">$299<span>/mo</span></p>
-        <p class="tier-desc">All 14 built-in services, no usage caps, <strong>one custom service</strong> included.</p>
-        <a class="link" href="#top">Get Full</a>
+        <p class="tier-desc">All 14 built-in services, no usage caps. <strong>No custom services included.</strong></p>
+        <a class="link" href="#top">Get a license</a>
       </div>
       <div class="tier">
-        <p class="tier-name">Enterprise</p>
-        <p class="tier-price">$999<span>/mo</span></p>
-        <p class="tier-desc">Everything in Full, plus <strong>unlimited custom services</strong>.</p>
-        <a class="link" href="#top">Get Enterprise</a>
+        <p class="tier-name">Custom services</p>
+        <p class="tier-price">from $50<span>/mo each</span></p>
+        <p class="tier-desc">Optional, on top of a license — priced per service, cheaper the more you run:</p>
+        <ul class="tier-price-table">
+          <li><span>1st–4th service</span><span>$100/mo each</span></li>
+          <li><span>5th–9th service</span><span>$75/mo each</span></li>
+          <li><span>10th on</span><span>$50/mo each</span></li>
+        </ul>
+        <a class="link" href="#top">Add custom services</a>
       </div>
     </div>
-    <p class="pricing-footnote">Both begin as a free, hour-long trial — nothing is held back.</p>
+    <p class="pricing-footnote">Every license begins as a free, hour-long trial — nothing is held back.</p>
   </section>
 </main>
 
