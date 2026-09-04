@@ -289,6 +289,178 @@ func (x *GraphResponse) GetErrorMessage() string {
 	return ""
 }
 
+// MultiLaneGraphRequest asks for one combined diagram spanning several
+// gist-state-machine instances at once, each its own horizontal swimlane,
+// connected wherever one's configured transitions set to_service to
+// another (see Transition's own doc in config.go) - the same
+// RenderMultiLaneSVG diagram style gist-server can already produce
+// in-process, now reachable over RPC so a customer's own gist-api-server
+// endpoint can render it (see AdminServer.MultiLaneGraph).
+//
+// implemented_triggers mirrors GraphRequest's own field, but keyed by
+// service_id since several machines are in play at once - a service_id
+// with no entry (or an empty one) has every one of its own triggers
+// marked unimplemented, same as an empty GraphRequest.implemented_triggers
+// does for Graph.
+type MultiLaneGraphRequest struct {
+	state               protoimpl.MessageState          `protogen:"open.v1"`
+	ServiceIds          []string                        `protobuf:"bytes,1,rep,name=service_ids,json=serviceIds,proto3" json:"service_ids,omitempty"`
+	ImplementedTriggers map[string]*ImplementedTriggers `protobuf:"bytes,2,rep,name=implemented_triggers,json=implementedTriggers,proto3" json:"implemented_triggers,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *MultiLaneGraphRequest) Reset() {
+	*x = MultiLaneGraphRequest{}
+	mi := &file_proto_statemachine_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MultiLaneGraphRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MultiLaneGraphRequest) ProtoMessage() {}
+
+func (x *MultiLaneGraphRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_statemachine_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MultiLaneGraphRequest.ProtoReflect.Descriptor instead.
+func (*MultiLaneGraphRequest) Descriptor() ([]byte, []int) {
+	return file_proto_statemachine_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *MultiLaneGraphRequest) GetServiceIds() []string {
+	if x != nil {
+		return x.ServiceIds
+	}
+	return nil
+}
+
+func (x *MultiLaneGraphRequest) GetImplementedTriggers() map[string]*ImplementedTriggers {
+	if x != nil {
+		return x.ImplementedTriggers
+	}
+	return nil
+}
+
+type ImplementedTriggers struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Triggers      []string               `protobuf:"bytes,1,rep,name=triggers,proto3" json:"triggers,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ImplementedTriggers) Reset() {
+	*x = ImplementedTriggers{}
+	mi := &file_proto_statemachine_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ImplementedTriggers) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ImplementedTriggers) ProtoMessage() {}
+
+func (x *ImplementedTriggers) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_statemachine_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ImplementedTriggers.ProtoReflect.Descriptor instead.
+func (*ImplementedTriggers) Descriptor() ([]byte, []int) {
+	return file_proto_statemachine_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *ImplementedTriggers) GetTriggers() []string {
+	if x != nil {
+		return x.Triggers
+	}
+	return nil
+}
+
+type MultiLaneGraphResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// svg is a self-contained, hand-rendered SVG diagram - see
+	// GraphResponse.svg's own doc for why no external layout engine is
+	// needed to view it.
+	Svg           string `protobuf:"bytes,1,opt,name=svg,proto3" json:"svg,omitempty"`
+	ErrorCode     string `protobuf:"bytes,2,opt,name=error_code,json=errorCode,proto3" json:"error_code,omitempty"`
+	ErrorMessage  string `protobuf:"bytes,3,opt,name=error_message,json=errorMessage,proto3" json:"error_message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MultiLaneGraphResponse) Reset() {
+	*x = MultiLaneGraphResponse{}
+	mi := &file_proto_statemachine_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MultiLaneGraphResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MultiLaneGraphResponse) ProtoMessage() {}
+
+func (x *MultiLaneGraphResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_statemachine_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MultiLaneGraphResponse.ProtoReflect.Descriptor instead.
+func (*MultiLaneGraphResponse) Descriptor() ([]byte, []int) {
+	return file_proto_statemachine_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *MultiLaneGraphResponse) GetSvg() string {
+	if x != nil {
+		return x.Svg
+	}
+	return ""
+}
+
+func (x *MultiLaneGraphResponse) GetErrorCode() string {
+	if x != nil {
+		return x.ErrorCode
+	}
+	return ""
+}
+
+func (x *MultiLaneGraphResponse) GetErrorMessage() string {
+	if x != nil {
+		return x.ErrorMessage
+	}
+	return ""
+}
+
 var File_proto_statemachine_proto protoreflect.FileDescriptor
 
 const file_proto_statemachine_proto_rawDesc = "" +
@@ -313,11 +485,26 @@ const file_proto_statemachine_proto_rawDesc = "" +
 	"\x03svg\x18\x02 \x01(\tR\x03svg\x12\x1d\n" +
 	"\n" +
 	"error_code\x18\x03 \x01(\tR\terrorCode\x12#\n" +
-	"\rerror_message\x18\x04 \x01(\tR\ferrorMessage2\x88\x01\n" +
+	"\rerror_message\x18\x04 \x01(\tR\ferrorMessage\"\x84\x02\n" +
+	"\x15MultiLaneGraphRequest\x12\x1f\n" +
+	"\vservice_ids\x18\x01 \x03(\tR\n" +
+	"serviceIds\x12g\n" +
+	"\x14implemented_triggers\x18\x02 \x03(\v24.gist.MultiLaneGraphRequest.ImplementedTriggersEntryR\x13implementedTriggers\x1aa\n" +
+	"\x18ImplementedTriggersEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12/\n" +
+	"\x05value\x18\x02 \x01(\v2\x19.gist.ImplementedTriggersR\x05value:\x028\x01\"1\n" +
+	"\x13ImplementedTriggers\x12\x1a\n" +
+	"\btriggers\x18\x01 \x03(\tR\btriggers\"n\n" +
+	"\x16MultiLaneGraphResponse\x12\x10\n" +
+	"\x03svg\x18\x01 \x01(\tR\x03svg\x12\x1d\n" +
+	"\n" +
+	"error_code\x18\x02 \x01(\tR\terrorCode\x12#\n" +
+	"\rerror_message\x18\x03 \x01(\tR\ferrorMessage2\xd5\x01\n" +
 	"\x13StateMachineService\x12?\n" +
 	"\n" +
 	"Transition\x12\x17.gist.TransitionRequest\x1a\x18.gist.TransitionResponse\x120\n" +
-	"\x05Graph\x12\x12.gist.GraphRequest\x1a\x13.gist.GraphResponseB&Z$github.com/wieoapps/gist/proto;protob\x06proto3"
+	"\x05Graph\x12\x12.gist.GraphRequest\x1a\x13.gist.GraphResponse\x12K\n" +
+	"\x0eMultiLaneGraph\x12\x1b.gist.MultiLaneGraphRequest\x1a\x1c.gist.MultiLaneGraphResponseB&Z$github.com/wieoapps/gist/proto;protob\x06proto3"
 
 var (
 	file_proto_statemachine_proto_rawDescOnce sync.Once
@@ -331,23 +518,31 @@ func file_proto_statemachine_proto_rawDescGZIP() []byte {
 	return file_proto_statemachine_proto_rawDescData
 }
 
-var file_proto_statemachine_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
+var file_proto_statemachine_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_proto_statemachine_proto_goTypes = []any{
-	(*TransitionRequest)(nil),  // 0: gist.TransitionRequest
-	(*TransitionResponse)(nil), // 1: gist.TransitionResponse
-	(*GraphRequest)(nil),       // 2: gist.GraphRequest
-	(*GraphResponse)(nil),      // 3: gist.GraphResponse
+	(*TransitionRequest)(nil),      // 0: gist.TransitionRequest
+	(*TransitionResponse)(nil),     // 1: gist.TransitionResponse
+	(*GraphRequest)(nil),           // 2: gist.GraphRequest
+	(*GraphResponse)(nil),          // 3: gist.GraphResponse
+	(*MultiLaneGraphRequest)(nil),  // 4: gist.MultiLaneGraphRequest
+	(*ImplementedTriggers)(nil),    // 5: gist.ImplementedTriggers
+	(*MultiLaneGraphResponse)(nil), // 6: gist.MultiLaneGraphResponse
+	nil,                            // 7: gist.MultiLaneGraphRequest.ImplementedTriggersEntry
 }
 var file_proto_statemachine_proto_depIdxs = []int32{
-	0, // 0: gist.StateMachineService.Transition:input_type -> gist.TransitionRequest
-	2, // 1: gist.StateMachineService.Graph:input_type -> gist.GraphRequest
-	1, // 2: gist.StateMachineService.Transition:output_type -> gist.TransitionResponse
-	3, // 3: gist.StateMachineService.Graph:output_type -> gist.GraphResponse
-	2, // [2:4] is the sub-list for method output_type
-	0, // [0:2] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	7, // 0: gist.MultiLaneGraphRequest.implemented_triggers:type_name -> gist.MultiLaneGraphRequest.ImplementedTriggersEntry
+	5, // 1: gist.MultiLaneGraphRequest.ImplementedTriggersEntry.value:type_name -> gist.ImplementedTriggers
+	0, // 2: gist.StateMachineService.Transition:input_type -> gist.TransitionRequest
+	2, // 3: gist.StateMachineService.Graph:input_type -> gist.GraphRequest
+	4, // 4: gist.StateMachineService.MultiLaneGraph:input_type -> gist.MultiLaneGraphRequest
+	1, // 5: gist.StateMachineService.Transition:output_type -> gist.TransitionResponse
+	3, // 6: gist.StateMachineService.Graph:output_type -> gist.GraphResponse
+	6, // 7: gist.StateMachineService.MultiLaneGraph:output_type -> gist.MultiLaneGraphResponse
+	5, // [5:8] is the sub-list for method output_type
+	2, // [2:5] is the sub-list for method input_type
+	2, // [2:2] is the sub-list for extension type_name
+	2, // [2:2] is the sub-list for extension extendee
+	0, // [0:2] is the sub-list for field type_name
 }
 
 func init() { file_proto_statemachine_proto_init() }
@@ -361,7 +556,7 @@ func file_proto_statemachine_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_statemachine_proto_rawDesc), len(file_proto_statemachine_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   4,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -19,8 +19,9 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	StateMachineService_Transition_FullMethodName = "/gist.StateMachineService/Transition"
-	StateMachineService_Graph_FullMethodName      = "/gist.StateMachineService/Graph"
+	StateMachineService_Transition_FullMethodName     = "/gist.StateMachineService/Transition"
+	StateMachineService_Graph_FullMethodName          = "/gist.StateMachineService/Graph"
+	StateMachineService_MultiLaneGraph_FullMethodName = "/gist.StateMachineService/MultiLaneGraph"
 )
 
 // StateMachineServiceClient is the client API for StateMachineService service.
@@ -29,6 +30,7 @@ const (
 type StateMachineServiceClient interface {
 	Transition(ctx context.Context, in *TransitionRequest, opts ...grpc.CallOption) (*TransitionResponse, error)
 	Graph(ctx context.Context, in *GraphRequest, opts ...grpc.CallOption) (*GraphResponse, error)
+	MultiLaneGraph(ctx context.Context, in *MultiLaneGraphRequest, opts ...grpc.CallOption) (*MultiLaneGraphResponse, error)
 }
 
 type stateMachineServiceClient struct {
@@ -59,12 +61,23 @@ func (c *stateMachineServiceClient) Graph(ctx context.Context, in *GraphRequest,
 	return out, nil
 }
 
+func (c *stateMachineServiceClient) MultiLaneGraph(ctx context.Context, in *MultiLaneGraphRequest, opts ...grpc.CallOption) (*MultiLaneGraphResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(MultiLaneGraphResponse)
+	err := c.cc.Invoke(ctx, StateMachineService_MultiLaneGraph_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // StateMachineServiceServer is the server API for StateMachineService service.
 // All implementations must embed UnimplementedStateMachineServiceServer
 // for forward compatibility.
 type StateMachineServiceServer interface {
 	Transition(context.Context, *TransitionRequest) (*TransitionResponse, error)
 	Graph(context.Context, *GraphRequest) (*GraphResponse, error)
+	MultiLaneGraph(context.Context, *MultiLaneGraphRequest) (*MultiLaneGraphResponse, error)
 	mustEmbedUnimplementedStateMachineServiceServer()
 }
 
@@ -80,6 +93,9 @@ func (UnimplementedStateMachineServiceServer) Transition(context.Context, *Trans
 }
 func (UnimplementedStateMachineServiceServer) Graph(context.Context, *GraphRequest) (*GraphResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Graph not implemented")
+}
+func (UnimplementedStateMachineServiceServer) MultiLaneGraph(context.Context, *MultiLaneGraphRequest) (*MultiLaneGraphResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method MultiLaneGraph not implemented")
 }
 func (UnimplementedStateMachineServiceServer) mustEmbedUnimplementedStateMachineServiceServer() {}
 func (UnimplementedStateMachineServiceServer) testEmbeddedByValue()                             {}
@@ -138,6 +154,24 @@ func _StateMachineService_Graph_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _StateMachineService_MultiLaneGraph_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(MultiLaneGraphRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StateMachineServiceServer).MultiLaneGraph(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StateMachineService_MultiLaneGraph_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StateMachineServiceServer).MultiLaneGraph(ctx, req.(*MultiLaneGraphRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // StateMachineService_ServiceDesc is the grpc.ServiceDesc for StateMachineService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -152,6 +186,10 @@ var StateMachineService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Graph",
 			Handler:    _StateMachineService_Graph_Handler,
+		},
+		{
+			MethodName: "MultiLaneGraph",
+			Handler:    _StateMachineService_MultiLaneGraph_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

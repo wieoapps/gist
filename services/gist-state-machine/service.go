@@ -299,3 +299,35 @@ func (svc *Service) GraphSVG(ctx context.Context) (string, error) {
 	}
 	return resp.GetSvg(), nil
 }
+
+// MultiLaneGraphSVG returns one combined, hand-rendered SVG spanning
+// every one of serviceIDs' configured gist-state-machine instances, each
+// its own horizontal swimlane, connected wherever a transition's
+// to-service names another instance in the list - see gist-server's own
+// RenderMultiLaneSVG. Unlike Graph/GraphSVG, svc's own service id plays
+// no special role here beyond providing the connection - pass whichever
+// ids (including or excluding svc's own) make up the diagram you want;
+// gist-server resolves each against its own configured instances,
+// regardless of which of them this process has attached any triggers
+// for. A trigger not registered via Attach against its own instance's id
+// (see RegisteredStateMachineTriggers) still renders, marked
+// unimplemented - exactly the same convention Graph/GraphSVG use, now
+// applied per lane instead of to a single machine.
+func (svc *Service) MultiLaneGraphSVG(ctx context.Context, serviceIDs []string) (string, error) {
+	implementedTriggers := make(map[string]*proto.ImplementedTriggers, len(serviceIDs))
+	for _, id := range serviceIDs {
+		implementedTriggers[id] = &proto.ImplementedTriggers{Triggers: svc.server.RegisteredStateMachineTriggers(id)}
+	}
+
+	resp, err := rpcconn.MustFor(svc.server).StateMachine.MultiLaneGraph(ctx, &proto.MultiLaneGraphRequest{
+		ServiceIds:          serviceIDs,
+		ImplementedTriggers: implementedTriggers,
+	})
+	if err != nil {
+		return "", fmt.Errorf("gist-state-machine: multi-lane graph: %w", err)
+	}
+	if resp.GetErrorCode() != "" {
+		return "", fmt.Errorf("gist-state-machine: multi-lane graph: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
+	}
+	return resp.GetSvg(), nil
+}

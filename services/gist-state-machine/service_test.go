@@ -22,6 +22,10 @@ type fakeStateMachineClient struct {
 	graphReq  *proto.GraphRequest
 	graphResp *proto.GraphResponse
 	graphErr  error
+
+	multiLaneReq  *proto.MultiLaneGraphRequest
+	multiLaneResp *proto.MultiLaneGraphResponse
+	multiLaneErr  error
 }
 
 func (f *fakeStateMachineClient) Transition(_ context.Context, in *proto.TransitionRequest, _ ...grpc.CallOption) (*proto.TransitionResponse, error) {
@@ -44,6 +48,17 @@ func (f *fakeStateMachineClient) Graph(_ context.Context, in *proto.GraphRequest
 		return f.graphResp, nil
 	}
 	return &proto.GraphResponse{Dot: "digraph {}"}, nil
+}
+
+func (f *fakeStateMachineClient) MultiLaneGraph(_ context.Context, in *proto.MultiLaneGraphRequest, _ ...grpc.CallOption) (*proto.MultiLaneGraphResponse, error) {
+	f.multiLaneReq = in
+	if f.multiLaneErr != nil {
+		return nil, f.multiLaneErr
+	}
+	if f.multiLaneResp != nil {
+		return f.multiLaneResp, nil
+	}
+	return &proto.MultiLaneGraphResponse{Svg: "<svg></svg>"}, nil
 }
 
 type testStatable struct {
@@ -426,5 +441,61 @@ func TestGraph_NoTriggersAttached_SendsEmptyImplementedList(t *testing.T) {
 	}
 	if len(fake.graphReq.GetImplementedTriggers()) != 0 {
 		t.Fatalf("expected no implemented triggers when nothing was Attached, got %v", fake.graphReq.GetImplementedTriggers())
+	}
+}
+
+func TestMultiLaneGraphSVG_SendsEveryRequestedServiceID_ReturnsSVG(t *testing.T) {
+	fake := &fakeStateMachineClient{multiLaneResp: &proto.MultiLaneGraphResponse{Svg: "<svg>multi</svg>"}}
+	svc := newTestService(t, fake)
+
+	svg, err := svc.MultiLaneGraphSVG(context.Background(), []string{"svc-1", "svc-2", "svc-3"})
+	if err != nil {
+		t.Fatalf("MultiLaneGraphSVG failed: %v", err)
+	}
+	if got := fake.multiLaneReq.GetServiceIds(); len(got) != 3 || got[0] != "svc-1" || got[1] != "svc-2" || got[2] != "svc-3" {
+		t.Fatalf("expected service_ids [svc-1 svc-2 svc-3], got %v", got)
+	}
+	if svg != "<svg>multi</svg>" {
+		t.Fatalf("unexpected svg output: %q", svg)
+	}
+}
+
+func TestMultiLaneGraphSVG_OnlySendsImplementedTriggersForItsOwnServiceID(t *testing.T) {
+	// svc's own id is "svc-1" (see newTestService) - only that id's
+	// RegisteredStateMachineTriggers has anything to report; the other
+	// requested ids get an empty (or absent) entry, exactly as if a
+	// completely different process had attached their triggers.
+	fake := &fakeStateMachineClient{}
+	approve := RegisterTriggerFunc("approve", noopAction)
+	svc := newTestService(t, fake, approve)
+
+	if _, err := svc.MultiLaneGraphSVG(context.Background(), []string{"svc-1", "svc-2"}); err != nil {
+		t.Fatalf("MultiLaneGraphSVG failed: %v", err)
+	}
+
+	got := fake.multiLaneReq.GetImplementedTriggers()
+	if triggers := got["svc-1"].GetTriggers(); len(triggers) != 1 || triggers[0] != "approve" {
+		t.Fatalf("expected svc-1's implemented triggers to be [approve], got %v", triggers)
+	}
+	if triggers := got["svc-2"].GetTriggers(); len(triggers) != 0 {
+		t.Fatalf("expected svc-2 to have no implemented triggers, got %v", triggers)
+	}
+}
+
+func TestMultiLaneGraphSVG_TransportError_Propagates(t *testing.T) {
+	fake := &fakeStateMachineClient{multiLaneErr: context.DeadlineExceeded}
+	svc := newTestService(t, fake)
+
+	if _, err := svc.MultiLaneGraphSVG(context.Background(), []string{"svc-1"}); err == nil {
+		t.Fatal("expected the transport error to propagate")
+	}
+}
+
+func TestMultiLaneGraphSVG_ServerErrorCode_SurfacesAsError(t *testing.T) {
+	fake := &fakeStateMachineClient{multiLaneResp: &proto.MultiLaneGraphResponse{ErrorCode: "invalid_argument", ErrorMessage: "unknown service svc-9"}}
+	svc := newTestService(t, fake)
+
+	if _, err := svc.MultiLaneGraphSVG(context.Background(), []string{"svc-9"}); err == nil {
+		t.Fatal("expected an error when the response carries an ErrorCode")
 	}
 }
