@@ -466,9 +466,7 @@
 <li><a href="#s12"><span><span class="toc-num">12</span> gist-state-machine</span></a></li>
 <li><a href="#s13"><span><span class="toc-num">13</span> gist-redis-client</span></a></li>
 <li><a href="#s14"><span><span class="toc-num">14</span> gist-pub-sub-client</span></a></li>
-<li><a href="#s15"><span><span class="toc-num">15</span> gist-rabbit-mq-client</span></a></li>
-<li><a href="#s16"><span><span class="toc-num">16</span> gist-load-balancer</span></a></li>
-      </ol>
+<li><a href="#s15"><span><span class="toc-num">15</span> gist-rabbit-mq-client</span></a></li>      </ol>
     </div>
     <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false" title="Light theme">
       <svg id="theme-toggle-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
@@ -548,9 +546,6 @@
                 <!-- GENERATED:gist-rabbit-mq-client:SURFACE:BEGIN -->
           <tr><td>15</td><td><a href="#s15">gist-rabbit-mq-client</a></td><td><span class="badge badge-api">API</span></td></tr>
                 <!-- GENERATED:gist-rabbit-mq-client:SURFACE:END -->
-                <!-- GENERATED:gist-load-balancer:SURFACE:BEGIN -->
-          <tr><td>16</td><td><a href="#s16">gist-load-balancer</a></td><td><span class="badge badge-config">Config only</span></td></tr>
-                <!-- GENERATED:gist-load-balancer:SURFACE:END -->
         </tbody>
       </table>
       <p class="muted">
@@ -649,7 +644,7 @@ gist-server -generate-config all -out config.json</code></pre>
           <table class="overview-table">
             <thead><tr><th>Flag</th><th>Description</th></tr></thead>
             <tbody>
-              <tr><td><code>-generate-config &lt;kinds&gt;</code></td><td>Comma-separated service kinds, or <code>all</code>. Valid kinds (every service in this doc except <code>gist-custom</code>, which has no fixed schema to scaffold): <code>gist-api-server</code>, <code>gist-auth</code>, <code>gist-elasticsearch-client</code>, <code>gist-fixtures</code>, <code>gist-google-cloud-storage-client</code>, <code>gist-http-client</code>, <code>gist-http-server</code>, <code>gist-load-balancer</code>, <code>gist-mysql-client</code>, <code>gist-postgres-client</code>, <code>gist-pub-sub-client</code>, <code>gist-rabbit-mq-client</code>, <code>gist-redis-client</code>, <code>gist-scheduler</code>, <code>gist-state-machine</code>.</td></tr>
+              <tr><td><code>-generate-config &lt;kinds&gt;</code></td><td>Comma-separated service kinds, or <code>all</code>. Valid kinds (every service in this doc except <code>gist-custom</code>, which has no fixed schema to scaffold): <code>gist-api-server</code>, <code>gist-auth</code>, <code>gist-elasticsearch-client</code>, <code>gist-fixtures</code>, <code>gist-google-cloud-storage-client</code>, <code>gist-http-client</code>, <code>gist-http-server</code>, <code>gist-mysql-client</code>, <code>gist-postgres-client</code>, <code>gist-pub-sub-client</code>, <code>gist-rabbit-mq-client</code>, <code>gist-redis-client</code>, <code>gist-scheduler</code>, <code>gist-state-machine</code>.</td></tr>
               <tr><td><code>-out &lt;path&gt;</code></td><td>Output path. Default <code>config.json</code>.</td></tr>
             </tbody>
           </table>
@@ -3137,83 +3132,6 @@ func AttachEndpointHandlers() gist.Option {
               </div>
           </div>
                 <!-- GENERATED:gist-rabbit-mq-client:END -->
-        </div>
-      </details>
-    </section>
-    <!-- ============ 16. gist-load-balancer ============ -->
-    <section class="doc-section" id="s16">
-      <details open>
-        <summary><span class="toc-num">16</span><h2>gist-load-balancer</h2></summary>
-        <div class="section-body">
-                <!-- GENERATED:gist-load-balancer:INTRO:BEGIN -->
-          <p>A reverse-proxying round-robin load balancer in front of a fixed list of backend URLs — config-only, like <code>gist-http-server</code>: nothing to call from your own code, you just point config at it and traffic gets distributed. Modeled on <a href="https://dev.to/vivekalhat/building-a-simple-load-balancer-in-go-70d">this dev.to article</a> (round robin + periodic HTTP HEAD health checks over <code>httputil.ReverseProxy</code>), with a per-instance <code>health-check-path</code> borrowed from <a href="https://github.com/Abdulrahman-Tayara/go-lb">go-lb</a>'s per-server health endpoint. go-lb's other features (weighted/sticky/least-connections strategies, TLS, rate limiting, content-based routing) are deliberately not ported — round robin covers the actual use case, TLS conflicts with <code>gist-api-server</code>'s own "always plain HTTP, front it with a reverse proxy" stance (this service follows the same rule — no <code>protocol</code>/TLS field here either), and content-based routing already belongs to <code>gist-api-server</code>, not this service.</p>
-                <!-- GENERATED:gist-load-balancer:INTRO:END -->
-                <!-- GENERATED:gist-load-balancer:BEGIN -->
-          <div class="cfgref">
-              <div class="cfgref-tabs">
-                <button type="button" class="cfgref-tab is-active" data-mode="minimal">Minimal</button>
-                <button type="button" class="cfgref-tab" data-mode="full">Full</button>
-              </div>
-              <div class="cfgref-pane" data-mode="minimal">
-                <div class="table-scroll">
-                <table class="overview-table">
-                  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
-                  <tbody>
-                  <tr><td><code>id</code></td><td>string</td><td>Unique instance ID for this load balancer.</td></tr>
-                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely (no listener started).</td></tr>
-                  <tr><td><code>backends</code></td><td>[]string</td><td>Absolute backend URLs (scheme + host required) traffic is round-robin distributed across. At least one is required.</td></tr>
-                  <tr><td><code>port</code></td><td>int</td><td>Bind port for the listener. Required — no default.</td></tr>
-                  </tbody>
-                </table>
-                </div>
-                <div class="code-block">
-                <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
-                <pre><code class="language-json">"gist-load-balancer": [
-  {
-    "id": "orders-api-lb",
-    "enabled": true,
-    "backends": ["http://127.0.0.1:8080", "http://127.0.0.1:8081"],
-    "port": 9000
-  }
-]</code></pre>
-                </div>
-              </div>
-              <div class="cfgref-pane" data-mode="full" hidden>
-                <div class="table-scroll">
-                <table class="overview-table">
-                  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
-                  <tbody>
-                  <tr><td><code>id</code></td><td>string</td><td>Unique instance ID for this load balancer.</td></tr>
-                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely (no listener started).</td></tr>
-                  <tr><td><code>delayed-start</code></td><td>int | string</td><td>Seconds (or duration string) to wait/delay before starting this instance.</td></tr>
-                  <tr><td><code>wait-for</code></td><td>[]string</td><td>IDs of other services this instance must wait to become ready before starting.</td></tr>
-                  <tr><td><code>backends</code></td><td>[]string</td><td>Absolute backend URLs (scheme + host required) traffic is round-robin distributed across. At least one is required.</td></tr>
-                  <tr><td><code>health-check-interval</code></td><td>int | string</td><td>Seconds (or duration string) between health checks of every backend. Defaults to 10s when omitted/zero.</td></tr>
-                  <tr><td><code>health-check-path</code></td><td>string</td><td>Path HEAD-requested on every backend's own host to check its health. Defaults to <code>/</code>.</td></tr>
-                  <tr><td><code>hostname</code></td><td>string</td><td>Bind address for the listener; defaults to <code>0.0.0.0</code>.</td></tr>
-                  <tr><td><code>port</code></td><td>int</td><td>Bind port for the listener. Required — no default.</td></tr>
-                  </tbody>
-                </table>
-                </div>
-                <div class="code-block">
-                <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
-                <pre><code class="language-json">"gist-load-balancer": [
-  {
-    "id": "orders-api-lb",
-    "enabled": true,
-    "delayed-start": "5s",
-    "wait-for": [],
-    "backends": ["http://127.0.0.1:8080", "http://127.0.0.1:8081"],
-    "health-check-interval": "10s",
-    "health-check-path": "/ping",
-    "hostname": "0.0.0.0",
-    "port": 9000
-  }
-]</code></pre>
-                </div>
-              </div>
-          </div>
-                <!-- GENERATED:gist-load-balancer:END -->
         </div>
       </details>
     </section>
