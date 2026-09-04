@@ -369,3 +369,62 @@ func TestGraph_ServerErrorCode_SurfacesAsError(t *testing.T) {
 		t.Fatal("expected an error when the response carries an ErrorCode")
 	}
 }
+
+func TestGraphSVG_SendsServiceID_ReturnsSVG(t *testing.T) {
+	fake := &fakeStateMachineClient{graphResp: &proto.GraphResponse{Svg: "<svg>...</svg>"}}
+	svc := newTestService(t, fake)
+
+	svg, err := svc.GraphSVG(context.Background())
+	if err != nil {
+		t.Fatalf("GraphSVG failed: %v", err)
+	}
+	if fake.graphReq.GetServiceId() != "svc-1" {
+		t.Fatalf("unexpected request: %+v", fake.graphReq)
+	}
+	if svg != "<svg>...</svg>" {
+		t.Fatalf("unexpected svg output: %q", svg)
+	}
+}
+
+func TestGraphSVG_TransportError_Propagates(t *testing.T) {
+	fake := &fakeStateMachineClient{graphErr: context.DeadlineExceeded}
+	svc := newTestService(t, fake)
+
+	if _, err := svc.GraphSVG(context.Background()); err == nil {
+		t.Fatal("expected the transport error to propagate")
+	}
+}
+
+func TestGraph_SendsEveryAttachedTriggerAsImplemented(t *testing.T) {
+	fake := &fakeStateMachineClient{}
+	approve := RegisterTriggerFunc("approve", noopAction)
+	reject := RegisterTriggerFunc("reject", noopAction)
+	svc := newTestService(t, fake, approve, reject)
+
+	if _, err := svc.Graph(context.Background()); err != nil {
+		t.Fatalf("Graph failed: %v", err)
+	}
+
+	got := fake.graphReq.GetImplementedTriggers()
+	want := map[string]bool{"approve": true, "reject": true}
+	if len(got) != len(want) {
+		t.Fatalf("expected %d implemented triggers, got %v", len(want), got)
+	}
+	for _, trigger := range got {
+		if !want[trigger] {
+			t.Errorf("unexpected trigger %q in implemented_triggers: %v", trigger, got)
+		}
+	}
+}
+
+func TestGraph_NoTriggersAttached_SendsEmptyImplementedList(t *testing.T) {
+	fake := &fakeStateMachineClient{}
+	svc := newTestService(t, fake)
+
+	if _, err := svc.Graph(context.Background()); err != nil {
+		t.Fatalf("Graph failed: %v", err)
+	}
+	if len(fake.graphReq.GetImplementedTriggers()) != 0 {
+		t.Fatalf("expected no implemented triggers when nothing was Attached, got %v", fake.graphReq.GetImplementedTriggers())
+	}
+}

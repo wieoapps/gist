@@ -2844,7 +2844,7 @@ func AttachEndpointHandlers() gist.Option {
         <div class="section-body">
                 <!-- GENERATED:gist-state-machine:INTRO:BEGIN -->
           <p>A stateless transition validator: given a current state and a trigger name, it checks a transitions graph loaded from <code>transitions-file</code> and either allows or rejects the move. It holds no state of its own — persisting the object is entirely your responsibility, handled in the trigger's own callback.</p>
-          <p><code>Graph</code> returns that same configured transition graph in DOT format (render it with any Graphviz front-end, e.g. <code>dot -Tpng</code>) — the structure itself, not any particular object's current state.</p>
+          <p><code>Graph</code> returns that same configured transition graph as DOT (render it with any Graphviz front-end, e.g. <code>dot -Tpng</code>) — the structure itself, not any particular object's current state. <code>GraphSVG</code> returns a self-contained, hand-rendered SVG diagram of the same graph, no external Graphviz/layout engine needed to view it. Either way, a trigger with no attached handler (see <code>Attach</code>) is marked <code>🚧</code>, the same convention this doc's own endpoint tables use for one with no registered handler.</p>
                 <!-- GENERATED:gist-state-machine:INTRO:END -->
                 <!-- GENERATED:gist-state-machine:BEGIN -->
           <div class="cfgref">
@@ -2919,10 +2919,26 @@ func AttachEndpointHandlers() gist.Option {
                 </div>
 
                 <h4 id="s12-graph">Visualizing the graph</h4>
-                <p style="margin:.4rem 0 .6rem"><code>giststatemachine.Service.Graph(ctx)</code> (client side) returns the configured transition graph in <a href="https://graphviz.org/doc/info/lang.html" target="_blank" rel="noopener">DOT format</a> - the structure itself, not any particular object's current state, since this service holds none. Render it with any Graphviz front-end, e.g.:</p>
+                <p style="margin:.4rem 0 .6rem">Two ways to get the configured transition graph out (client side) - the structure itself, not any particular object's current state, since this service holds none. Either way, a trigger with no attached handler (see <code>Attach</code>) comes back marked <code>🚧</code>, the same "unimplemented" convention this doc's own endpoint tables use.</p>
                 <pre class="diagram">dot, err := svc.Graph(ctx)
-// write dot to a .dot file, then:
-//   dot -Tpng order-lifecycle.dot -o order-lifecycle.png</pre>
+// write dot to a .dot file, then render it with any Graphviz
+// front-end, e.g.:
+//   dot -Tpng order-lifecycle.dot -o order-lifecycle.png
+
+svg, err := svc.GraphSVG(ctx)
+// self-contained SVG, hand-rendered by gist-server itself - no
+// Graphviz/layout engine needed, just an SVG-capable viewer:
+//   os.WriteFile("order-lifecycle.svg", []byte(svg), 0o644)</pre>
+                <p style="margin:.9rem 0 .4rem">Your own process already owns whatever HTTP server it runs - unlike a framework that owns the only listener, mounting <code>GraphSVG</code> on a route is one handler, not a config field:</p>
+                <pre class="diagram">http.HandleFunc("/order-lifecycle.svg", func(w http.ResponseWriter, r *http.Request) {
+    svg, err := svc.GraphSVG(r.Context())
+    if err != nil {
+        http.Error(w, err.Error(), http.StatusInternalServerError)
+        return
+    }
+    w.Header().Set("Content-Type", "image/svg+xml")
+    _, _ = w.Write([]byte(svg))
+})</pre>
               </div>
           </div>
                 <!-- GENERATED:gist-state-machine:END -->

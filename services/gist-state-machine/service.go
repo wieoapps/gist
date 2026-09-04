@@ -251,19 +251,51 @@ func Transition[M Statabler](ctx context.Context, svc *Service, trigger string, 
 	return nil
 }
 
+// graph is the shared RPC both Graph and GraphSVG call - sends every
+// trigger name actually Attach-ed against svc's own service id (via
+// server.RegisteredStateMachineTriggers), so gist-server can mark any
+// configured-but-unattached trigger as unimplemented in what it sends
+// back. gist-server has no way to know this on its own, since Attach
+// runs entirely in this process.
+func (svc *Service) graph(ctx context.Context) (*proto.GraphResponse, error) {
+	resp, err := rpcconn.MustFor(svc.server).StateMachine.Graph(ctx, &proto.GraphRequest{
+		ServiceId:           svc.serviceID,
+		ImplementedTriggers: svc.server.RegisteredStateMachineTriggers(svc.serviceID),
+	})
+	if err != nil {
+		return nil, fmt.Errorf("gist-state-machine: graph: %w", err)
+	}
+	if resp.GetErrorCode() != "" {
+		return nil, fmt.Errorf("gist-state-machine: graph: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
+	}
+	return resp, nil
+}
+
 // Graph returns the DOT-format representation of svc's configured
 // transition graph (https://graphviz.org/doc/info/lang.html) - render
 // it with any Graphviz front-end (e.g. `dot -Tpng graph.dot -o
 // graph.png`) to visualize it. Purely structural: gist-server holds no
 // live object, so this reflects the graph itself, seeded with its own
 // configured initial state - not any particular object's current state.
+// A trigger with no attached handler (see Attach) is marked with a
+// "🚧 " prefix, the same convention gist-api-server's own docs use for
+// an endpoint with no registered handler.
 func (svc *Service) Graph(ctx context.Context) (string, error) {
-	resp, err := rpcconn.MustFor(svc.server).StateMachine.Graph(ctx, &proto.GraphRequest{ServiceId: svc.serviceID})
+	resp, err := svc.graph(ctx)
 	if err != nil {
-		return "", fmt.Errorf("gist-state-machine: graph: %w", err)
-	}
-	if resp.GetErrorCode() != "" {
-		return "", fmt.Errorf("gist-state-machine: graph: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
+		return "", err
 	}
 	return resp.GetDot(), nil
+}
+
+// GraphSVG returns a self-contained, hand-rendered SVG diagram of the
+// same graph Graph describes - no external Graphviz/layout engine
+// needed to view it, just an SVG-capable viewer (any browser, or an
+// <img>/<object> tag in a page your own process already serves).
+func (svc *Service) GraphSVG(ctx context.Context) (string, error) {
+	resp, err := svc.graph(ctx)
+	if err != nil {
+		return "", err
+	}
+	return resp.GetSvg(), nil
 }

@@ -152,18 +152,26 @@ func (x *TransitionResponse) GetErrorMessage() string {
 	return ""
 }
 
-// GraphRequest asks for the DOT-format representation of service_id's
-// configured transition graph (see qmuntal/stateless's own ToGraph) -
-// purely structural, seeded with that service's own configured initial
-// state. It does not reflect any particular object's current state,
-// since gist-server holds none (see statemachine.proto's own top-level
-// doc comment on why: the caller always owns and sends its current
-// state).
+// GraphRequest asks for the graph representation of service_id's
+// configured transition graph - purely structural, seeded with that
+// service's own configured initial state. It does not reflect any
+// particular object's current state, since gist-server holds none (see
+// statemachine.proto's own top-level doc comment on why: the caller
+// always owns and sends its current state).
+//
+// implemented_triggers is the caller's own list of trigger names it has
+// actually registered a handler for (via giststatemachine.Attach) -
+// gist-server has no visibility into that on its own, since Attach runs
+// entirely in the caller's process. Any configured trigger not in this
+// list gets a "🚧 " prefix in both dot and svg, the same "unimplemented"
+// convention gist-api-server's own docs already use for an endpoint
+// with no registered handler.
 type GraphRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	ServiceId     string                 `protobuf:"bytes,1,opt,name=service_id,json=serviceId,proto3" json:"service_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state               protoimpl.MessageState `protogen:"open.v1"`
+	ServiceId           string                 `protobuf:"bytes,1,opt,name=service_id,json=serviceId,proto3" json:"service_id,omitempty"`
+	ImplementedTriggers []string               `protobuf:"bytes,2,rep,name=implemented_triggers,json=implementedTriggers,proto3" json:"implemented_triggers,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *GraphRequest) Reset() {
@@ -203,11 +211,22 @@ func (x *GraphRequest) GetServiceId() string {
 	return ""
 }
 
+func (x *GraphRequest) GetImplementedTriggers() []string {
+	if x != nil {
+		return x.ImplementedTriggers
+	}
+	return nil
+}
+
 type GraphResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Dot           string                 `protobuf:"bytes,1,opt,name=dot,proto3" json:"dot,omitempty"`
-	ErrorCode     string                 `protobuf:"bytes,2,opt,name=error_code,json=errorCode,proto3" json:"error_code,omitempty"`
-	ErrorMessage  string                 `protobuf:"bytes,3,opt,name=error_message,json=errorMessage,proto3" json:"error_message,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	Dot   string                 `protobuf:"bytes,1,opt,name=dot,proto3" json:"dot,omitempty"`
+	// svg is a self-contained, hand-rendered SVG diagram of the same
+	// graph - no external Graphviz/layout engine needed to view it, just
+	// an SVG-capable viewer (any browser).
+	Svg           string `protobuf:"bytes,2,opt,name=svg,proto3" json:"svg,omitempty"`
+	ErrorCode     string `protobuf:"bytes,3,opt,name=error_code,json=errorCode,proto3" json:"error_code,omitempty"`
+	ErrorMessage  string `protobuf:"bytes,4,opt,name=error_message,json=errorMessage,proto3" json:"error_message,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -249,6 +268,13 @@ func (x *GraphResponse) GetDot() string {
 	return ""
 }
 
+func (x *GraphResponse) GetSvg() string {
+	if x != nil {
+		return x.Svg
+	}
+	return ""
+}
+
 func (x *GraphResponse) GetErrorCode() string {
 	if x != nil {
 		return x.ErrorCode
@@ -277,15 +303,17 @@ const file_proto_statemachine_proto_rawDesc = "" +
 	"\tnew_state\x18\x01 \x01(\tR\bnewState\x12\x1d\n" +
 	"\n" +
 	"error_code\x18\x02 \x01(\tR\terrorCode\x12#\n" +
-	"\rerror_message\x18\x03 \x01(\tR\ferrorMessage\"-\n" +
+	"\rerror_message\x18\x03 \x01(\tR\ferrorMessage\"`\n" +
 	"\fGraphRequest\x12\x1d\n" +
 	"\n" +
-	"service_id\x18\x01 \x01(\tR\tserviceId\"e\n" +
+	"service_id\x18\x01 \x01(\tR\tserviceId\x121\n" +
+	"\x14implemented_triggers\x18\x02 \x03(\tR\x13implementedTriggers\"w\n" +
 	"\rGraphResponse\x12\x10\n" +
-	"\x03dot\x18\x01 \x01(\tR\x03dot\x12\x1d\n" +
+	"\x03dot\x18\x01 \x01(\tR\x03dot\x12\x10\n" +
+	"\x03svg\x18\x02 \x01(\tR\x03svg\x12\x1d\n" +
 	"\n" +
-	"error_code\x18\x02 \x01(\tR\terrorCode\x12#\n" +
-	"\rerror_message\x18\x03 \x01(\tR\ferrorMessage2\x88\x01\n" +
+	"error_code\x18\x03 \x01(\tR\terrorCode\x12#\n" +
+	"\rerror_message\x18\x04 \x01(\tR\ferrorMessage2\x88\x01\n" +
 	"\x13StateMachineService\x12?\n" +
 	"\n" +
 	"Transition\x12\x17.gist.TransitionRequest\x1a\x18.gist.TransitionResponse\x120\n" +

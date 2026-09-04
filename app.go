@@ -10,6 +10,7 @@ import (
 	"os/exec"
 	"os/signal"
 	"path/filepath"
+	"strings"
 	"sync"
 	"syscall"
 	"time"
@@ -306,6 +307,25 @@ func (a *Server) StateMachineTrigger(serviceID, trigger string) (StateMachineTri
 	action, ok := a.stateMachineTriggers[serviceID+"/"+trigger]
 	a.mu.Unlock()
 	return action, ok
+}
+
+// RegisteredStateMachineTriggers returns every trigger name attached
+// against serviceID so far - see giststatemachine.Service.Graph, which
+// sends this list to gist-server so it can mark any configured trigger
+// NOT in it as unimplemented in the returned graph. gist-server has no
+// way to know this on its own, since Attach runs entirely here, in the
+// customer's own process.
+func (a *Server) RegisteredStateMachineTriggers(serviceID string) []string {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	prefix := serviceID + "/"
+	var out []string
+	for key := range a.stateMachineTriggers {
+		if trigger, ok := strings.CutPrefix(key, prefix); ok {
+			out = append(out, trigger)
+		}
+	}
+	return out
 }
 
 type authSubjectKey struct{}
