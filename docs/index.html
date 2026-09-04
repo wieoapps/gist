@@ -339,6 +339,7 @@ var CreateOrder = gistapiserver.EndpointHandler("create-order",
 
 gistapiserver.Attach("orders-api", CreateOrder)</pre>
     <p class="selfdocs-note">Rename a field or add <code>required:"true"</code>, and both the validation and the docs change together — they were never two things to begin with.</p>
+    <p class="selfdocs-note">Under the hood, <code>CreateOrder</code> is a remote procedure call disguised as an ordinary Go function — you never wrote any RPC code, gist did.</p>
 
     <p class="how-caption">Built-in mocking means the contract can exist before the implementation does:</p>
     <ul class="how-benefits">
@@ -465,9 +466,11 @@ gistapiserver.Attach("orders-api", CreateOrder)</pre>
 
   <section class="gist wrap">
     <h2>The gist.</h2>
+    <p class="callout">An application operating system for Go services.</p>
     <ul class="gist-list">
       <li><span class="mark">—</span> One binary, fourteen services</li>
-      <li><span class="mark">—</span> Real fixtures — actual containers, not mocks</li>
+      <li><span class="mark">—</span> Real fixtures — actual containers. Your code can't tell them from production</li>
+      <li><span class="mark">—</span> Idiomatic Go in, idiomatic Go out — no protobuf, no gRPC to write</li>
       <li><span class="mark">—</span> Offline license. No phone-home</li>
       <li><span class="mark">—</span> Extend it with your own services</li>
       <li><span class="mark">—</span> Config and docs generated from code</li>
