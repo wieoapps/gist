@@ -3,6 +3,8 @@ package giststatemachine
 import (
 	"context"
 	"errors"
+	"fmt"
+	"sync"
 	"testing"
 
 	"google.golang.org/grpc"
@@ -310,6 +312,28 @@ func TestStatable_EmbeddedInCustomerType_GetSetWorkWithoutHandWrittenMethods(t *
 	if got := s.GetState(); got != "draft" {
 		t.Errorf("GetState() after SetState(\"draft\") = %q, want \"draft\"", got)
 	}
+}
+
+// TestStatable_ConcurrentGetSet_NoRace proves GetState/SetState are safe
+// to call from multiple goroutines at once - e.g. an HTTP handler
+// reading current status while a background job transitions the same
+// object. Run with `go test -race`: before Statable's mutex was added,
+// this reliably tripped the race detector.
+func TestStatable_ConcurrentGetSet_NoRace(t *testing.T) {
+	var s Statable
+	var wg sync.WaitGroup
+	for i := 0; i < 50; i++ {
+		wg.Add(2)
+		go func(i int) {
+			defer wg.Done()
+			s.SetState(fmt.Sprintf("state-%d", i))
+		}(i)
+		go func() {
+			defer wg.Done()
+			_ = s.GetState()
+		}()
+	}
+	wg.Wait()
 }
 
 func TestGraph_SendsServiceID_ReturnsDot(t *testing.T) {

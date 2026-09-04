@@ -48,6 +48,7 @@ package giststatemachine
 import (
 	"context"
 	"fmt"
+	"sync"
 
 	"github.com/wieoapps/gist"
 	"github.com/wieoapps/gist/internal/rpcconn"
@@ -69,13 +70,28 @@ type Statabler interface {
 //	}
 //
 // The same "nest it and it's just there" ergonomics as the original
-// monolith's own Statable.
+// monolith's own Statable - including its RWMutex-guarded GetState/
+// SetState: a customer's own object can outlive a single Transition
+// call and be read from other goroutines while one is in flight (e.g.
+// an HTTP handler reading current status while a background job
+// transitions the same object), so concurrent access has to be safe by
+// construction, not just usually fine in practice.
 type Statable struct {
+	mu    sync.RWMutex
 	state string
 }
 
-func (s *Statable) GetState() string      { return s.state }
-func (s *Statable) SetState(state string) { s.state = state }
+func (s *Statable) GetState() string {
+	s.mu.RLock()
+	defer s.mu.RUnlock()
+	return s.state
+}
+
+func (s *Statable) SetState(state string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.state = state
+}
 
 // TransitionFn is a single OnEnter/OnAction/OnExit phase for a trigger -
 // receives the same servicesGroup every API endpoint handler does
