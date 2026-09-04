@@ -110,6 +110,9 @@
     margin:0 0 1.8rem; padding:2rem 1.5rem; border:1px solid var(--rule); border-radius:14px;
     background:var(--surface);
   }
+  .flow-pair{ display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; }
+  .flow-pair .flow-frame{ margin-bottom:0; padding:1.6rem 1rem; }
+  @media (max-width:560px){ .flow-pair{ grid-template-columns:1fr; } }
   .flow{ display:flex; flex-direction:column; align-items:center; }
   .flow-card{
     width:100%; max-width:19rem; border:1px solid var(--rule); border-radius:12px;
@@ -302,67 +305,6 @@
       <li><span class="mark">—</span> A crash in a database driver can't take your app down with it</li>
       <li><span class="mark">—</span> The gRPC boundary means the server side isn't locked to Go</li>
     </ul>
-
-    <p class="how-caption">Your app starts it once, as a child process:</p>
-    <div class="flow-frame">
-      <div class="flow">
-        <div class="flow-node">Your Go application</div>
-        <div class="flow-connector">
-          <span class="line"></span>
-          <span class="label">imports</span>
-          <span class="arrow"></span>
-        </div>
-        <div class="flow-node muted">github.com/wieoapps/gist</div>
-        <div class="flow-connector">
-          <span class="line"></span>
-          <span class="label">starts, as a subprocess</span>
-          <span class="arrow"></span>
-        </div>
-        <div class="flow-node accent">gist-server</div>
-        <div class="chips">
-          <span class="chip">api-server</span>
-          <span class="chip">mysql</span>
-          <span class="chip">postgres</span>
-          <span class="chip">elasticsearch</span>
-          <span class="chip">redis</span>
-          <span class="chip">pub-sub</span>
-          <span class="chip">rabbit-mq</span>
-          <span class="chip">http-client</span>
-          <span class="chip">http-server</span>
-          <span class="chip">auth</span>
-          <span class="chip">scheduler</span>
-          <span class="chip">state-machine</span>
-          <span class="chip">gcs</span>
-          <span class="chip">fixtures</span>
-          <span class="chip">load-balancer</span>
-        </div>
-      </div>
-    </div>
-
-    <p class="how-caption">Then every call is proxied straight through to the real thing:</p>
-    <div class="flow-frame">
-      <div class="flow">
-        <div class="flow-node">Your code</div>
-        <div class="flow-connector"><span class="line"></span><span class="arrow"></span></div>
-        <div class="flow-node muted">gist-elasticsearch-client</div>
-        <div class="flow-connector"><span class="line"></span><span class="arrow"></span></div>
-        <div class="flow-node muted">rpcconn</div>
-        <div class="flow-connector"><span class="line"></span><span class="arrow"></span></div>
-        <div class="flow-node accent">gRPC</div>
-        <div class="flow-connector"><span class="line"></span><span class="arrow"></span></div>
-        <div class="flow-node">gist-server</div>
-        <div class="flow-connector"><span class="line"></span><span class="arrow"></span></div>
-        <div class="flow-node">Elasticsearch</div>
-      </div>
-    </div>
-
-    <p class="how-caption">You only wire up what you use — one tagged struct field per service:</p>
-    <pre class="diagram">type Services struct {
-    DB            *mysql.Service         <span class="tag">`name:"database"`</span>
-    Elasticsearch *elasticsearch.Service <span class="tag">`name:"search"`</span>
-    Storage       *gcs.Service           <span class="tag">`name:"storage"`</span>
-    Logger        gist.Logger
-}</pre>
   </section>
 
   <section class="selfdocs wrap">
@@ -382,7 +324,7 @@ var CreateOrder = gistapiserver.EndpointHandler("create-order",
 )
 
 gistapiserver.Attach("orders-api", CreateOrder)</pre>
-    <p class="selfdocs-note"><code>CreateOrderInput</code> does two jobs from one definition: it's what decodes and validates the incoming request, and it's what the OpenAPI schema is reflected from. Rename a field or add <code>required:"true"</code> and both change together, because they were never two things to begin with.</p>
+    <p class="selfdocs-note">Rename a field or add <code>required:"true"</code>, and both the validation and the docs change together — they were never two things to begin with.</p>
 
     <p class="how-caption">Built-in mocking means the contract can exist before the implementation does:</p>
     <ul class="how-benefits">
@@ -390,7 +332,7 @@ gistapiserver.Attach("orders-api", CreateOrder)</pre>
       <li><span class="mark">—</span> Mock data set, real logic not wired up: docs show 🐦 Mockable</li>
       <li><span class="mark">—</span> Add <code>?mock=true</code> to any mockable endpoint to get that response, no backend required</li>
     </ul>
-    <p class="selfdocs-note">That's the point: design the whole contract first — endpoints, types, examples — and hand it to whoever's building the frontend immediately. The real business logic gets wired in whenever it's ready, one <code>EndpointHandler</code> at a time, without the docs ever drifting from what's actually there.</p>
+    <p class="selfdocs-note">Design the contract first, hand it to the frontend, wire in real logic whenever it's ready — the docs never drift, because there was never anywhere else for them to live.</p>
   </section>
 
   <section class="example wrap">
@@ -439,27 +381,25 @@ gistapiserver.Attach("orders-api", CreateOrder)</pre>
       </div>
     </div>
 
-    <p class="how-caption">Every night, unrelated to any request:</p>
-    <div class="flow-frame">
-      <div class="flow">
-        <div class="flow-node muted">03:00</div>
-        <div class="flow-connector"><span class="line"></span><span class="arrow"></span></div>
-        <div class="flow-node">scheduler</div>
-        <div class="flow-connector"><span class="line"></span><span class="arrow"></span></div>
-        <div class="flow-node accent">Go reconciliation function</div>
-        <div class="flow-connector"><span class="line"></span><span class="arrow"></span></div>
-        <div class="flow-node muted">gist-mysql-client</div>
+    <p class="how-caption">Two more ways the same order gets touched, same shape either way:</p>
+    <div class="flow-pair">
+      <div class="flow-frame">
+        <div class="flow">
+          <div class="flow-node muted">03:00, every night</div>
+          <div class="flow-connector"><span class="line"></span><span class="arrow"></span></div>
+          <div class="flow-node">scheduler</div>
+          <div class="flow-connector"><span class="line"></span><span class="arrow"></span></div>
+          <div class="flow-node accent">Go reconciliation func</div>
+        </div>
       </div>
-    </div>
-
-    <p class="how-caption">And when another service publishes that the order shipped:</p>
-    <div class="flow-frame">
-      <div class="flow">
-        <div class="flow-node muted">RabbitMQ</div>
-        <div class="flow-connector"><span class="line"></span><span class="arrow"></span></div>
-        <div class="flow-node">gist-server</div>
-        <div class="flow-connector"><span class="line"></span><span class="arrow"></span></div>
-        <div class="flow-node accent">Go event handler</div>
+      <div class="flow-frame">
+        <div class="flow">
+          <div class="flow-node muted">order shipped</div>
+          <div class="flow-connector"><span class="line"></span><span class="arrow"></span></div>
+          <div class="flow-node">RabbitMQ &rarr; gist-server</div>
+          <div class="flow-connector"><span class="line"></span><span class="arrow"></span></div>
+          <div class="flow-node accent">Go event handler</div>
+        </div>
       </div>
     </div>
   </section>
@@ -505,9 +445,8 @@ gistapiserver.Attach("orders-api", CreateOrder)</pre>
         </tbody>
       </table>
     </div>
-    <p class="perf-note">Per-query cost, single-row MySQL point lookups (<code>SELECT ... WHERE id = ?</code>), one run per row. The overhead stays flat — a fixed per-call cost, not something that compounds with volume — and there's no network involved either way: gist-server runs on the same machine, so this is one local unix-socket round trip, not a remote call.</p>
-    <p class="perf-note">The last row is under concurrent load instead of one query at a time: 10 goroutines calling in parallel, 1,000 queries each. Both columns drop because most of a query's cost is time spent waiting on the database over the network, not doing work — run enough of them at once and that waiting overlaps instead of stacking up serially. Gist's extra hop is mostly waiting too, so it overlaps the same way, which is why the gap between the two columns compresses under load rather than growing.</p>
-    <p class="perf-note">Run on an Apple M4 Pro (arm64), Go 1.27, MySQL 9.7.2 in a local Docker container — a development laptop, not a dedicated benchmarking rig, but the same machine and setup for every row above.</p>
+    <p class="perf-note">Per-query cost, single-row MySQL point lookups. The overhead is a flat per-call cost — it doesn't compound with volume, and there's no network involved either way: gist-server runs on the same machine, so this is a local unix-socket round trip, not a remote call. The last row swaps one query at a time for 10 concurrent callers, which is why both columns drop together — most of a query's cost is time spent waiting on the database, and concurrent callers overlap that wait instead of stacking it up.</p>
+    <p class="perf-note">Measured on an Apple M4 Pro, Go 1.27, MySQL 9.7.2 in a local Docker container — a development laptop, not a dedicated rig, but the same one for every row above.</p>
   </section>
 
   <section class="gist wrap">
