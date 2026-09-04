@@ -404,7 +404,7 @@
 <div class="layout">
   <nav class="sidebar" aria-label="Service sections">
     <div class="brand">
-      <span class="brand-kicker">gist-server <!-- GENERATED:VERSION:BEGIN -->v1.0.2<!-- GENERATED:VERSION:END --></span>
+      <span class="brand-kicker">gist-server <!-- GENERATED:VERSION:BEGIN -->latest<!-- GENERATED:VERSION:END --></span>
       <h1>Documentation</h1>
     </div>
     <div class="sidebar-actions">
@@ -2888,6 +2888,7 @@ func AttachEndpointHandlers() gist.Option {
                   <tr><td><code>transitions-file</code></td><td>string</td><td>Path to the transitions JSON file, loaded into <code>Transitions</code>.</td></tr>
                   <tr><td><code>delayed-start</code></td><td>int | string</td><td>Seconds (or duration string) to wait/delay before starting this instance.</td></tr>
                   <tr><td><code>wait-for</code></td><td>[]string</td><td>IDs of other services this instance must wait to become ready before starting.</td></tr>
+                  <tr><td><code>swimlane-color</code></td><td>string</td><td>Hex color (<code>#rrggbb</code>) for this instance's swimlane in RenderMultiLaneSVG's diagram. Optional - leave empty if you don't render this machine that way.</td></tr>
                   </tbody>
                 </table>
                 </div>
@@ -2900,7 +2901,8 @@ func AttachEndpointHandlers() gist.Option {
     "initial-state": "pending",
     "transitions-file": "./config/order-transitions.json",
     "delayed-start": "5s",
-    "wait-for": ["orders-db"]
+    "wait-for": ["orders-db"],
+    "swimlane-color": "#3cb44b"
   }
 ]</code></pre>
                 </div>
