@@ -404,7 +404,7 @@
 <div class="layout">
   <nav class="sidebar" aria-label="Service sections">
     <div class="brand">
-      <span class="brand-kicker">gist-server <!-- GENERATED:VERSION:BEGIN -->latest<!-- GENERATED:VERSION:END --></span>
+      <span class="brand-kicker">gist-server <!-- GENERATED:VERSION:BEGIN -->v1.0.1<!-- GENERATED:VERSION:END --></span>
       <h1>Documentation</h1>
     </div>
     <div class="sidebar-actions">
@@ -466,7 +466,8 @@
 <li><a href="#s12"><span><span class="toc-num">12</span> gist-state-machine</span></a></li>
 <li><a href="#s13"><span><span class="toc-num">13</span> gist-redis-client</span></a></li>
 <li><a href="#s14"><span><span class="toc-num">14</span> gist-pub-sub-client</span></a></li>
-<li><a href="#s15"><span><span class="toc-num">15</span> gist-rabbit-mq-client</span></a></li>      </ol>
+<li><a href="#s15"><span><span class="toc-num">15</span> gist-rabbit-mq-client</span></a></li>
+<li><a href="#s16"><span><span class="toc-num">16</span> gist-reverse-proxy</span></a></li>      </ol>
     </div>
     <button class="theme-toggle" id="theme-toggle" type="button" aria-pressed="false" title="Light theme">
       <svg id="theme-toggle-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg>
@@ -546,6 +547,9 @@
                 <!-- GENERATED:gist-rabbit-mq-client:SURFACE:BEGIN -->
           <tr><td>15</td><td><a href="#s15">gist-rabbit-mq-client</a></td><td><span class="badge badge-api">API</span></td></tr>
                 <!-- GENERATED:gist-rabbit-mq-client:SURFACE:END -->
+                <!-- GENERATED:gist-reverse-proxy:SURFACE:BEGIN -->
+          <tr><td>16</td><td><a href="#s16">gist-reverse-proxy</a></td><td><span class="badge badge-config">Config only</span></td></tr>
+                <!-- GENERATED:gist-reverse-proxy:SURFACE:END -->
         </tbody>
       </table>
       <p class="muted">
@@ -644,7 +648,7 @@ gist-server -generate-config all -out config.json</code></pre>
           <table class="overview-table">
             <thead><tr><th>Flag</th><th>Description</th></tr></thead>
             <tbody>
-              <tr><td><code>-generate-config &lt;kinds&gt;</code></td><td>Comma-separated service kinds, or <code>all</code>. Valid kinds (every service in this doc except <code>gist-custom</code>, which has no fixed schema to scaffold): <code>gist-api-server</code>, <code>gist-auth</code>, <code>gist-elasticsearch-client</code>, <code>gist-fixtures</code>, <code>gist-google-cloud-storage-client</code>, <code>gist-http-client</code>, <code>gist-http-server</code>, <code>gist-mysql-client</code>, <code>gist-postgres-client</code>, <code>gist-pub-sub-client</code>, <code>gist-rabbit-mq-client</code>, <code>gist-redis-client</code>, <code>gist-scheduler</code>, <code>gist-state-machine</code>.</td></tr>
+              <tr><td><code>-generate-config &lt;kinds&gt;</code></td><td>Comma-separated service kinds, or <code>all</code>. Valid kinds (every service in this doc except <code>gist-custom</code>, which has no fixed schema to scaffold): <code>gist-api-server</code>, <code>gist-auth</code>, <code>gist-elasticsearch-client</code>, <code>gist-fixtures</code>, <code>gist-google-cloud-storage-client</code>, <code>gist-http-client</code>, <code>gist-http-server</code>, <code>gist-mysql-client</code>, <code>gist-postgres-client</code>, <code>gist-pub-sub-client</code>, <code>gist-rabbit-mq-client</code>, <code>gist-redis-client</code>, <code>gist-reverse-proxy</code>, <code>gist-scheduler</code>, <code>gist-state-machine</code>.</td></tr>
               <tr><td><code>-out &lt;path&gt;</code></td><td>Output path. Default <code>config.json</code>.</td></tr>
             </tbody>
           </table>
@@ -3132,6 +3136,137 @@ func AttachEndpointHandlers() gist.Option {
               </div>
           </div>
                 <!-- GENERATED:gist-rabbit-mq-client:END -->
+        </div>
+      </details>
+    </section>
+    <!-- ============ 16. gist-reverse-proxy ============ -->
+    <section class="doc-section" id="s16">
+      <details open>
+        <summary><span class="toc-num">16</span><h2>gist-reverse-proxy</h2></summary>
+        <div class="section-body">
+                <!-- GENERATED:gist-reverse-proxy:INTRO:BEGIN -->
+          <p>Reverse proxy in front of a fixed backend pool, terminating real TLS - the one thing gist-api-server's own listener deliberately never does (see its own docs: <code>protocol</code>/TLS has no config field there, front it with a reverse proxy instead). This is that reverse proxy, built in rather than an external process: round-robin, health-checked backends per <code>sites</code> entry, with automatic certificate issuance/renewal via <code>acme</code>.</p>
+          <p><code>acme.ca</code> picks the certificate source: <code>local</code> generates an in-process self-signed certificate (no network, no external server - for local development), <code>staging</code>/<code>production</code> obtain a real Let's Encrypt certificate, and a literal ACME directory URL points at any other ACME-compatible CA (e.g. a local Pebble/step-ca test server). One instance can front several domains at once via multiple <code>sites</code> entries, each dispatched by SNI/Host header off the same shared listeners.</p>
+                <!-- GENERATED:gist-reverse-proxy:INTRO:END -->
+                <!-- GENERATED:gist-reverse-proxy:BEGIN -->
+          <div class="cfgref">
+              <div class="cfgref-tabs">
+                <button type="button" class="cfgref-tab is-active" data-mode="minimal">Minimal</button>
+                <button type="button" class="cfgref-tab" data-mode="full">Full</button>
+              </div>
+              <div class="cfgref-pane" data-mode="minimal">
+                <div class="table-scroll">
+                <table class="overview-table">
+                  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                  <tbody>
+                  <tr><td><code>id</code></td><td>string</td><td>Unique instance ID for this reverse proxy.</td></tr>
+                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely (no listeners started).</td></tr>
+                  <tr><td><code>https-port</code></td><td>int</td><td>Bind port for the TLS listener; defaults to <code>443</code>.</td></tr>
+                  <tr><td><code>sites</code></td><td><a href="#s16-site">[]Site</a></td><td>Virtual hosts served by this instance's shared listeners - each is a domain set and the backend pool it proxies to, dispatched by SNI/Host header. One instance covers every domain fronted from one IP; a second domain set needing a different IP needs a separate instance with its own <code>hostname</code>.</td></tr>
+                  <tr><td><code>acme</code></td><td><a href="#s16-acmeconfig">ACMEConfig</a></td><td>Certificate-issuance settings.</td></tr>
+                  </tbody>
+                </table>
+                </div>
+                <div class="code-block">
+                <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
+                <pre><code class="language-json">"gist-reverse-proxy": [
+  {
+    "id": "public-edge",
+    "enabled": true,
+    "https-port": 443,
+    "sites": [
+      {
+        "domains": ["api.orderflow.example"],
+        "backends": ["127.0.0.1:8080"],
+        "health-check-path": "/health"
+      }
+    ],
+    "acme": {
+      "ca": "production",
+      "email": "ops@orderflow.example",
+      "cert-storage-path": "./data/gist-reverse-proxy/public-edge",
+      "timeout": "60s"
+    }
+  }
+]</code></pre>
+                </div>
+              </div>
+              <div class="cfgref-pane" data-mode="full" hidden>
+                <div class="table-scroll">
+                <table class="overview-table">
+                  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                  <tbody>
+                  <tr><td><code>id</code></td><td>string</td><td>Unique instance ID for this reverse proxy.</td></tr>
+                  <tr><td><code>enabled</code></td><td>bool</td><td>If <code>false</code>, this entry is skipped entirely (no listeners started).</td></tr>
+                  <tr><td><code>delayed-start</code></td><td>int | string</td><td>Seconds (or duration string) to wait/delay before starting this instance.</td></tr>
+                  <tr><td><code>wait-for</code></td><td>[]string</td><td>IDs of other services this instance must wait to become ready before starting.</td></tr>
+                  <tr><td><code>name</code></td><td>string</td><td>Display label for this instance; not otherwise used at runtime.</td></tr>
+                  <tr><td><code>hostname</code></td><td>string</td><td>Bind address for both listeners below; defaults to <code>0.0.0.0</code>.</td></tr>
+                  <tr><td><code>https-port</code></td><td>int</td><td>Bind port for the TLS listener; defaults to <code>443</code>.</td></tr>
+                  <tr><td><code>http-port</code></td><td>int</td><td>Bind port for the plain-HTTP listener - serves ACME HTTP-01 challenges and, unless <code>disable-http-redirect</code> is set, redirects everything else to HTTPS. Defaults to <code>80</code>. Ignored entirely if <code>disable-http-listener</code> is set.</td></tr>
+                  <tr><td><code>disable-http-listener</code></td><td>bool</td><td>If <code>true</code>, no plain-HTTP listener is started at all - only the TLS listener on <code>https-port</code>. Note this also disables ACME's HTTP-01 challenge, so <code>acme.ca</code> must be able to complete a TLS-ALPN-01 challenge instead (or use <code>local</code>).</td></tr>
+                  <tr><td><code>disable-http-redirect</code></td><td>bool</td><td>If <code>true</code>, non-challenge requests on <code>http-port</code> are proxied in the clear instead of getting a 301 to the HTTPS URL. Defaults to <code>false</code> (redirect).</td></tr>
+                  <tr><td><code>sites</code></td><td><a href="#s16-site">[]Site</a></td><td>Virtual hosts served by this instance's shared listeners - each is a domain set and the backend pool it proxies to, dispatched by SNI/Host header. One instance covers every domain fronted from one IP; a second domain set needing a different IP needs a separate instance with its own <code>hostname</code>.</td></tr>
+                  <tr><td><code>acme</code></td><td><a href="#s16-acmeconfig">ACMEConfig</a></td><td>Certificate-issuance settings.</td></tr>
+                  </tbody>
+                </table>
+                </div>
+                <div class="code-block">
+                <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
+                <pre><code class="language-json">"gist-reverse-proxy": [
+  {
+    "id": "public-edge",
+    "enabled": true,
+    "delayed-start": "5s",
+    "wait-for": [],
+    "name": "Public edge proxy",
+    "hostname": "0.0.0.0",
+    "https-port": 443,
+    "http-port": 80,
+    "disable-http-listener": false,
+    "disable-http-redirect": false,
+    "sites": [
+      {
+        "domains": ["api.orderflow.example"],
+        "backends": ["127.0.0.1:8080"],
+        "health-check-path": "/health"
+      }
+    ],
+    "acme": {
+      "ca": "production",
+      "email": "ops@orderflow.example",
+      "cert-storage-path": "./data/gist-reverse-proxy/public-edge",
+      "timeout": "60s"
+    }
+  }
+]</code></pre>
+                </div>
+                <h4 id="s16-site">sites[] (Site)</h4>
+                <div class="table-scroll">
+                <table class="overview-table">
+                  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                  <tbody>
+                  <tr><td><code>domains</code></td><td>[]string</td><td>Domain names this site serves, as TLS SANs on one certificate. Each needs a public DNS A/AAAA record pointed at this host before ACME issuance can succeed - see <code>acme.ca</code> for testing this without a real domain.</td></tr>
+                  <tr><td><code>backends</code></td><td>[]string</td><td>Backend addresses this site's traffic is proxied to on a round-robin basis (e.g. a gist-api-server instance's own plain-HTTP listener). Every backend starts optimistically healthy; <code>health-check-path</code> then keeps that judgment current.</td></tr>
+                  <tr><td><code>health-check-path</code></td><td>string</td><td>Path polled (HTTP HEAD) on every one of this site's backends to mark it up/down. Leave empty to skip health checking entirely - every backend then stays optimistically healthy.</td></tr>
+                  </tbody>
+                </table>
+                </div>
+                <h4 id="s16-acmeconfig">acme (ACMEConfig)</h4>
+                <div class="table-scroll">
+                <table class="overview-table">
+                  <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+                  <tbody>
+                  <tr><td><code>ca</code></td><td>string</td><td><code>local</code> (in-process self-signed certificate, no network, no external server - for local development), <code>staging</code> (Let's Encrypt staging: a real ACME flow, untrusted certs, high rate limit - for exercising the pipeline before switching to production), <code>production</code> (real Let's Encrypt, trusted certs, rate-limited), or a literal ACME directory URL (e.g. a local Pebble/step-ca test server).</td></tr>
+                  <tr><td><code>email</code></td><td>string</td><td>Contact email registered with the ACME account; the CA uses it for expiry/problem notifications. Required unless <code>ca</code> is <code>local</code>.</td></tr>
+                  <tr><td><code>cert-storage-path</code></td><td>string</td><td>Directory issued certificates (and, for ACME, the account key) persist under, so a restart reuses them instead of re-requesting - Let's Encrypt production allows only 50 certificates per registered domain per week. Defaults to <code>./data/gist-reverse-proxy/&lt;id&gt;</code>.</td></tr>
+                  <tr><td><code>timeout</code></td><td>int | string</td><td>Max seconds (or duration string) Start waits for certificate issuance/renewal to complete before failing startup outright, rather than hanging indefinitely on a stuck ACME handshake. Defaults to <code>60s</code>.</td></tr>
+                  </tbody>
+                </table>
+                </div>
+              </div>
+          </div>
+                <!-- GENERATED:gist-reverse-proxy:END -->
         </div>
       </details>
     </section>
