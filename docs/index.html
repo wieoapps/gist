@@ -104,6 +104,11 @@
     font-family:"JetBrains Mono",monospace; font-size:.82rem; line-height:1.65; color:var(--ink-soft);
   }
   .diagram .tag{ color:var(--accent-strong); }
+  .callout{
+    margin:0 0 1.8rem; padding:1rem 1.4rem; border-left:3px solid var(--accent);
+    background:var(--surface); border-radius:0 8px 8px 0;
+    font-size:1.05rem; font-weight:600; font-style:italic; color:var(--ink); line-height:1.5;
+  }
 
   /* ---------- flow diagrams (rendered, not ASCII) ---------- */
   .flow-frame{
@@ -270,16 +275,17 @@
 
   <section class="how wrap">
     <h2>How it works.</h2>
-    <p class="how-intro"><strong>Gist owns the infrastructure mechanism. Your Go code owns the work.</strong> Your app deals in typed Go objects and callbacks — business logic, handlers, state. Everything ugly about talking to a database, a queue, or a bucket lives one process away, in <code>gist-server</code>.</p>
+    <p class="how-intro">Application developers write business logic. <strong>Gist takes responsibility for everything that's repetitive infrastructure.</strong></p>
 
     <div class="flow-frame">
       <div class="flow">
         <div class="flow-card">
-          <h4>Your Go code</h4>
+          <h4>Your Go code — owns</h4>
           <ul>
             <li>Business logic</li>
+            <li>Domain objects</li>
             <li>API handlers</li>
-            <li>State callbacks</li>
+            <li>State-machine actions</li>
             <li>Custom services</li>
           </ul>
         </div>
@@ -289,18 +295,21 @@
           <span class="arrow"></span>
         </div>
         <div class="flow-card accent">
-          <h4>gist-server</h4>
+          <h4>gist-server — owns</h4>
           <ul>
             <li>HTTP/API</li>
             <li>MySQL &middot; PostgreSQL</li>
-            <li>Elasticsearch &middot; GCS</li>
-            <li>RabbitMQ</li>
-            <li>State machines</li>
-            <li>Scheduling &middot; Logging</li>
+            <li>Elasticsearch &middot; GCS &middot; RabbitMQ</li>
+            <li>State-machine graph &middot; scheduling</li>
+            <li>Logging &middot; infrastructure lifecycle</li>
           </ul>
         </div>
       </div>
     </div>
+
+    <p class="callout">The application does not need to know how infrastructure is connected.</p>
+
+    <p class="how-intro"><strong>Gist-server owns infrastructure mechanics; Go owns application semantics.</strong> Your app deals in typed Go objects and callbacks — business logic, handlers, state. Everything ugly about talking to a database, a queue, or a bucket lives one process away, in <code>gist-server</code>.</p>
 
     <p class="how-intro">That split buys real advantages, not just tidiness:</p>
     <ul class="how-benefits">
