@@ -16,6 +16,10 @@ type fakeStateMachineClient struct {
 	req  *proto.TransitionRequest
 	resp *proto.TransitionResponse
 	err  error
+
+	graphReq  *proto.GraphRequest
+	graphResp *proto.GraphResponse
+	graphErr  error
 }
 
 func (f *fakeStateMachineClient) Transition(_ context.Context, in *proto.TransitionRequest, _ ...grpc.CallOption) (*proto.TransitionResponse, error) {
@@ -27,6 +31,17 @@ func (f *fakeStateMachineClient) Transition(_ context.Context, in *proto.Transit
 		return f.resp, nil
 	}
 	return &proto.TransitionResponse{NewState: "done"}, nil
+}
+
+func (f *fakeStateMachineClient) Graph(_ context.Context, in *proto.GraphRequest, _ ...grpc.CallOption) (*proto.GraphResponse, error) {
+	f.graphReq = in
+	if f.graphErr != nil {
+		return nil, f.graphErr
+	}
+	if f.graphResp != nil {
+		return f.graphResp, nil
+	}
+	return &proto.GraphResponse{Dot: "digraph {}"}, nil
 }
 
 type testStatable struct {
@@ -294,5 +309,39 @@ func TestStatable_EmbeddedInCustomerType_GetSetWorkWithoutHandWrittenMethods(t *
 	s.SetState("draft")
 	if got := s.GetState(); got != "draft" {
 		t.Errorf("GetState() after SetState(\"draft\") = %q, want \"draft\"", got)
+	}
+}
+
+func TestGraph_SendsServiceID_ReturnsDot(t *testing.T) {
+	fake := &fakeStateMachineClient{graphResp: &proto.GraphResponse{Dot: "digraph { draft -> submitted }"}}
+	svc := newTestService(t, fake)
+
+	dot, err := svc.Graph(context.Background())
+	if err != nil {
+		t.Fatalf("Graph failed: %v", err)
+	}
+	if fake.graphReq.GetServiceId() != "svc-1" {
+		t.Fatalf("unexpected request: %+v", fake.graphReq)
+	}
+	if dot != "digraph { draft -> submitted }" {
+		t.Fatalf("unexpected dot output: %q", dot)
+	}
+}
+
+func TestGraph_TransportError_Propagates(t *testing.T) {
+	fake := &fakeStateMachineClient{graphErr: context.DeadlineExceeded}
+	svc := newTestService(t, fake)
+
+	if _, err := svc.Graph(context.Background()); err == nil {
+		t.Fatal("expected the transport error to propagate")
+	}
+}
+
+func TestGraph_ServerErrorCode_SurfacesAsError(t *testing.T) {
+	fake := &fakeStateMachineClient{graphResp: &proto.GraphResponse{ErrorCode: "invalid_argument", ErrorMessage: "unknown service svc-1"}}
+	svc := newTestService(t, fake)
+
+	if _, err := svc.Graph(context.Background()); err == nil {
+		t.Fatal("expected an error when the response carries an ErrorCode")
 	}
 }

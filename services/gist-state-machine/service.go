@@ -234,3 +234,20 @@ func Transition[M Statabler](ctx context.Context, svc *Service, trigger string, 
 	}
 	return nil
 }
+
+// Graph returns the DOT-format representation of svc's configured
+// transition graph (https://graphviz.org/doc/info/lang.html) - render
+// it with any Graphviz front-end (e.g. `dot -Tpng graph.dot -o
+// graph.png`) to visualize it. Purely structural: gist-server holds no
+// live object, so this reflects the graph itself, seeded with its own
+// configured initial state - not any particular object's current state.
+func (svc *Service) Graph(ctx context.Context) (string, error) {
+	resp, err := rpcconn.MustFor(svc.server).StateMachine.Graph(ctx, &proto.GraphRequest{ServiceId: svc.serviceID})
+	if err != nil {
+		return "", fmt.Errorf("gist-state-machine: graph: %w", err)
+	}
+	if resp.GetErrorCode() != "" {
+		return "", fmt.Errorf("gist-state-machine: graph: %s: %s", resp.GetErrorCode(), resp.GetErrorMessage())
+	}
+	return resp.GetDot(), nil
+}

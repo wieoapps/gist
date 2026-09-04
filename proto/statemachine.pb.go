@@ -152,6 +152,117 @@ func (x *TransitionResponse) GetErrorMessage() string {
 	return ""
 }
 
+// GraphRequest asks for the DOT-format representation of service_id's
+// configured transition graph (see qmuntal/stateless's own ToGraph) -
+// purely structural, seeded with that service's own configured initial
+// state. It does not reflect any particular object's current state,
+// since gist-server holds none (see statemachine.proto's own top-level
+// doc comment on why: the caller always owns and sends its current
+// state).
+type GraphRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ServiceId     string                 `protobuf:"bytes,1,opt,name=service_id,json=serviceId,proto3" json:"service_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GraphRequest) Reset() {
+	*x = GraphRequest{}
+	mi := &file_proto_statemachine_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GraphRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GraphRequest) ProtoMessage() {}
+
+func (x *GraphRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_statemachine_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GraphRequest.ProtoReflect.Descriptor instead.
+func (*GraphRequest) Descriptor() ([]byte, []int) {
+	return file_proto_statemachine_proto_rawDescGZIP(), []int{2}
+}
+
+func (x *GraphRequest) GetServiceId() string {
+	if x != nil {
+		return x.ServiceId
+	}
+	return ""
+}
+
+type GraphResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Dot           string                 `protobuf:"bytes,1,opt,name=dot,proto3" json:"dot,omitempty"`
+	ErrorCode     string                 `protobuf:"bytes,2,opt,name=error_code,json=errorCode,proto3" json:"error_code,omitempty"`
+	ErrorMessage  string                 `protobuf:"bytes,3,opt,name=error_message,json=errorMessage,proto3" json:"error_message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GraphResponse) Reset() {
+	*x = GraphResponse{}
+	mi := &file_proto_statemachine_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GraphResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GraphResponse) ProtoMessage() {}
+
+func (x *GraphResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_statemachine_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GraphResponse.ProtoReflect.Descriptor instead.
+func (*GraphResponse) Descriptor() ([]byte, []int) {
+	return file_proto_statemachine_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *GraphResponse) GetDot() string {
+	if x != nil {
+		return x.Dot
+	}
+	return ""
+}
+
+func (x *GraphResponse) GetErrorCode() string {
+	if x != nil {
+		return x.ErrorCode
+	}
+	return ""
+}
+
+func (x *GraphResponse) GetErrorMessage() string {
+	if x != nil {
+		return x.ErrorMessage
+	}
+	return ""
+}
+
 var File_proto_statemachine_proto protoreflect.FileDescriptor
 
 const file_proto_statemachine_proto_rawDesc = "" +
@@ -166,10 +277,19 @@ const file_proto_statemachine_proto_rawDesc = "" +
 	"\tnew_state\x18\x01 \x01(\tR\bnewState\x12\x1d\n" +
 	"\n" +
 	"error_code\x18\x02 \x01(\tR\terrorCode\x12#\n" +
-	"\rerror_message\x18\x03 \x01(\tR\ferrorMessage2V\n" +
+	"\rerror_message\x18\x03 \x01(\tR\ferrorMessage\"-\n" +
+	"\fGraphRequest\x12\x1d\n" +
+	"\n" +
+	"service_id\x18\x01 \x01(\tR\tserviceId\"e\n" +
+	"\rGraphResponse\x12\x10\n" +
+	"\x03dot\x18\x01 \x01(\tR\x03dot\x12\x1d\n" +
+	"\n" +
+	"error_code\x18\x02 \x01(\tR\terrorCode\x12#\n" +
+	"\rerror_message\x18\x03 \x01(\tR\ferrorMessage2\x88\x01\n" +
 	"\x13StateMachineService\x12?\n" +
 	"\n" +
-	"Transition\x12\x17.gist.TransitionRequest\x1a\x18.gist.TransitionResponseB&Z$github.com/wieoapps/gist/proto;protob\x06proto3"
+	"Transition\x12\x17.gist.TransitionRequest\x1a\x18.gist.TransitionResponse\x120\n" +
+	"\x05Graph\x12\x12.gist.GraphRequest\x1a\x13.gist.GraphResponseB&Z$github.com/wieoapps/gist/proto;protob\x06proto3"
 
 var (
 	file_proto_statemachine_proto_rawDescOnce sync.Once
@@ -183,16 +303,20 @@ func file_proto_statemachine_proto_rawDescGZIP() []byte {
 	return file_proto_statemachine_proto_rawDescData
 }
 
-var file_proto_statemachine_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
+var file_proto_statemachine_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_proto_statemachine_proto_goTypes = []any{
 	(*TransitionRequest)(nil),  // 0: gist.TransitionRequest
 	(*TransitionResponse)(nil), // 1: gist.TransitionResponse
+	(*GraphRequest)(nil),       // 2: gist.GraphRequest
+	(*GraphResponse)(nil),      // 3: gist.GraphResponse
 }
 var file_proto_statemachine_proto_depIdxs = []int32{
 	0, // 0: gist.StateMachineService.Transition:input_type -> gist.TransitionRequest
-	1, // 1: gist.StateMachineService.Transition:output_type -> gist.TransitionResponse
-	1, // [1:2] is the sub-list for method output_type
-	0, // [0:1] is the sub-list for method input_type
+	2, // 1: gist.StateMachineService.Graph:input_type -> gist.GraphRequest
+	1, // 2: gist.StateMachineService.Transition:output_type -> gist.TransitionResponse
+	3, // 3: gist.StateMachineService.Graph:output_type -> gist.GraphResponse
+	2, // [2:4] is the sub-list for method output_type
+	0, // [0:2] is the sub-list for method input_type
 	0, // [0:0] is the sub-list for extension type_name
 	0, // [0:0] is the sub-list for extension extendee
 	0, // [0:0] is the sub-list for field type_name
@@ -209,7 +333,7 @@ func file_proto_statemachine_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_statemachine_proto_rawDesc), len(file_proto_statemachine_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   2,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   1,
 		},
