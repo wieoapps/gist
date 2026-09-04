@@ -337,7 +337,7 @@ func TestStatable_EmbeddedInCustomerType_GetSetWorkWithoutHandWrittenMethods(t *
 func TestStatable_ConcurrentGetSet_NoRace(t *testing.T) {
 	var s Statable
 	var wg sync.WaitGroup
-	for i := 0; i < 50; i++ {
+	for i := range 50 {
 		wg.Add(2)
 		go func(i int) {
 			defer wg.Done()
