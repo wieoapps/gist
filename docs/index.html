@@ -1,4 +1,6 @@
+<!DOCTYPE html>
 <title>Gist Server</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 <meta name="color-scheme" content="light">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -85,6 +87,7 @@
   .how{ padding:clamp(2.5rem,6vw,3.5rem) 0; border-top:1px solid var(--rule); }
   .how h2{ font-size:1.05rem; font-weight:700; font-family:"JetBrains Mono",monospace; color:var(--accent-strong); margin-bottom:1rem; }
   .how-intro{ font-size:1.02rem; line-height:1.6; color:var(--ink-soft); max-width:36rem; margin:1.6rem 0; }
+  .how-intro strong{ color:var(--ink); font-weight:700; }
   .how-caption{ font-size:.88rem; color:var(--ink-soft); margin:2.1rem 0 .7rem; }
   .how-benefits{
     list-style:none; margin:1.1rem 0 0; padding:0; columns:2; column-gap:2.2rem;
@@ -100,14 +103,90 @@
     background:var(--surface); overflow-x:auto;
     font-family:"JetBrains Mono",monospace; font-size:.82rem; line-height:1.65; color:var(--ink-soft);
   }
-  .diagram .hi{ color:var(--ink); font-weight:600; }
   .diagram .tag{ color:var(--accent-strong); }
+
+  /* ---------- flow diagrams (rendered, not ASCII) ---------- */
+  .flow-frame{
+    margin:0 0 1.8rem; padding:2rem 1.5rem; border:1px solid var(--rule); border-radius:14px;
+    background:var(--surface);
+  }
+  .flow{ display:flex; flex-direction:column; align-items:center; }
+  .flow-card{
+    width:100%; max-width:19rem; border:1px solid var(--rule); border-radius:12px;
+    background:var(--paper); padding:1.1rem 1.4rem; text-align:center;
+  }
+  .flow-card.accent{ border-color:var(--accent); }
+  .flow-card h4{
+    font-family:"JetBrains Mono",monospace; font-size:.95rem; font-weight:700;
+    color:var(--ink); margin-bottom:.7rem;
+  }
+  .flow-card.accent h4{ color:var(--accent-strong); }
+  .flow-card ul{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:.4rem; }
+  .flow-card li{ font-size:.86rem; color:var(--ink-soft); }
+  .flow-node{
+    font-family:"JetBrains Mono",monospace; font-size:.86rem; font-weight:600; color:var(--ink);
+    border:1px solid var(--rule); border-radius:999px; background:var(--paper);
+    padding:.55rem 1.2rem; text-align:center;
+  }
+  .flow-node.accent{ border-color:var(--accent); color:var(--accent-strong); }
+  .flow-node.muted{ font-weight:500; color:var(--ink-soft); }
+  .flow-connector{ display:flex; flex-direction:column; align-items:center; padding:.3rem 0; }
+  .flow-connector .line{ width:1px; height:1rem; background:var(--rule); }
+  .flow-connector .label{
+    font-family:"Public Sans",sans-serif; font-size:.76rem; color:var(--ink-soft);
+    padding:.2rem 0; white-space:nowrap;
+  }
+  .flow-connector .arrow{
+    width:0; height:0; border-left:4px solid transparent; border-right:4px solid transparent;
+    border-top:6px solid var(--rule);
+  }
+  .chips{ display:flex; flex-wrap:wrap; gap:.5rem; justify-content:center; margin-top:1.4rem; }
+  .chip{
+    font-family:"JetBrains Mono",monospace; font-size:.76rem; padding:.32rem .7rem; border-radius:999px;
+    background:var(--paper); border:1px solid var(--rule); color:var(--ink-soft);
+  }
+  .fanout-branches{
+    display:flex; flex-wrap:wrap; justify-content:center; gap:1.5rem 1.2rem;
+    width:100%; margin-top:1rem; padding-top:1.3rem; border-top:1px solid var(--rule);
+  }
+  .branch{ display:flex; flex-direction:column; align-items:center; flex:1 1 8rem; max-width:11rem; }
+  .branch .tick{ width:1px; height:.8rem; background:var(--rule); }
+  .branch .branch-label{
+    font-family:"Public Sans",sans-serif; font-size:.76rem; color:var(--ink-soft);
+    margin:.15rem 0 .5rem;
+  }
+
+  /* ---------- example ---------- */
+  .example{ padding:clamp(2.5rem,6vw,3.5rem) 0; border-top:1px solid var(--rule); }
+  .example h2{ font-size:1.05rem; font-weight:700; font-family:"JetBrains Mono",monospace; color:var(--accent-strong); margin-bottom:1rem; }
+  .example-intro{ font-size:1.02rem; line-height:1.6; color:var(--ink-soft); max-width:36rem; margin-bottom:1.6rem; }
 
   /* ---------- performance ---------- */
   .perf{ padding:clamp(2.5rem,6vw,3.5rem) 0; border-top:1px solid var(--rule); }
   .perf h2{ font-size:1.05rem; font-weight:700; font-family:"JetBrains Mono",monospace; color:var(--accent-strong); margin-bottom:1rem; }
   .perf-intro{ font-size:1.02rem; line-height:1.6; color:var(--ink-soft); max-width:36rem; margin-bottom:1.6rem; }
   .perf-note{ font-size:.88rem; color:var(--ink-soft); margin-top:1rem; max-width:36rem; }
+  .perf-table{
+    width:100%; border-collapse:collapse; font-size:.88rem;
+    border:1px solid var(--rule); border-radius:10px; overflow:hidden;
+  }
+  .perf-table th, .perf-table td{ padding:.75rem 1rem; text-align:right; border-bottom:1px solid var(--rule); }
+  .perf-table th:first-child, .perf-table td:first-child{ text-align:left; }
+  .perf-table thead th{
+    font-family:"JetBrains Mono",monospace; font-size:.72rem; letter-spacing:.04em; text-transform:uppercase;
+    color:var(--ink-soft); background:var(--surface); font-weight:600;
+  }
+  .perf-table tbody td{ font-family:"JetBrains Mono",monospace; color:var(--ink-soft); font-variant-numeric:tabular-nums; }
+  .perf-table tbody td:first-child{ font-family:"Public Sans",sans-serif; color:var(--ink); font-weight:600; }
+  .perf-table tbody tr:last-child td{ border-bottom:none; }
+  .perf-table .overhead{ color:var(--accent-strong); font-weight:700; }
+  .perf-table-wrap{ overflow-x:auto; margin-bottom:1.2rem; }
+
+  /* ---------- self-documenting api ---------- */
+  .selfdocs{ padding:clamp(2.5rem,6vw,3.5rem) 0; border-top:1px solid var(--rule); }
+  .selfdocs h2{ font-size:1.05rem; font-weight:700; font-family:"JetBrains Mono",monospace; color:var(--accent-strong); margin-bottom:1rem; }
+  .selfdocs-intro{ font-size:1.02rem; line-height:1.6; color:var(--ink-soft); max-width:36rem; margin-bottom:1.6rem; }
+  .selfdocs-note{ font-size:.88rem; color:var(--ink-soft); margin-top:1rem; max-width:36rem; }
 
   /* ---------- the gist ---------- */
   .gist{ padding:clamp(2.5rem,6vw,3.5rem) 0; border-top:1px solid var(--rule); }
@@ -183,34 +262,37 @@
 
   <section class="how wrap">
     <h2>How it works.</h2>
-    <p class="how-intro">Gist's whole model is to make infrastructure disappear from your application code. Your app deals in typed Go objects and callbacks — business logic, handlers, state. Everything ugly about talking to a database, a queue, or a bucket lives one process away, in <code>gist-server</code>.</p>
+    <p class="how-intro"><strong>Gist owns the infrastructure mechanism. Your Go code owns the work.</strong> Your app deals in typed Go objects and callbacks — business logic, handlers, state. Everything ugly about talking to a database, a queue, or a bucket lives one process away, in <code>gist-server</code>.</p>
 
-    <pre class="diagram">┌──────────────────────┐
-│ <span class="hi">Your Go code</span>         │
-│                      │
-│ Business logic       │
-│ API handlers         │
-│ State callbacks      │
-│ Custom services      │
-└──────────┬───────────┘
-            │
-      gistsdk API
-            │
-     local gRPC/IPC
-            │
-┌───────────▼──────────┐
-│ <span class="hi">gist-server</span>          │
-│                      │
-│ HTTP/API             │
-│ MySQL                │
-│ PostgreSQL           │
-│ Elasticsearch        │
-│ GCS                  │
-│ RabbitMQ             │
-│ State machines       │
-│ Scheduling           │
-│ Logging              │
-└──────────────────────┘</pre>
+    <div class="flow-frame">
+      <div class="flow">
+        <div class="flow-card">
+          <h4>Your Go code</h4>
+          <ul>
+            <li>Business logic</li>
+            <li>API handlers</li>
+            <li>State callbacks</li>
+            <li>Custom services</li>
+          </ul>
+        </div>
+        <div class="flow-connector">
+          <span class="line"></span>
+          <span class="label">gistsdk API, local gRPC/IPC</span>
+          <span class="arrow"></span>
+        </div>
+        <div class="flow-card accent">
+          <h4>gist-server</h4>
+          <ul>
+            <li>HTTP/API</li>
+            <li>MySQL &middot; PostgreSQL</li>
+            <li>Elasticsearch &middot; GCS</li>
+            <li>RabbitMQ</li>
+            <li>State machines</li>
+            <li>Scheduling &middot; Logging</li>
+          </ul>
+        </div>
+      </div>
+    </div>
 
     <p class="how-intro">That split buys real advantages, not just tidiness:</p>
     <ul class="how-benefits">
@@ -222,39 +304,57 @@
     </ul>
 
     <p class="how-caption">Your app starts it once, as a child process:</p>
-    <pre class="diagram"><span class="hi">          Your Go application</span>
-                    │
-                    │ imports
-                    ▼
-         github.com/wieoapps/gist
-                    │
-                    │ starts, as a subprocess
-                    ▼
-               <span class="hi">gist-server</span>
-                    │
-                    ▼
-   api-server, mysql, postgres, elasticsearch,
-   redis, pub-sub, rabbit-mq, http-client,
-   http-server, auth, scheduler, state-machine,
-   gcs, fixtures, load-balancer</pre>
+    <div class="flow-frame">
+      <div class="flow">
+        <div class="flow-node">Your Go application</div>
+        <div class="flow-connector">
+          <span class="line"></span>
+          <span class="label">imports</span>
+          <span class="arrow"></span>
+        </div>
+        <div class="flow-node muted">github.com/wieoapps/gist</div>
+        <div class="flow-connector">
+          <span class="line"></span>
+          <span class="label">starts, as a subprocess</span>
+          <span class="arrow"></span>
+        </div>
+        <div class="flow-node accent">gist-server</div>
+        <div class="chips">
+          <span class="chip">api-server</span>
+          <span class="chip">mysql</span>
+          <span class="chip">postgres</span>
+          <span class="chip">elasticsearch</span>
+          <span class="chip">redis</span>
+          <span class="chip">pub-sub</span>
+          <span class="chip">rabbit-mq</span>
+          <span class="chip">http-client</span>
+          <span class="chip">http-server</span>
+          <span class="chip">auth</span>
+          <span class="chip">scheduler</span>
+          <span class="chip">state-machine</span>
+          <span class="chip">gcs</span>
+          <span class="chip">fixtures</span>
+          <span class="chip">load-balancer</span>
+        </div>
+      </div>
+    </div>
 
     <p class="how-caption">Then every call is proxied straight through to the real thing:</p>
-    <pre class="diagram">        <span class="hi">Your code</span>
-            │
-            ▼
-gist-elasticsearch-client
-            │
-            ▼
-         rpcconn
-            │
-            ▼
-          <span class="tag">gRPC</span>
-            │
-            ▼
-       <span class="hi">gist-server</span>
-            │
-            ▼
-      <span class="hi">Elasticsearch</span></pre>
+    <div class="flow-frame">
+      <div class="flow">
+        <div class="flow-node">Your code</div>
+        <div class="flow-connector"><span class="line"></span><span class="arrow"></span></div>
+        <div class="flow-node muted">gist-elasticsearch-client</div>
+        <div class="flow-connector"><span class="line"></span><span class="arrow"></span></div>
+        <div class="flow-node muted">rpcconn</div>
+        <div class="flow-connector"><span class="line"></span><span class="arrow"></span></div>
+        <div class="flow-node accent">gRPC</div>
+        <div class="flow-connector"><span class="line"></span><span class="arrow"></span></div>
+        <div class="flow-node">gist-server</div>
+        <div class="flow-connector"><span class="line"></span><span class="arrow"></span></div>
+        <div class="flow-node">Elasticsearch</div>
+      </div>
+    </div>
 
     <p class="how-caption">You only wire up what you use — one tagged struct field per service:</p>
     <pre class="diagram">type Services struct {
@@ -265,14 +365,149 @@ gist-elasticsearch-client
 }</pre>
   </section>
 
+  <section class="selfdocs wrap">
+    <h2>API-first.</h2>
+    <p class="selfdocs-intro">OpenAPI docs are generated straight from the Go types your handler already uses for decoding and validation — the same struct does both jobs, so there's nothing separate to keep in sync. The Go type <em>is</em> part of the API contract.</p>
+    <pre class="diagram">type CreateOrderInput struct {
+    CustomerID int `json:"customer_id" required:"true" <span class="tag">example:"42"</span>`
+}
+
+var CreateOrder = gistapiserver.EndpointHandler("create-order",
+    []gistapiserver.ExpectedError{gistapiserver.Internal},
+    func(sg Services, ctx context.Context, in CreateOrderInput, out *CreateOrderOutput) error {
+        out.OrderID = sg.Orders.Create(ctx, in.CustomerID)
+        return nil
+    },
+    &amp;CreateOrderOutput{OrderID: "ord_9f2a"},
+)
+
+gistapiserver.Attach("orders-api", CreateOrder)</pre>
+    <p class="selfdocs-note"><code>CreateOrderInput</code> does two jobs from one definition: it's what decodes and validates the incoming request, and it's what the OpenAPI schema is reflected from. Rename a field or add <code>required:"true"</code> and both change together, because they were never two things to begin with.</p>
+
+    <p class="how-caption">Built-in mocking means the contract can exist before the implementation does:</p>
+    <ul class="how-benefits">
+      <li><span class="mark">—</span> No handler yet: docs show 🚧 Unimplemented, calling it returns a real 501</li>
+      <li><span class="mark">—</span> Mock data set, real logic not wired up: docs show 🐦 Mockable</li>
+      <li><span class="mark">—</span> Add <code>?mock=true</code> to any mockable endpoint to get that response, no backend required</li>
+    </ul>
+    <p class="selfdocs-note">That's the point: design the whole contract first — endpoints, types, examples — and hand it to whoever's building the frontend immediately. The real business logic gets wired in whenever it's ready, one <code>EndpointHandler</code> at a time, without the docs ever drifting from what's actually there.</p>
+  </section>
+
+  <section class="example wrap">
+    <h2>One example.</h2>
+    <p class="example-intro">Three ordinary things that happen to the same order, each triggered a different way — an HTTP request, a scheduled job, a queue message. All three land in your Go code; gist is just how they got there.</p>
+
+    <p class="how-caption">A customer places an order:</p>
+    <div class="flow-frame">
+      <div class="flow">
+        <div class="flow-node muted">POST /v1/orders</div>
+        <div class="flow-connector"><span class="line"></span><span class="arrow"></span></div>
+        <div class="flow-node">gist-api-server</div>
+        <div class="flow-connector">
+          <span class="line"></span>
+          <span class="label">validate, auth, route</span>
+          <span class="arrow"></span>
+        </div>
+        <div class="flow-node accent">Go CreateOrder handler</div>
+        <div class="fanout-branches">
+          <div class="branch">
+            <span class="tick"></span>
+            <span class="branch-label">save the order</span>
+            <div class="flow-node muted">gist-mysql-client</div>
+          </div>
+          <div class="branch">
+            <span class="tick"></span>
+            <span class="branch-label">charge the card</span>
+            <div class="flow-node muted">gist-http-client</div>
+          </div>
+          <div class="branch">
+            <span class="tick"></span>
+            <span class="branch-label">index for search</span>
+            <div class="flow-node muted">Elasticsearch</div>
+          </div>
+          <div class="branch">
+            <span class="tick"></span>
+            <span class="branch-label">store the receipt</span>
+            <div class="flow-node muted">GCS</div>
+          </div>
+          <div class="branch">
+            <span class="tick"></span>
+            <span class="branch-label">advance order state</span>
+            <div class="flow-node muted">state machine</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <p class="how-caption">Every night, unrelated to any request:</p>
+    <div class="flow-frame">
+      <div class="flow">
+        <div class="flow-node muted">03:00</div>
+        <div class="flow-connector"><span class="line"></span><span class="arrow"></span></div>
+        <div class="flow-node">scheduler</div>
+        <div class="flow-connector"><span class="line"></span><span class="arrow"></span></div>
+        <div class="flow-node accent">Go reconciliation function</div>
+        <div class="flow-connector"><span class="line"></span><span class="arrow"></span></div>
+        <div class="flow-node muted">gist-mysql-client</div>
+      </div>
+    </div>
+
+    <p class="how-caption">And when another service publishes that the order shipped:</p>
+    <div class="flow-frame">
+      <div class="flow">
+        <div class="flow-node muted">RabbitMQ</div>
+        <div class="flow-connector"><span class="line"></span><span class="arrow"></span></div>
+        <div class="flow-node">gist-server</div>
+        <div class="flow-connector"><span class="line"></span><span class="arrow"></span></div>
+        <div class="flow-node accent">Go event handler</div>
+      </div>
+    </div>
+  </section>
+
   <section class="perf wrap">
     <h2>Performance.</h2>
-    <p class="perf-intro">That extra hop has a real cost — measured, not guessed. Here's a single database lookup, direct versus through gist:</p>
-    <pre class="diagram">Direct call, same process       <span class="hi">503,051 ns/op</span>   (0.503 ms)
-Through gist, one gRPC call     <span class="hi">559,562 ns/op</span>   (0.560 ms)
-                                 ─────────────
-Overhead                        <span class="tag">+56,511 ns</span>     (+0.057 ms, +11.2%)</pre>
-    <p class="perf-note">Measured on a single MySQL point lookup, averaged over four 1000-query runs. There's no network involved either way — gist-server runs on the same machine, so this is one local unix-socket round trip, not a remote call.</p>
+    <p class="perf-intro">That extra hop has a real cost — measured, not guessed, at three different scales: a single database point lookup, direct versus through gist.</p>
+    <div class="perf-table-wrap">
+      <table class="perf-table">
+        <thead>
+          <tr>
+            <th>Queries</th>
+            <th>Direct</th>
+            <th>Through gist</th>
+            <th>Overhead</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1,000</td>
+            <td>0.503 ms</td>
+            <td>0.560 ms</td>
+            <td class="overhead">+0.057 ms</td>
+          </tr>
+          <tr>
+            <td>10,000</td>
+            <td>0.504 ms</td>
+            <td>0.559 ms</td>
+            <td class="overhead">+0.055 ms</td>
+          </tr>
+          <tr>
+            <td>100,000</td>
+            <td>0.505 ms</td>
+            <td>0.551 ms</td>
+            <td class="overhead">+0.046 ms</td>
+          </tr>
+          <tr>
+            <td>10 × 1,000 (parallel)</td>
+            <td>0.117 ms</td>
+            <td>0.147 ms</td>
+            <td class="overhead">+0.030 ms</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="perf-note">Per-query cost, single-row MySQL point lookups (<code>SELECT ... WHERE id = ?</code>), one run per row. The overhead stays flat — a fixed per-call cost, not something that compounds with volume — and there's no network involved either way: gist-server runs on the same machine, so this is one local unix-socket round trip, not a remote call.</p>
+    <p class="perf-note">The last row is under concurrent load instead of one query at a time: 10 goroutines calling in parallel, 1,000 queries each. Both columns drop because most of a query's cost is time spent waiting on the database over the network, not doing work — run enough of them at once and that waiting overlaps instead of stacking up serially. Gist's extra hop is mostly waiting too, so it overlaps the same way, which is why the gap between the two columns compresses under load rather than growing.</p>
+    <p class="perf-note">Run on an Apple M4 Pro (arm64), Go 1.27, MySQL 9.7.2 in a local Docker container — a development laptop, not a dedicated benchmarking rig, but the same machine and setup for every row above.</p>
   </section>
 
   <section class="gist wrap">
