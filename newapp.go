@@ -39,6 +39,16 @@ func (a *App) Run() {
 		}
 	}
 
+	// Every Attach/AttachMiddlewares Option above has already run its own
+	// registration RPCs by now - this is the first point gist-server can
+	// actually be asked whether every configured middleware name got one.
+	if err := server.ValidateMiddlewares(); err != nil {
+		if stopErr := server.Stop(); stopErr != nil {
+			return
+		}
+		server.Logger.Panic("gistsdk: middleware validation failed", map[string]any{"error": err})
+	}
+
 	server.WaitForInterrupt()
 }
 

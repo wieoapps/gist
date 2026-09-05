@@ -19,9 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	BootstrapService_Handshake_FullMethodName        = "/gist.BootstrapService/Handshake"
-	BootstrapService_Register_FullMethodName         = "/gist.BootstrapService/Register"
-	BootstrapService_GenerateFixtures_FullMethodName = "/gist.BootstrapService/GenerateFixtures"
+	BootstrapService_Handshake_FullMethodName           = "/gist.BootstrapService/Handshake"
+	BootstrapService_Register_FullMethodName            = "/gist.BootstrapService/Register"
+	BootstrapService_RegisterMiddleware_FullMethodName  = "/gist.BootstrapService/RegisterMiddleware"
+	BootstrapService_ValidateMiddlewares_FullMethodName = "/gist.BootstrapService/ValidateMiddlewares"
+	BootstrapService_GenerateFixtures_FullMethodName    = "/gist.BootstrapService/GenerateFixtures"
 )
 
 // BootstrapServiceClient is the client API for BootstrapService service.
@@ -36,6 +38,8 @@ const (
 type BootstrapServiceClient interface {
 	Handshake(ctx context.Context, in *HandshakeRequest, opts ...grpc.CallOption) (*HandshakeResponse, error)
 	Register(ctx context.Context, in *RegisterRequest, opts ...grpc.CallOption) (*RegisterResponse, error)
+	RegisterMiddleware(ctx context.Context, in *RegisterMiddlewareRequest, opts ...grpc.CallOption) (*RegisterMiddlewareAck, error)
+	ValidateMiddlewares(ctx context.Context, in *ValidateMiddlewaresRequest, opts ...grpc.CallOption) (*ValidateMiddlewaresResponse, error)
 	GenerateFixtures(ctx context.Context, in *GenerateFixturesRequest, opts ...grpc.CallOption) (*GenerateFixturesResponse, error)
 }
 
@@ -67,6 +71,26 @@ func (c *bootstrapServiceClient) Register(ctx context.Context, in *RegisterReque
 	return out, nil
 }
 
+func (c *bootstrapServiceClient) RegisterMiddleware(ctx context.Context, in *RegisterMiddlewareRequest, opts ...grpc.CallOption) (*RegisterMiddlewareAck, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(RegisterMiddlewareAck)
+	err := c.cc.Invoke(ctx, BootstrapService_RegisterMiddleware_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *bootstrapServiceClient) ValidateMiddlewares(ctx context.Context, in *ValidateMiddlewaresRequest, opts ...grpc.CallOption) (*ValidateMiddlewaresResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ValidateMiddlewaresResponse)
+	err := c.cc.Invoke(ctx, BootstrapService_ValidateMiddlewares_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *bootstrapServiceClient) GenerateFixtures(ctx context.Context, in *GenerateFixturesRequest, opts ...grpc.CallOption) (*GenerateFixturesResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GenerateFixturesResponse)
@@ -89,6 +113,8 @@ func (c *bootstrapServiceClient) GenerateFixtures(ctx context.Context, in *Gener
 type BootstrapServiceServer interface {
 	Handshake(context.Context, *HandshakeRequest) (*HandshakeResponse, error)
 	Register(context.Context, *RegisterRequest) (*RegisterResponse, error)
+	RegisterMiddleware(context.Context, *RegisterMiddlewareRequest) (*RegisterMiddlewareAck, error)
+	ValidateMiddlewares(context.Context, *ValidateMiddlewaresRequest) (*ValidateMiddlewaresResponse, error)
 	GenerateFixtures(context.Context, *GenerateFixturesRequest) (*GenerateFixturesResponse, error)
 	mustEmbedUnimplementedBootstrapServiceServer()
 }
@@ -105,6 +131,12 @@ func (UnimplementedBootstrapServiceServer) Handshake(context.Context, *Handshake
 }
 func (UnimplementedBootstrapServiceServer) Register(context.Context, *RegisterRequest) (*RegisterResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Register not implemented")
+}
+func (UnimplementedBootstrapServiceServer) RegisterMiddleware(context.Context, *RegisterMiddlewareRequest) (*RegisterMiddlewareAck, error) {
+	return nil, status.Error(codes.Unimplemented, "method RegisterMiddleware not implemented")
+}
+func (UnimplementedBootstrapServiceServer) ValidateMiddlewares(context.Context, *ValidateMiddlewaresRequest) (*ValidateMiddlewaresResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ValidateMiddlewares not implemented")
 }
 func (UnimplementedBootstrapServiceServer) GenerateFixtures(context.Context, *GenerateFixturesRequest) (*GenerateFixturesResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GenerateFixtures not implemented")
@@ -166,6 +198,42 @@ func _BootstrapService_Register_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _BootstrapService_RegisterMiddleware_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RegisterMiddlewareRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BootstrapServiceServer).RegisterMiddleware(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BootstrapService_RegisterMiddleware_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BootstrapServiceServer).RegisterMiddleware(ctx, req.(*RegisterMiddlewareRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _BootstrapService_ValidateMiddlewares_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ValidateMiddlewaresRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(BootstrapServiceServer).ValidateMiddlewares(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: BootstrapService_ValidateMiddlewares_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(BootstrapServiceServer).ValidateMiddlewares(ctx, req.(*ValidateMiddlewaresRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _BootstrapService_GenerateFixtures_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GenerateFixturesRequest)
 	if err := dec(in); err != nil {
@@ -198,6 +266,14 @@ var BootstrapService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Register",
 			Handler:    _BootstrapService_Register_Handler,
+		},
+		{
+			MethodName: "RegisterMiddleware",
+			Handler:    _BootstrapService_RegisterMiddleware_Handler,
+		},
+		{
+			MethodName: "ValidateMiddlewares",
+			Handler:    _BootstrapService_ValidateMiddlewares_Handler,
 		},
 		{
 			MethodName: "GenerateFixtures",

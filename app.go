@@ -61,6 +61,19 @@ const (
 	notFoundCode int32 = 5
 )
 
+// MiddlewareDispatchFunc is one named middleware's registered callback,
+// type-erased the same way DispatchFunc is for an endpoint - proto
+// types are the shared vocabulary here (not a customer-facing type)
+// because gistapiserver.MiddlewareRequest/MiddlewareResponse live in a
+// package that imports this one; this package can't import back without
+// a cycle. gistapiserver.MiddlewareHandler's own registration closure is
+// what converts between these and its typed, customer-facing fn.
+type MiddlewareDispatchFunc func(ctx context.Context, req *proto.InvokeMiddlewareRequest) (*proto.InvokeMiddlewareResponse, error)
+
+type middlewareDispatchEntry struct {
+	fn MiddlewareDispatchFunc
+}
+
 type dispatchEntry struct {
 	fn DispatchFunc
 
@@ -269,6 +282,18 @@ func (a *Server) RegisterDispatch(id string, fn DispatchFunc, declaredErrors map
 	a.mu.Unlock()
 }
 
+// RegisterMiddlewareDispatch is RegisterDispatch's counterpart for a
+// named middleware - see gistapiserver.MiddlewareHandler, the typed,
+// customer-facing entry point that builds fn.
+func (a *Server) RegisterMiddlewareDispatch(name string, fn MiddlewareDispatchFunc) {
+	a.mu.Lock()
+	if a.middlewareDispatch == nil {
+		a.middlewareDispatch = map[string]middlewareDispatchEntry{}
+	}
+	a.middlewareDispatch[name] = middlewareDispatchEntry{fn: fn}
+	a.mu.Unlock()
+}
+
 // StateMachineTriggerFn is one OnEnter/OnAction/OnExit phase for a
 // gist-state-machine trigger, type-erased - statable is the live object
 // passed to giststatemachine.Transition, typed any here since this
@@ -371,6 +396,7 @@ type Server struct {
 
 	mu                   sync.Mutex
 	dispatch             map[string]dispatchEntry
+	middlewareDispatch   map[string]middlewareDispatchEntry
 	customServices       map[string]*customServiceKind
 	schedulers           map[string]func(ctx context.Context)
 	stateMachineTriggers map[string]StateMachineTrigger
@@ -406,6 +432,7 @@ func Start(cfg Config) (*Server, error) {
 		adminSocket:          filepath.Join(dir, "admin.sock"),
 		callbackSocket:       filepath.Join(dir, "callback.sock"),
 		dispatch:             map[string]dispatchEntry{},
+		middlewareDispatch:   map[string]middlewareDispatchEntry{},
 		customServices:       map[string]*customServiceKind{},
 		schedulers:           map[string]func(ctx context.Context){},
 		stateMachineTriggers: map[string]StateMachineTrigger{},
@@ -617,6 +644,27 @@ func (a *Server) Stop() error {
 	return nil
 }
 
+// ValidateMiddlewares confirms every configured gist-api-server
+// middleware name has a real callback registered for it (see
+// AttachMiddlewares) - called once by App.Run, after every Option has
+// already run, since gist-server's own startup happens strictly before
+// this process even connects and has nothing to check against yet
+// (see bootstrap.proto's ValidateMiddlewaresRequest doc). Exported so
+// App.Run (a sibling file in this same package) can call it, but not
+// meant to be called directly by customer code - AttachMiddlewares is
+// the customer-facing entry point.
+func (a *Server) ValidateMiddlewares() error {
+	resp, err := rpcconn.MustFor(a).Admin.ValidateMiddlewares(context.Background(), &proto.ValidateMiddlewaresRequest{})
+	if err != nil {
+		return fmt.Errorf("gistsdk: could not validate configured middlewares: %w", err)
+	}
+	if len(resp.GetMissing()) > 0 {
+		return fmt.Errorf("gistsdk: %d configured middleware(s) never registered via gistapiserver.AttachMiddlewares:\n%s",
+			len(resp.GetMissing()), strings.Join(resp.GetMissing(), "\n"))
+	}
+	return nil
+}
+
 func (a *Server) WaitForInterrupt() {
 	ch := make(chan os.Signal, 1)
 	signal.Notify(ch, os.Interrupt, syscall.SIGTERM)
@@ -691,6 +739,48 @@ func (s *callbackServer) Invoke(ctx context.Context, req *proto.InvokeRequest) (
 	}
 
 	return &proto.InvokeResponse{Output: output}, nil
+}
+
+// InvokeMiddleware is Invoke's counterpart for a named middleware -
+// simpler on the error path than Invoke's own declared-error-code
+// system, since a middleware doesn't go through EndpointHandler's
+// ExpectedError ceremony: a plain error falls back to a generic
+// internal-error message (trace-ID logged, unless BubbleUpErrors),
+// and a CodeError's own message/code are used directly, the same "this
+// was deliberately authored as public" signal ExpectedError.WithMessage
+// gives Invoke.
+func (s *callbackServer) InvokeMiddleware(ctx context.Context, req *proto.InvokeMiddlewareRequest) (*proto.InvokeMiddlewareResponse, error) {
+	s.app.mu.Lock()
+	entry, ok := s.app.middlewareDispatch[req.GetName()]
+	s.app.mu.Unlock()
+
+	if !ok {
+		return &proto.InvokeMiddlewareResponse{
+			ErrorCode:    notFoundCode,
+			ErrorMessage: "middleware not registered: " + req.GetName(),
+		}, nil
+	}
+
+	resp, err := entry.fn(ctx, req)
+	if err != nil {
+		code := internalCode
+		message := "internal error"
+		var traceID string
+		switch ce, isCodeError := err.(CodeError); {
+		case isCodeError:
+			code = ce.StatusCode()
+			message = err.Error()
+		case s.app.bubbleUpRawErrors:
+			message = err.Error()
+		case s.app.Logger != nil:
+			traceID = newTraceID()
+			s.app.Logger.Error("gistsdk: middleware returned an error with no public message",
+				map[string]any{"middleware": req.GetName(), "error": err, "trace_id": traceID})
+		}
+		return &proto.InvokeMiddlewareResponse{ErrorCode: code, ErrorMessage: message, ErrorTraceId: traceID}, nil
+	}
+
+	return resp, nil
 }
 
 const notRegisteredCode = "not_registered"

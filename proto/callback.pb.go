@@ -604,11 +604,207 @@ func (x *DeliverAck) GetRequeue() bool {
 	return false
 }
 
+// InvokeMiddlewareRequest is one named middleware's own callback,
+// dispatched from publicapi.Server.serve() right after auth checks, in
+// the same position plugins/services/gist_api/handler.go's own
+// middleware chain (apiKey -> userAuths -> custom middlewares) ran a
+// customer-registered api.CustomMiddleware - restoring the same
+// capability across the process boundary the two-process split
+// introduced, since an arbitrary func(http.Handler) http.Handler can no
+// longer run in gist-server's own process. Deliberately narrower than
+// that old, full net/http access: method/path/headers/query only, no
+// request body (most real registered middlewares - custom auth, rate
+// limiting, request logging - never touched it, and reading it here
+// would mean marshaling a full body copy per middleware per request).
+type InvokeMiddlewareRequest struct {
+	state         protoimpl.MessageState   `protogen:"open.v1"`
+	Name          string                   `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	EndpointId    string                   `protobuf:"bytes,2,opt,name=endpoint_id,json=endpointId,proto3" json:"endpoint_id,omitempty"`
+	Method        string                   `protobuf:"bytes,3,opt,name=method,proto3" json:"method,omitempty"`
+	Path          string                   `protobuf:"bytes,4,opt,name=path,proto3" json:"path,omitempty"`
+	Headers       map[string]*HeaderValues `protobuf:"bytes,5,rep,name=headers,proto3" json:"headers,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	QueryParams   map[string]string        `protobuf:"bytes,6,rep,name=query_params,json=queryParams,proto3" json:"query_params,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *InvokeMiddlewareRequest) Reset() {
+	*x = InvokeMiddlewareRequest{}
+	mi := &file_proto_callback_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *InvokeMiddlewareRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*InvokeMiddlewareRequest) ProtoMessage() {}
+
+func (x *InvokeMiddlewareRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_callback_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use InvokeMiddlewareRequest.ProtoReflect.Descriptor instead.
+func (*InvokeMiddlewareRequest) Descriptor() ([]byte, []int) {
+	return file_proto_callback_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *InvokeMiddlewareRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *InvokeMiddlewareRequest) GetEndpointId() string {
+	if x != nil {
+		return x.EndpointId
+	}
+	return ""
+}
+
+func (x *InvokeMiddlewareRequest) GetMethod() string {
+	if x != nil {
+		return x.Method
+	}
+	return ""
+}
+
+func (x *InvokeMiddlewareRequest) GetPath() string {
+	if x != nil {
+		return x.Path
+	}
+	return ""
+}
+
+func (x *InvokeMiddlewareRequest) GetHeaders() map[string]*HeaderValues {
+	if x != nil {
+		return x.Headers
+	}
+	return nil
+}
+
+func (x *InvokeMiddlewareRequest) GetQueryParams() map[string]string {
+	if x != nil {
+		return x.QueryParams
+	}
+	return nil
+}
+
+// InvokeMiddlewareResponse: blocked = true means the middleware decided
+// the request should go no further - status_code/headers/body are what
+// publicapi.Server.serve() writes back verbatim instead of continuing
+// to the endpoint's own handler. blocked = false (headers/body/
+// status_code unused) means proceed normally. error_code/error_message/
+// error_trace_id mirror InvokeResponse's own triple, for when the
+// middleware func itself errors - a distinct outcome from a deliberate
+// block.
+type InvokeMiddlewareResponse struct {
+	state         protoimpl.MessageState   `protogen:"open.v1"`
+	Blocked       bool                     `protobuf:"varint,1,opt,name=blocked,proto3" json:"blocked,omitempty"`
+	StatusCode    int32                    `protobuf:"varint,2,opt,name=status_code,json=statusCode,proto3" json:"status_code,omitempty"`
+	Headers       map[string]*HeaderValues `protobuf:"bytes,3,rep,name=headers,proto3" json:"headers,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	Body          []byte                   `protobuf:"bytes,4,opt,name=body,proto3" json:"body,omitempty"`
+	ErrorCode     int32                    `protobuf:"varint,5,opt,name=error_code,json=errorCode,proto3" json:"error_code,omitempty"`
+	ErrorMessage  string                   `protobuf:"bytes,6,opt,name=error_message,json=errorMessage,proto3" json:"error_message,omitempty"`
+	ErrorTraceId  string                   `protobuf:"bytes,7,opt,name=error_trace_id,json=errorTraceId,proto3" json:"error_trace_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *InvokeMiddlewareResponse) Reset() {
+	*x = InvokeMiddlewareResponse{}
+	mi := &file_proto_callback_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *InvokeMiddlewareResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*InvokeMiddlewareResponse) ProtoMessage() {}
+
+func (x *InvokeMiddlewareResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_callback_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use InvokeMiddlewareResponse.ProtoReflect.Descriptor instead.
+func (*InvokeMiddlewareResponse) Descriptor() ([]byte, []int) {
+	return file_proto_callback_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *InvokeMiddlewareResponse) GetBlocked() bool {
+	if x != nil {
+		return x.Blocked
+	}
+	return false
+}
+
+func (x *InvokeMiddlewareResponse) GetStatusCode() int32 {
+	if x != nil {
+		return x.StatusCode
+	}
+	return 0
+}
+
+func (x *InvokeMiddlewareResponse) GetHeaders() map[string]*HeaderValues {
+	if x != nil {
+		return x.Headers
+	}
+	return nil
+}
+
+func (x *InvokeMiddlewareResponse) GetBody() []byte {
+	if x != nil {
+		return x.Body
+	}
+	return nil
+}
+
+func (x *InvokeMiddlewareResponse) GetErrorCode() int32 {
+	if x != nil {
+		return x.ErrorCode
+	}
+	return 0
+}
+
+func (x *InvokeMiddlewareResponse) GetErrorMessage() string {
+	if x != nil {
+		return x.ErrorMessage
+	}
+	return ""
+}
+
+func (x *InvokeMiddlewareResponse) GetErrorTraceId() string {
+	if x != nil {
+		return x.ErrorTraceId
+	}
+	return ""
+}
+
 var File_proto_callback_proto protoreflect.FileDescriptor
 
 const file_proto_callback_proto_rawDesc = "" +
 	"\n" +
-	"\x14proto/callback.proto\x12\x04gist\"i\n" +
+	"\x14proto/callback.proto\x12\x04gist\x1a\x16proto/httpclient.proto\"i\n" +
 	"\rInvokeRequest\x12\x1f\n" +
 	"\vendpoint_id\x18\x01 \x01(\tR\n" +
 	"endpointId\x12\x14\n" +
@@ -655,9 +851,37 @@ const file_proto_callback_proto_rawDesc = "" +
 	"error_code\x18\x01 \x01(\tR\terrorCode\x12#\n" +
 	"\rerror_message\x18\x02 \x01(\tR\ferrorMessage\x12\x10\n" +
 	"\x03ack\x18\x03 \x01(\bR\x03ack\x12\x18\n" +
-	"\arequeue\x18\x04 \x01(\bR\arequeue2\xbf\x02\n" +
+	"\arequeue\x18\x04 \x01(\bR\arequeue\"\xa3\x03\n" +
+	"\x17InvokeMiddlewareRequest\x12\x12\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x12\x1f\n" +
+	"\vendpoint_id\x18\x02 \x01(\tR\n" +
+	"endpointId\x12\x16\n" +
+	"\x06method\x18\x03 \x01(\tR\x06method\x12\x12\n" +
+	"\x04path\x18\x04 \x01(\tR\x04path\x12D\n" +
+	"\aheaders\x18\x05 \x03(\v2*.gist.InvokeMiddlewareRequest.HeadersEntryR\aheaders\x12Q\n" +
+	"\fquery_params\x18\x06 \x03(\v2..gist.InvokeMiddlewareRequest.QueryParamsEntryR\vqueryParams\x1aN\n" +
+	"\fHeadersEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12(\n" +
+	"\x05value\x18\x02 \x01(\v2\x12.gist.HeaderValuesR\x05value:\x028\x01\x1a>\n" +
+	"\x10QueryParamsEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xea\x02\n" +
+	"\x18InvokeMiddlewareResponse\x12\x18\n" +
+	"\ablocked\x18\x01 \x01(\bR\ablocked\x12\x1f\n" +
+	"\vstatus_code\x18\x02 \x01(\x05R\n" +
+	"statusCode\x12E\n" +
+	"\aheaders\x18\x03 \x03(\v2+.gist.InvokeMiddlewareResponse.HeadersEntryR\aheaders\x12\x12\n" +
+	"\x04body\x18\x04 \x01(\fR\x04body\x12\x1d\n" +
+	"\n" +
+	"error_code\x18\x05 \x01(\x05R\terrorCode\x12#\n" +
+	"\rerror_message\x18\x06 \x01(\tR\ferrorMessage\x12$\n" +
+	"\x0eerror_trace_id\x18\a \x01(\tR\ferrorTraceId\x1aN\n" +
+	"\fHeadersEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12(\n" +
+	"\x05value\x18\x02 \x01(\v2\x12.gist.HeaderValuesR\x05value:\x028\x012\x92\x03\n" +
 	"\x0fCallbackService\x123\n" +
-	"\x06Invoke\x12\x13.gist.InvokeRequest\x1a\x14.gist.InvokeResponse\x12M\n" +
+	"\x06Invoke\x12\x13.gist.InvokeRequest\x1a\x14.gist.InvokeResponse\x12Q\n" +
+	"\x10InvokeMiddleware\x12\x1d.gist.InvokeMiddlewareRequest\x1a\x1e.gist.InvokeMiddlewareResponse\x12M\n" +
 	"\x12StartCustomService\x12\x1f.gist.StartCustomServiceRequest\x1a\x16.gist.CustomServiceAck\x12K\n" +
 	"\x11StopCustomService\x12\x1e.gist.StopCustomServiceRequest\x1a\x16.gist.CustomServiceAck\x12(\n" +
 	"\x04Tick\x12\x11.gist.TickRequest\x1a\r.gist.TickAck\x121\n" +
@@ -675,7 +899,7 @@ func file_proto_callback_proto_rawDescGZIP() []byte {
 	return file_proto_callback_proto_rawDescData
 }
 
-var file_proto_callback_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_proto_callback_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
 var file_proto_callback_proto_goTypes = []any{
 	(*InvokeRequest)(nil),             // 0: gist.InvokeRequest
 	(*InvokeResponse)(nil),            // 1: gist.InvokeResponse
@@ -686,25 +910,38 @@ var file_proto_callback_proto_goTypes = []any{
 	(*TickAck)(nil),                   // 6: gist.TickAck
 	(*DeliverRequest)(nil),            // 7: gist.DeliverRequest
 	(*DeliverAck)(nil),                // 8: gist.DeliverAck
-	nil,                               // 9: gist.DeliverRequest.HeadersEntry
+	(*InvokeMiddlewareRequest)(nil),   // 9: gist.InvokeMiddlewareRequest
+	(*InvokeMiddlewareResponse)(nil),  // 10: gist.InvokeMiddlewareResponse
+	nil,                               // 11: gist.DeliverRequest.HeadersEntry
+	nil,                               // 12: gist.InvokeMiddlewareRequest.HeadersEntry
+	nil,                               // 13: gist.InvokeMiddlewareRequest.QueryParamsEntry
+	nil,                               // 14: gist.InvokeMiddlewareResponse.HeadersEntry
+	(*HeaderValues)(nil),              // 15: gist.HeaderValues
 }
 var file_proto_callback_proto_depIdxs = []int32{
-	9, // 0: gist.DeliverRequest.headers:type_name -> gist.DeliverRequest.HeadersEntry
-	0, // 1: gist.CallbackService.Invoke:input_type -> gist.InvokeRequest
-	2, // 2: gist.CallbackService.StartCustomService:input_type -> gist.StartCustomServiceRequest
-	3, // 3: gist.CallbackService.StopCustomService:input_type -> gist.StopCustomServiceRequest
-	5, // 4: gist.CallbackService.Tick:input_type -> gist.TickRequest
-	7, // 5: gist.CallbackService.Deliver:input_type -> gist.DeliverRequest
-	1, // 6: gist.CallbackService.Invoke:output_type -> gist.InvokeResponse
-	4, // 7: gist.CallbackService.StartCustomService:output_type -> gist.CustomServiceAck
-	4, // 8: gist.CallbackService.StopCustomService:output_type -> gist.CustomServiceAck
-	6, // 9: gist.CallbackService.Tick:output_type -> gist.TickAck
-	8, // 10: gist.CallbackService.Deliver:output_type -> gist.DeliverAck
-	6, // [6:11] is the sub-list for method output_type
-	1, // [1:6] is the sub-list for method input_type
-	1, // [1:1] is the sub-list for extension type_name
-	1, // [1:1] is the sub-list for extension extendee
-	0, // [0:1] is the sub-list for field type_name
+	11, // 0: gist.DeliverRequest.headers:type_name -> gist.DeliverRequest.HeadersEntry
+	12, // 1: gist.InvokeMiddlewareRequest.headers:type_name -> gist.InvokeMiddlewareRequest.HeadersEntry
+	13, // 2: gist.InvokeMiddlewareRequest.query_params:type_name -> gist.InvokeMiddlewareRequest.QueryParamsEntry
+	14, // 3: gist.InvokeMiddlewareResponse.headers:type_name -> gist.InvokeMiddlewareResponse.HeadersEntry
+	15, // 4: gist.InvokeMiddlewareRequest.HeadersEntry.value:type_name -> gist.HeaderValues
+	15, // 5: gist.InvokeMiddlewareResponse.HeadersEntry.value:type_name -> gist.HeaderValues
+	0,  // 6: gist.CallbackService.Invoke:input_type -> gist.InvokeRequest
+	9,  // 7: gist.CallbackService.InvokeMiddleware:input_type -> gist.InvokeMiddlewareRequest
+	2,  // 8: gist.CallbackService.StartCustomService:input_type -> gist.StartCustomServiceRequest
+	3,  // 9: gist.CallbackService.StopCustomService:input_type -> gist.StopCustomServiceRequest
+	5,  // 10: gist.CallbackService.Tick:input_type -> gist.TickRequest
+	7,  // 11: gist.CallbackService.Deliver:input_type -> gist.DeliverRequest
+	1,  // 12: gist.CallbackService.Invoke:output_type -> gist.InvokeResponse
+	10, // 13: gist.CallbackService.InvokeMiddleware:output_type -> gist.InvokeMiddlewareResponse
+	4,  // 14: gist.CallbackService.StartCustomService:output_type -> gist.CustomServiceAck
+	4,  // 15: gist.CallbackService.StopCustomService:output_type -> gist.CustomServiceAck
+	6,  // 16: gist.CallbackService.Tick:output_type -> gist.TickAck
+	8,  // 17: gist.CallbackService.Deliver:output_type -> gist.DeliverAck
+	12, // [12:18] is the sub-list for method output_type
+	6,  // [6:12] is the sub-list for method input_type
+	6,  // [6:6] is the sub-list for extension type_name
+	6,  // [6:6] is the sub-list for extension extendee
+	0,  // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_proto_callback_proto_init() }
@@ -712,13 +949,14 @@ func file_proto_callback_proto_init() {
 	if File_proto_callback_proto != nil {
 		return
 	}
+	file_proto_httpclient_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_callback_proto_rawDesc), len(file_proto_callback_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   10,
+			NumMessages:   15,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

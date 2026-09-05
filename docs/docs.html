@@ -404,7 +404,7 @@
 <div class="layout">
   <nav class="sidebar" aria-label="Service sections">
     <div class="brand">
-      <span class="brand-kicker">gist-server <!-- GENERATED:VERSION:BEGIN -->v1.0.1<!-- GENERATED:VERSION:END --></span>
+      <span class="brand-kicker">gist-server <!-- GENERATED:VERSION:BEGIN -->latest<!-- GENERATED:VERSION:END --></span>
       <h1>Documentation</h1>
     </div>
     <div class="sidebar-actions">
@@ -427,6 +427,7 @@
             <ul class="toc-sub">
               <li><a href="#s2-endpoints-json">endpoints.json</a></li>
               <li><a href="#s2-api">API</a></li>
+              <li><a href="#s2-middleware">Custom middleware</a></li>
             </ul>
           </details>
         </li>
@@ -759,7 +760,7 @@ logging.Error("charge failed", map[string]any{
                   <tr><td><code>rate-limiter</code></td><td>int</td><td>Max requests allowed before responses are rate-limited; <code>0</code> disables it.</td></tr>
                   <tr><td><code>ping-endpoint</code></td><td>string</td><td>Path that serves a trivial liveness/heartbeat response (skipped if empty or <code>/</code>).</td></tr>
                   <tr><td><code>endpoints-file</code></td><td>string</td><td>Path to the endpoints JSON file (route/doc metadata) loaded into <code>Endpoints</code>.</td></tr>
-                  <tr><td><code>middlewares</code></td><td>[]string</td><td>Instance-wide middleware names applied to every endpoint (e.g. <code>gzip</code>).</td></tr>
+                  <tr><td><code>middlewares</code></td><td>[]string</td><td>Instance-wide middleware names applied to every endpoint - <code>gzip</code> compresses responses; any other name is dispatched to a callback registered via <code>gistapiserver.AttachMiddlewares</code> in the customer's own process, which can inspect the request and block it before the endpoint's own handler runs.</td></tr>
                   <tr><td><code>auths</code></td><td><a href="#s2-authconf">[]AuthConf</a></td><td>Catalog of JWT auth schemes endpoints can reference by <code>token-type</code>.</td></tr>
                   <tr><td><code>docs</code></td><td><a href="#s2-docs">Docs</a></td><td>OpenAPI documentation UI settings.</td></tr>
                   </tbody>
@@ -907,7 +908,7 @@ logging.Error("charge failed", map[string]any{
               <tr><td><code>path</code></td><td>string</td><td>URL path, e.g. <code>/orders/{id}</code>.</td></tr>
               <tr><td><code>tags</code></td><td>[]string</td><td>Grouping tags shown in the docs UI.</td></tr>
               <tr><td><code>auths</code></td><td>[]string</td><td><code>token-type</code> values (from the instance's own <code>auths</code> catalog) required to call this endpoint.</td></tr>
-              <tr><td><code>middlewares</code></td><td>[]string</td><td>Per-endpoint middleware names, merged with the instance's own <code>middlewares</code> (e.g. <code>gzip</code>).</td></tr>
+              <tr><td><code>middlewares</code></td><td>[]string</td><td>Per-endpoint middleware names, merged with the instance's own <code>middlewares</code> - <code>gzip</code> compresses this endpoint's response; any other name is dispatched to a callback registered via <code>gistapiserver.AttachMiddlewares</code>, which can inspect the request and block it before this endpoint's own handler runs.</td></tr>
             </tbody>
           </table>
           </div>
@@ -997,6 +998,82 @@ func AttachEndpointHandlers() gist.Option {
             <code>Unavailable</code>, <code>DeadlineExceeded</code> — each with
             <code>.WithMessage(fmt string, values ...any) ExpectedError</code> and
             <code>.WithoutMessage()</code>.</p>
+
+          <h4 id="s2-middleware">Custom middleware</h4>
+          <p>A named middleware runs once per matching request, right after auth checks
+            (<code>x-api-key</code>/JWT) and before the endpoint's own handler — it can inspect
+            the request and either let it through or block it, before any business logic runs.
+            Reference it by name from <code>middlewares</code> (instance-wide or per-endpoint,
+            see <a href="#s2-endpoints-json">endpoints.json</a> above) the same way you already
+            reference <code>gzip</code>; any name besides <code>gzip</code> is dispatched to a
+            callback your own process registers with <code>MiddlewareHandler</code>/
+            <code>AttachMiddlewares</code>, over the same cross-process channel
+            <code>EndpointHandler</code>'s own business logic uses (gist-server itself never
+            runs your middleware code — it can't, it's a separate process).</p>
+          <div class="code-block">
+            <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
+            <pre><code class="language-go">type MiddlewareRequest struct {
+    EndpointID  string
+    Method      string
+    Path        string
+    Headers     http.Header
+    QueryParams url.Values
+}
+type MiddlewareResponse struct {
+    Blocked    bool   // true stops the request here - StatusCode/Headers/Body are written back verbatim
+    StatusCode int
+    Headers    http.Header
+    Body       []byte
+}
+
+func MiddlewareHandler[servicesGroup any](
+    name string,
+    fn func(sg servicesGroup, ctx context.Context, req *MiddlewareRequest) (*MiddlewareResponse, error),
+) *Middleware[servicesGroup]
+
+func AttachMiddlewares[servicesGroup any](serviceID string, middlewares ...*Middleware[servicesGroup]) gist.Option</code></pre>
+          </div>
+          <p>Deliberately narrower than a full <code>net/http</code> middleware: method, path,
+            headers, and query params only — no request body (reading it here would mean
+            marshaling a full copy per middleware per request, and none of the realistic cases —
+            auth, rate limiting, request logging — need it), and no response-header injection
+            beyond a block's own <code>Headers</code>/<code>Body</code>. <code>AttachMiddlewares</code>
+            is a separate call from <code>Attach</code>, so adding a middleware never changes an
+            existing <code>Attach(serviceID, handlers...)</code> call site's own shape.</p>
+          <div class="code-block">
+            <div class="code-head"><span class="code-lang">Go</span><button class="copy-btn" type="button">Copy</button></div>
+            <pre><code class="language-go">var HeaderCheck = gistapiserver.MiddlewareHandler("header-check",
+    func(sg ServicesGroup, ctx context.Context, req *gistapiserver.MiddlewareRequest) (*gistapiserver.MiddlewareResponse, error) {
+        if req.Headers.Get("X-Api-Secret") != sg.Config.APISecret {
+            return &gistapiserver.MiddlewareResponse{
+                Blocked:    true,
+                StatusCode: http.StatusUnauthorized,
+                Headers:    http.Header{"Content-Type": []string{"application/json"}},
+                Body:       []byte(`{"error":"missing or wrong X-Api-Secret header"}`),
+            }, nil
+        }
+        return &gistapiserver.MiddlewareResponse{Blocked: false}, nil
+    },
+)
+
+func AttachMiddlewares() gist.Option {
+    return gistapiserver.AttachMiddlewares("orderflow-api", HeaderCheck)
+}</code></pre>
+          </div>
+          <div class="code-block">
+            <div class="code-head"><span class="code-lang">JSON</span><button class="copy-btn" type="button">Copy</button></div>
+            <pre><code class="language-json">{
+  "id": "create-order",
+  "path": "/orders",
+  "middlewares": ["header-check"]
+}</code></pre>
+          </div>
+          <p>A configured middleware name that's never registered fails fast: at the end of
+            your own <code>gist.NewApp(...).Run()</code>, once every <code>Attach</code>/
+            <code>AttachMiddlewares</code> call has run, gist-server is asked to confirm every
+            configured name actually has a callback — your own process panics at startup with a
+            message naming the exact service/endpoint/middleware, rather than only failing (or
+            silently doing nothing) the first time a real request happens to hit it.</p>
               </div>
           </div>
                 <!-- GENERATED:gist-api-server:END -->

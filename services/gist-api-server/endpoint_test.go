@@ -170,6 +170,14 @@ func (f *fakeAdminClient) GenerateFixtures(context.Context, *proto.GenerateFixtu
 	return &proto.GenerateFixturesResponse{}, nil
 }
 
+func (f *fakeAdminClient) RegisterMiddleware(context.Context, *proto.RegisterMiddlewareRequest, ...grpc.CallOption) (*proto.RegisterMiddlewareAck, error) {
+	return &proto.RegisterMiddlewareAck{}, nil
+}
+
+func (f *fakeAdminClient) ValidateMiddlewares(context.Context, *proto.ValidateMiddlewaresRequest, ...grpc.CallOption) (*proto.ValidateMiddlewaresResponse, error) {
+	return &proto.ValidateMiddlewaresResponse{}, nil
+}
+
 type testServicesGroup struct{}
 
 type testIn struct {

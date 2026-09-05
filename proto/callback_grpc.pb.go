@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	CallbackService_Invoke_FullMethodName             = "/gist.CallbackService/Invoke"
+	CallbackService_InvokeMiddleware_FullMethodName   = "/gist.CallbackService/InvokeMiddleware"
 	CallbackService_StartCustomService_FullMethodName = "/gist.CallbackService/StartCustomService"
 	CallbackService_StopCustomService_FullMethodName  = "/gist.CallbackService/StopCustomService"
 	CallbackService_Tick_FullMethodName               = "/gist.CallbackService/Tick"
@@ -31,6 +32,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type CallbackServiceClient interface {
 	Invoke(ctx context.Context, in *InvokeRequest, opts ...grpc.CallOption) (*InvokeResponse, error)
+	InvokeMiddleware(ctx context.Context, in *InvokeMiddlewareRequest, opts ...grpc.CallOption) (*InvokeMiddlewareResponse, error)
 	StartCustomService(ctx context.Context, in *StartCustomServiceRequest, opts ...grpc.CallOption) (*CustomServiceAck, error)
 	StopCustomService(ctx context.Context, in *StopCustomServiceRequest, opts ...grpc.CallOption) (*CustomServiceAck, error)
 	Tick(ctx context.Context, in *TickRequest, opts ...grpc.CallOption) (*TickAck, error)
@@ -49,6 +51,16 @@ func (c *callbackServiceClient) Invoke(ctx context.Context, in *InvokeRequest, o
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(InvokeResponse)
 	err := c.cc.Invoke(ctx, CallbackService_Invoke_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *callbackServiceClient) InvokeMiddleware(ctx context.Context, in *InvokeMiddlewareRequest, opts ...grpc.CallOption) (*InvokeMiddlewareResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(InvokeMiddlewareResponse)
+	err := c.cc.Invoke(ctx, CallbackService_InvokeMiddleware_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -100,6 +112,7 @@ func (c *callbackServiceClient) Deliver(ctx context.Context, in *DeliverRequest,
 // for forward compatibility.
 type CallbackServiceServer interface {
 	Invoke(context.Context, *InvokeRequest) (*InvokeResponse, error)
+	InvokeMiddleware(context.Context, *InvokeMiddlewareRequest) (*InvokeMiddlewareResponse, error)
 	StartCustomService(context.Context, *StartCustomServiceRequest) (*CustomServiceAck, error)
 	StopCustomService(context.Context, *StopCustomServiceRequest) (*CustomServiceAck, error)
 	Tick(context.Context, *TickRequest) (*TickAck, error)
@@ -116,6 +129,9 @@ type UnimplementedCallbackServiceServer struct{}
 
 func (UnimplementedCallbackServiceServer) Invoke(context.Context, *InvokeRequest) (*InvokeResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method Invoke not implemented")
+}
+func (UnimplementedCallbackServiceServer) InvokeMiddleware(context.Context, *InvokeMiddlewareRequest) (*InvokeMiddlewareResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method InvokeMiddleware not implemented")
 }
 func (UnimplementedCallbackServiceServer) StartCustomService(context.Context, *StartCustomServiceRequest) (*CustomServiceAck, error) {
 	return nil, status.Error(codes.Unimplemented, "method StartCustomService not implemented")
@@ -164,6 +180,24 @@ func _CallbackService_Invoke_Handler(srv interface{}, ctx context.Context, dec f
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CallbackServiceServer).Invoke(ctx, req.(*InvokeRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CallbackService_InvokeMiddleware_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(InvokeMiddlewareRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CallbackServiceServer).InvokeMiddleware(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CallbackService_InvokeMiddleware_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CallbackServiceServer).InvokeMiddleware(ctx, req.(*InvokeMiddlewareRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -250,6 +284,10 @@ var CallbackService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Invoke",
 			Handler:    _CallbackService_Invoke_Handler,
+		},
+		{
+			MethodName: "InvokeMiddleware",
+			Handler:    _CallbackService_InvokeMiddleware_Handler,
 		},
 		{
 			MethodName: "StartCustomService",

@@ -349,6 +349,196 @@ func (*RegisterResponse) Descriptor() ([]byte, []int) {
 	return file_proto_bootstrap_proto_rawDescGZIP(), []int{4}
 }
 
+// RegisterMiddlewareRequest tracks that a named middleware (see
+// callback.proto's InvokeMiddlewareRequest) now has a real callback
+// registered for it - the same "declare the schema so gist-server knows
+// it exists" step Register does for an endpoint, but for a middleware
+// name instead. Tracked per service_id, mirroring Register's own
+// per-instance schema registry.
+type RegisterMiddlewareRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ServiceId     string                 `protobuf:"bytes,1,opt,name=service_id,json=serviceId,proto3" json:"service_id,omitempty"`
+	Name          string                 `protobuf:"bytes,2,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RegisterMiddlewareRequest) Reset() {
+	*x = RegisterMiddlewareRequest{}
+	mi := &file_proto_bootstrap_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RegisterMiddlewareRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RegisterMiddlewareRequest) ProtoMessage() {}
+
+func (x *RegisterMiddlewareRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_bootstrap_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RegisterMiddlewareRequest.ProtoReflect.Descriptor instead.
+func (*RegisterMiddlewareRequest) Descriptor() ([]byte, []int) {
+	return file_proto_bootstrap_proto_rawDescGZIP(), []int{5}
+}
+
+func (x *RegisterMiddlewareRequest) GetServiceId() string {
+	if x != nil {
+		return x.ServiceId
+	}
+	return ""
+}
+
+func (x *RegisterMiddlewareRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+type RegisterMiddlewareAck struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RegisterMiddlewareAck) Reset() {
+	*x = RegisterMiddlewareAck{}
+	mi := &file_proto_bootstrap_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RegisterMiddlewareAck) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RegisterMiddlewareAck) ProtoMessage() {}
+
+func (x *RegisterMiddlewareAck) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_bootstrap_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RegisterMiddlewareAck.ProtoReflect.Descriptor instead.
+func (*RegisterMiddlewareAck) Descriptor() ([]byte, []int) {
+	return file_proto_bootstrap_proto_rawDescGZIP(), []int{6}
+}
+
+// ValidateMiddlewaresRequest is called once, at the end of the
+// customer's own gist.NewApp(...).Run() - after every Attach/
+// AttachMiddlewares Option has already run its own registration RPCs -
+// to fail the customer's own process to start (not gist-server's) if
+// any endpoint's configured middleware name was never registered.
+// gist-server's own PostBuild can't validate this itself: it runs
+// during gist-server's own startup, strictly before the customer's SDK
+// process has even connected, so there's nothing yet to check against.
+// No service_id: this checks every enabled gist-api-server instance at
+// once, since the SDK has no reason to separately track which instance
+// IDs a given process happened to Attach/AttachMiddlewares to.
+type ValidateMiddlewaresRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ValidateMiddlewaresRequest) Reset() {
+	*x = ValidateMiddlewaresRequest{}
+	mi := &file_proto_bootstrap_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ValidateMiddlewaresRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ValidateMiddlewaresRequest) ProtoMessage() {}
+
+func (x *ValidateMiddlewaresRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_bootstrap_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ValidateMiddlewaresRequest.ProtoReflect.Descriptor instead.
+func (*ValidateMiddlewaresRequest) Descriptor() ([]byte, []int) {
+	return file_proto_bootstrap_proto_rawDescGZIP(), []int{7}
+}
+
+type ValidateMiddlewaresResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// missing is one pre-formatted, human-readable description per
+	// configured-but-never-registered middleware name (e.g. service
+	// "reaction-api" endpoint "get-thing": middleware "my-auth" never
+	// registered) - a plain string rather than a structured message,
+	// since the only consumer is Run()'s own fatal error text.
+	Missing       []string `protobuf:"bytes,1,rep,name=missing,proto3" json:"missing,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ValidateMiddlewaresResponse) Reset() {
+	*x = ValidateMiddlewaresResponse{}
+	mi := &file_proto_bootstrap_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ValidateMiddlewaresResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ValidateMiddlewaresResponse) ProtoMessage() {}
+
+func (x *ValidateMiddlewaresResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_bootstrap_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ValidateMiddlewaresResponse.ProtoReflect.Descriptor instead.
+func (*ValidateMiddlewaresResponse) Descriptor() ([]byte, []int) {
+	return file_proto_bootstrap_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *ValidateMiddlewaresResponse) GetMissing() []string {
+	if x != nil {
+		return x.Missing
+	}
+	return nil
+}
+
 // ColumnKinds is one table's column -> Go kind ("int"/"float"/"bool"/
 // "string"/"other"), reflected client-side at the same time as
 // rows_json - a plain JSON round-trip loses the int-vs-float64
@@ -367,7 +557,7 @@ type ColumnKinds struct {
 
 func (x *ColumnKinds) Reset() {
 	*x = ColumnKinds{}
-	mi := &file_proto_bootstrap_proto_msgTypes[5]
+	mi := &file_proto_bootstrap_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -379,7 +569,7 @@ func (x *ColumnKinds) String() string {
 func (*ColumnKinds) ProtoMessage() {}
 
 func (x *ColumnKinds) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bootstrap_proto_msgTypes[5]
+	mi := &file_proto_bootstrap_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -392,7 +582,7 @@ func (x *ColumnKinds) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ColumnKinds.ProtoReflect.Descriptor instead.
 func (*ColumnKinds) Descriptor() ([]byte, []int) {
-	return file_proto_bootstrap_proto_rawDescGZIP(), []int{5}
+	return file_proto_bootstrap_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *ColumnKinds) GetKinds() map[string]string {
@@ -419,7 +609,7 @@ type GenerateFixturesRequest struct {
 
 func (x *GenerateFixturesRequest) Reset() {
 	*x = GenerateFixturesRequest{}
-	mi := &file_proto_bootstrap_proto_msgTypes[6]
+	mi := &file_proto_bootstrap_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -431,7 +621,7 @@ func (x *GenerateFixturesRequest) String() string {
 func (*GenerateFixturesRequest) ProtoMessage() {}
 
 func (x *GenerateFixturesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bootstrap_proto_msgTypes[6]
+	mi := &file_proto_bootstrap_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -444,7 +634,7 @@ func (x *GenerateFixturesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GenerateFixturesRequest.ProtoReflect.Descriptor instead.
 func (*GenerateFixturesRequest) Descriptor() ([]byte, []int) {
-	return file_proto_bootstrap_proto_rawDescGZIP(), []int{6}
+	return file_proto_bootstrap_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *GenerateFixturesRequest) GetServiceId() string {
@@ -476,7 +666,7 @@ type GenerateFixturesResponse struct {
 
 func (x *GenerateFixturesResponse) Reset() {
 	*x = GenerateFixturesResponse{}
-	mi := &file_proto_bootstrap_proto_msgTypes[7]
+	mi := &file_proto_bootstrap_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -488,7 +678,7 @@ func (x *GenerateFixturesResponse) String() string {
 func (*GenerateFixturesResponse) ProtoMessage() {}
 
 func (x *GenerateFixturesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_proto_bootstrap_proto_msgTypes[7]
+	mi := &file_proto_bootstrap_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -501,7 +691,7 @@ func (x *GenerateFixturesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GenerateFixturesResponse.ProtoReflect.Descriptor instead.
 func (*GenerateFixturesResponse) Descriptor() ([]byte, []int) {
-	return file_proto_bootstrap_proto_rawDescGZIP(), []int{7}
+	return file_proto_bootstrap_proto_rawDescGZIP(), []int{11}
 }
 
 var File_proto_bootstrap_proto protoreflect.FileDescriptor
@@ -534,7 +724,15 @@ const file_proto_bootstrap_proto_rawDesc = "" +
 	"\n" +
 	"service_id\x18\x01 \x01(\tR\tserviceId\x12,\n" +
 	"\x06schema\x18\x02 \x01(\v2\x14.gist.EndpointSchemaR\x06schema\"\x12\n" +
-	"\x10RegisterResponse\"{\n" +
+	"\x10RegisterResponse\"N\n" +
+	"\x19RegisterMiddlewareRequest\x12\x1d\n" +
+	"\n" +
+	"service_id\x18\x01 \x01(\tR\tserviceId\x12\x12\n" +
+	"\x04name\x18\x02 \x01(\tR\x04name\"\x17\n" +
+	"\x15RegisterMiddlewareAck\"\x1c\n" +
+	"\x1aValidateMiddlewaresRequest\"7\n" +
+	"\x1bValidateMiddlewaresResponse\x12\x18\n" +
+	"\amissing\x18\x01 \x03(\tR\amissing\"{\n" +
 	"\vColumnKinds\x122\n" +
 	"\x05kinds\x18\x01 \x03(\v2\x1c.gist.ColumnKinds.KindsEntryR\x05kinds\x1a8\n" +
 	"\n" +
@@ -549,10 +747,12 @@ const file_proto_bootstrap_proto_rawDesc = "" +
 	"\x10ColumnKindsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12'\n" +
 	"\x05value\x18\x02 \x01(\v2\x11.gist.ColumnKindsR\x05value:\x028\x01\"\x1a\n" +
-	"\x18GenerateFixturesResponse2\xde\x01\n" +
+	"\x18GenerateFixturesResponse2\x8e\x03\n" +
 	"\x10BootstrapService\x12<\n" +
 	"\tHandshake\x12\x16.gist.HandshakeRequest\x1a\x17.gist.HandshakeResponse\x129\n" +
-	"\bRegister\x12\x15.gist.RegisterRequest\x1a\x16.gist.RegisterResponse\x12Q\n" +
+	"\bRegister\x12\x15.gist.RegisterRequest\x1a\x16.gist.RegisterResponse\x12R\n" +
+	"\x12RegisterMiddleware\x12\x1f.gist.RegisterMiddlewareRequest\x1a\x1b.gist.RegisterMiddlewareAck\x12Z\n" +
+	"\x13ValidateMiddlewares\x12 .gist.ValidateMiddlewaresRequest\x1a!.gist.ValidateMiddlewaresResponse\x12Q\n" +
 	"\x10GenerateFixtures\x12\x1d.gist.GenerateFixturesRequest\x1a\x1e.gist.GenerateFixturesResponseB&Z$github.com/wieoapps/gist/proto;protob\x06proto3"
 
 var (
@@ -567,37 +767,45 @@ func file_proto_bootstrap_proto_rawDescGZIP() []byte {
 	return file_proto_bootstrap_proto_rawDescData
 }
 
-var file_proto_bootstrap_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_proto_bootstrap_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_proto_bootstrap_proto_goTypes = []any{
-	(*EndpointSchema)(nil),           // 0: gist.EndpointSchema
-	(*HandshakeRequest)(nil),         // 1: gist.HandshakeRequest
-	(*HandshakeResponse)(nil),        // 2: gist.HandshakeResponse
-	(*RegisterRequest)(nil),          // 3: gist.RegisterRequest
-	(*RegisterResponse)(nil),         // 4: gist.RegisterResponse
-	(*ColumnKinds)(nil),              // 5: gist.ColumnKinds
-	(*GenerateFixturesRequest)(nil),  // 6: gist.GenerateFixturesRequest
-	(*GenerateFixturesResponse)(nil), // 7: gist.GenerateFixturesResponse
-	nil,                              // 8: gist.ColumnKinds.KindsEntry
-	nil,                              // 9: gist.GenerateFixturesRequest.ColumnKindsEntry
-	(*Field)(nil),                    // 10: gist.Field
-	(*ExpectedError)(nil),            // 11: gist.ExpectedError
+	(*EndpointSchema)(nil),              // 0: gist.EndpointSchema
+	(*HandshakeRequest)(nil),            // 1: gist.HandshakeRequest
+	(*HandshakeResponse)(nil),           // 2: gist.HandshakeResponse
+	(*RegisterRequest)(nil),             // 3: gist.RegisterRequest
+	(*RegisterResponse)(nil),            // 4: gist.RegisterResponse
+	(*RegisterMiddlewareRequest)(nil),   // 5: gist.RegisterMiddlewareRequest
+	(*RegisterMiddlewareAck)(nil),       // 6: gist.RegisterMiddlewareAck
+	(*ValidateMiddlewaresRequest)(nil),  // 7: gist.ValidateMiddlewaresRequest
+	(*ValidateMiddlewaresResponse)(nil), // 8: gist.ValidateMiddlewaresResponse
+	(*ColumnKinds)(nil),                 // 9: gist.ColumnKinds
+	(*GenerateFixturesRequest)(nil),     // 10: gist.GenerateFixturesRequest
+	(*GenerateFixturesResponse)(nil),    // 11: gist.GenerateFixturesResponse
+	nil,                                 // 12: gist.ColumnKinds.KindsEntry
+	nil,                                 // 13: gist.GenerateFixturesRequest.ColumnKindsEntry
+	(*Field)(nil),                       // 14: gist.Field
+	(*ExpectedError)(nil),               // 15: gist.ExpectedError
 }
 var file_proto_bootstrap_proto_depIdxs = []int32{
-	10, // 0: gist.EndpointSchema.fields:type_name -> gist.Field
-	10, // 1: gist.EndpointSchema.output_fields:type_name -> gist.Field
-	11, // 2: gist.EndpointSchema.expected_errors:type_name -> gist.ExpectedError
+	14, // 0: gist.EndpointSchema.fields:type_name -> gist.Field
+	14, // 1: gist.EndpointSchema.output_fields:type_name -> gist.Field
+	15, // 2: gist.EndpointSchema.expected_errors:type_name -> gist.ExpectedError
 	0,  // 3: gist.RegisterRequest.schema:type_name -> gist.EndpointSchema
-	8,  // 4: gist.ColumnKinds.kinds:type_name -> gist.ColumnKinds.KindsEntry
-	9,  // 5: gist.GenerateFixturesRequest.column_kinds:type_name -> gist.GenerateFixturesRequest.ColumnKindsEntry
-	5,  // 6: gist.GenerateFixturesRequest.ColumnKindsEntry.value:type_name -> gist.ColumnKinds
+	12, // 4: gist.ColumnKinds.kinds:type_name -> gist.ColumnKinds.KindsEntry
+	13, // 5: gist.GenerateFixturesRequest.column_kinds:type_name -> gist.GenerateFixturesRequest.ColumnKindsEntry
+	9,  // 6: gist.GenerateFixturesRequest.ColumnKindsEntry.value:type_name -> gist.ColumnKinds
 	1,  // 7: gist.BootstrapService.Handshake:input_type -> gist.HandshakeRequest
 	3,  // 8: gist.BootstrapService.Register:input_type -> gist.RegisterRequest
-	6,  // 9: gist.BootstrapService.GenerateFixtures:input_type -> gist.GenerateFixturesRequest
-	2,  // 10: gist.BootstrapService.Handshake:output_type -> gist.HandshakeResponse
-	4,  // 11: gist.BootstrapService.Register:output_type -> gist.RegisterResponse
-	7,  // 12: gist.BootstrapService.GenerateFixtures:output_type -> gist.GenerateFixturesResponse
-	10, // [10:13] is the sub-list for method output_type
-	7,  // [7:10] is the sub-list for method input_type
+	5,  // 9: gist.BootstrapService.RegisterMiddleware:input_type -> gist.RegisterMiddlewareRequest
+	7,  // 10: gist.BootstrapService.ValidateMiddlewares:input_type -> gist.ValidateMiddlewaresRequest
+	10, // 11: gist.BootstrapService.GenerateFixtures:input_type -> gist.GenerateFixturesRequest
+	2,  // 12: gist.BootstrapService.Handshake:output_type -> gist.HandshakeResponse
+	4,  // 13: gist.BootstrapService.Register:output_type -> gist.RegisterResponse
+	6,  // 14: gist.BootstrapService.RegisterMiddleware:output_type -> gist.RegisterMiddlewareAck
+	8,  // 15: gist.BootstrapService.ValidateMiddlewares:output_type -> gist.ValidateMiddlewaresResponse
+	11, // 16: gist.BootstrapService.GenerateFixtures:output_type -> gist.GenerateFixturesResponse
+	12, // [12:17] is the sub-list for method output_type
+	7,  // [7:12] is the sub-list for method input_type
 	7,  // [7:7] is the sub-list for extension type_name
 	7,  // [7:7] is the sub-list for extension extendee
 	0,  // [0:7] is the sub-list for field type_name
@@ -615,7 +823,7 @@ func file_proto_bootstrap_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_bootstrap_proto_rawDesc), len(file_proto_bootstrap_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   10,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

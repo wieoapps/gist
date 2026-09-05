@@ -217,6 +217,14 @@ func (f *fakeAdminClient) GenerateFixtures(_ context.Context, in *proto.Generate
 	return &proto.GenerateFixturesResponse{}, nil
 }
 
+func (f *fakeAdminClient) RegisterMiddleware(context.Context, *proto.RegisterMiddlewareRequest, ...grpc.CallOption) (*proto.RegisterMiddlewareAck, error) {
+	return &proto.RegisterMiddlewareAck{}, nil
+}
+
+func (f *fakeAdminClient) ValidateMiddlewares(context.Context, *proto.ValidateMiddlewaresRequest, ...grpc.CallOption) (*proto.ValidateMiddlewaresResponse, error) {
+	return &proto.ValidateMiddlewaresResponse{}, nil
+}
+
 func TestGenerateFixtures_SendsEncodedRowsAndKinds(t *testing.T) {
 	fake := &fakeAdminClient{}
 	server := &gist.Server{}
