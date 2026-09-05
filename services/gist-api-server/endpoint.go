@@ -31,6 +31,31 @@ func EndpointHandler[servicesGroup any, in any, out any](
 	}
 }
 
+// RawEndpointHandler is EndpointHandler's counterpart for a response that
+// isn't a JSON-encoded struct at all - an SVG diagram, a PDF, a plain
+// image - anything whose bytes need to reach the caller exactly as the
+// handler produced them, under a Content-Type other than
+// "application/json". A separate function rather than a parameter on
+// EndpointHandler: that one's out is always JSON-marshaled by the
+// dispatch closure itself (see registerEndpoint), and generic type
+// inference has no way to make that conditional on a runtime contentType
+// argument - fn here returns the exact bytes to send instead of
+// populating a typed output struct, and there is no out type parameter
+// to infer in the first place.
+func RawEndpointHandler[servicesGroup any, in any](
+	id string,
+	expectedErrors []ExpectedError,
+	contentType string,
+	fn func(sg servicesGroup, ctx context.Context, in in) ([]byte, error),
+) *Handler[servicesGroup] {
+	return &Handler[servicesGroup]{
+		id: id,
+		attach: func(server *gist.Server, serviceID string, sg servicesGroup) error {
+			return registerRawEndpoint(server, serviceID, sg, id, expectedErrors, contentType, fn)
+		},
+	}
+}
+
 func Attach[servicesGroup any](serviceID string, handlers ...*Handler[servicesGroup]) gist.Option {
 	return func(server *gist.Server) error {
 		sg, err := gist.BuildServiceGroup[servicesGroup](server)
@@ -93,6 +118,54 @@ func registerEndpoint[servicesGroup any, in any, out any](
 		}
 
 		return json.Marshal(output)
+	}, declaredErrors)
+
+	return nil
+}
+
+// registerRawEndpoint mirrors registerEndpoint - same schema
+// registration, same callback dispatch - except there is no out type to
+// reflect OutputFields from (a raw response has no fields at all, JSON
+// or otherwise) and fn's own return value is written to the wire
+// exactly as given, never passed through json.Marshal.
+func registerRawEndpoint[servicesGroup any, in any](
+	server *gist.Server,
+	serviceID string,
+	sg servicesGroup,
+	id string,
+	expectedErrors []ExpectedError,
+	contentType string,
+	fn func(sg servicesGroup, ctx context.Context, in in) ([]byte, error),
+) error {
+	es := &proto.EndpointSchema{
+		Id:             id,
+		Fields:         reflectFields(reflect.TypeOf(*new(in))),
+		ContentType:    contentType,
+		ExpectedErrors: make([]*proto.ExpectedError, len(expectedErrors)),
+	}
+	declaredErrors := make(map[int32]string, len(expectedErrors))
+	for i, e := range expectedErrors {
+		es.ExpectedErrors[i] = &proto.ExpectedError{Code: int32(e.Code), Description: e.Message}
+		declaredErrors[int32(e.Code)] = e.Message
+	}
+
+	if _, err := rpcconn.MustFor(server).Admin.Register(context.Background(), &proto.RegisterRequest{ServiceId: serviceID, Schema: es}); err != nil {
+		return fmt.Errorf("gistapi: could not register endpoint %q on service %q: %w", id, serviceID, err)
+	}
+
+	server.RegisterDispatch(id, func(ctx context.Context, input json.RawMessage) (json.RawMessage, error) {
+		var typedIn in
+		if len(input) > 0 {
+			if err := json.Unmarshal(input, &typedIn); err != nil {
+				return nil, fmt.Errorf("gistapi: could not decode callback input: %w", err)
+			}
+		}
+
+		raw, err := fn(sg, ctx, typedIn)
+		if err != nil {
+			return nil, err
+		}
+		return raw, nil
 	}, declaredErrors)
 
 	return nil

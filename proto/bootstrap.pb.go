@@ -38,8 +38,14 @@ type EndpointSchema struct {
 	OutputFields   []*Field               `protobuf:"bytes,10,rep,name=output_fields,json=outputFields,proto3" json:"output_fields,omitempty"`
 	Mock           []byte                 `protobuf:"bytes,11,opt,name=mock,proto3" json:"mock,omitempty"` // JSON, optional
 	ExpectedErrors []*ExpectedError       `protobuf:"bytes,12,rep,name=expected_errors,json=expectedErrors,proto3" json:"expected_errors,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// content_type overrides the response's Content-Type header and, when
+	// set, tells gist-server to write the handler's output bytes verbatim
+	// instead of assuming they're a JSON-encoded struct - see
+	// gistapiserver.RawEndpointHandler, the one thing that sets this.
+	// Empty (the default) keeps the existing "application/json" behavior.
+	ContentType   string `protobuf:"bytes,13,opt,name=content_type,json=contentType,proto3" json:"content_type,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *EndpointSchema) Reset() {
@@ -154,6 +160,13 @@ func (x *EndpointSchema) GetExpectedErrors() []*ExpectedError {
 		return x.ExpectedErrors
 	}
 	return nil
+}
+
+func (x *EndpointSchema) GetContentType() string {
+	if x != nil {
+		return x.ContentType
+	}
+	return ""
 }
 
 // HandshakeRequest carries the connecting SDK's own resolved version -
@@ -495,7 +508,7 @@ var File_proto_bootstrap_proto protoreflect.FileDescriptor
 
 const file_proto_bootstrap_proto_rawDesc = "" +
 	"\n" +
-	"\x15proto/bootstrap.proto\x12\x04gist\x1a\x12proto/common.proto\"\x8a\x03\n" +
+	"\x15proto/bootstrap.proto\x12\x04gist\x1a\x12proto/common.proto\"\xad\x03\n" +
 	"\x0eEndpointSchema\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12\x16\n" +
 	"\x06method\x18\x02 \x01(\tR\x06method\x12\x12\n" +
@@ -511,7 +524,8 @@ const file_proto_bootstrap_proto_rawDesc = "" +
 	"\routput_fields\x18\n" +
 	" \x03(\v2\v.gist.FieldR\foutputFields\x12\x12\n" +
 	"\x04mock\x18\v \x01(\fR\x04mock\x12<\n" +
-	"\x0fexpected_errors\x18\f \x03(\v2\x13.gist.ExpectedErrorR\x0eexpectedErrors\"3\n" +
+	"\x0fexpected_errors\x18\f \x03(\v2\x13.gist.ExpectedErrorR\x0eexpectedErrors\x12!\n" +
+	"\fcontent_type\x18\r \x01(\tR\vcontentType\"3\n" +
 	"\x10HandshakeRequest\x12\x1f\n" +
 	"\vsdk_version\x18\x01 \x01(\tR\n" +
 	"sdkVersion\"\x13\n" +

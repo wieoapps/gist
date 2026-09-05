@@ -305,6 +305,42 @@ func TestAttach_PropagatesRegisterError(t *testing.T) {
 	}
 }
 
+func TestRawEndpointHandler_Attach_RegistersContentTypeAndNoOutputFields(t *testing.T) {
+	handler := RawEndpointHandler("get-svg",
+		[]ExpectedError{Internal},
+		"image/svg+xml",
+		func(sg testServicesGroup, ctx context.Context, in testIn) ([]byte, error) {
+			return []byte("<svg/>"), nil
+		},
+	)
+
+	fake := &fakeAdminClient{}
+	server := &gist.Server{}
+	rpcconn.Register(server, &rpcconn.Clients{Admin: fake})
+
+	if err := attachOrSkipOnNilMapLimitation(t, server, "svc-1", handler); err != nil {
+		t.Fatalf("Attach failed: %v", err)
+	}
+
+	if len(fake.registered) != 1 {
+		t.Fatalf("expected exactly 1 Register call, got %d", len(fake.registered))
+	}
+	schema := fake.registered[0].GetSchema()
+	if schema.GetContentType() != "image/svg+xml" {
+		t.Errorf("expected ContentType %q, got %q", "image/svg+xml", schema.GetContentType())
+	}
+	// A raw endpoint's response isn't a struct at all, so there's no
+	// output type to reflect - unlike EndpointHandler, whose OutputFields
+	// always mirror its typed out (see
+	// TestEndpointHandler_Attach_RegistersExpectedSchema).
+	if len(schema.GetOutputFields()) != 0 {
+		t.Errorf("expected no output fields for a raw endpoint, got %+v", schema.GetOutputFields())
+	}
+	if len(schema.GetFields()) != 1 || schema.GetFields()[0].GetName() != "id" {
+		t.Errorf("expected one input field named \"id\" (input is still reflected normally), got %+v", schema.GetFields())
+	}
+}
+
 func TestAttach_MultipleHandlers_StopsOnFirstError(t *testing.T) {
 	failing := EndpointHandler("fails", nil,
 		func(sg testServicesGroup, ctx context.Context, in testIn, out *testOut) error { return nil }, nil)
