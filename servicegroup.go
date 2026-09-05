@@ -26,9 +26,6 @@ func BuildServiceGroup[T any](server *Server) (T, error) {
 	for i := 0; i < t.NumField(); i++ {
 		field := t.Field(i)
 
-		// A Logger field is populated straight from the server, no name
-		// tag needed - there's exactly one, unlike DB/HTTPClient/etc.,
-		// which are per-config-id instances a tag picks out.
 		if field.Type == loggerType {
 			v.Field(i).Set(reflect.ValueOf(server.Logger))
 			continue
